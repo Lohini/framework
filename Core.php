@@ -3,6 +3,11 @@ namespace BailIff;
 
 use Nette\Object;
 
+/**
+ * BailIff Core
+ *
+ * @author Lopo <lopo@losys.eu>
+ */
 final class Core
 extends Object
 {

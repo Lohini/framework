@@ -1,14 +1,19 @@
-<?php
+<?php // vim: ts=4 sw=4 ai:
 namespace BailIff\Browser;
 
 use Nette\String,
 	Nette\Environment as NEnvironment;
 
+/**
+ * BailIff Browser
+ *
+ * @author Lopo <lopo@losys.eu>
+ */
 class Browser
 {
 	public static function getLanguagesPriority()
 	{
-		if (!$header=NEnvironment::getHttpRequest()->getHeader("accept-language"))
+		if (!$header=NEnvironment::getHttpRequest()->getHeader('accept-language'))
 			return NULL;
 		$prefered_languages=array();
 		if (preg_match_all("#([^;,]+)(;[^,0-9]*([0-9\.]+)[^,]*)?#i", $header, $matches, PREG_SET_ORDER)) {
@@ -18,8 +23,9 @@ class Browser
 					$pr=$priority;
 					$priority-=0.001;
 					}
-				else
+				else {
 					$pr=floatval($match[3]);
+					}
 				$prefered_languages[$match[1]]=$pr;
 				}
 			arsort($prefered_languages, SORT_NUMERIC);
