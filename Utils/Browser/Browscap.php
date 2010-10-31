@@ -183,7 +183,7 @@ class Browscap
 
 	public function __construct()
 	{
-		$this->iniFilename= $this->iniFilename!=NULL ?: realpath(NEnvironment::getVariable('tempDir').'/browscap.ini');
+		$this->iniFilename=realpath(NEnvironment::getVariable('tempDir')).'/browscap.ini';
 	}
 
 	/**
@@ -584,8 +584,8 @@ class Browscap
 	{
 		if (self::$result==NULL) {
 			$inst=new self;
-			$inst->updateMethod=self::UPDATE_LOCAL;
-			$inst->localFile=realpath(NEnvironment::getVariable('tempDir').'/temp/browscap.ini');
+//			$inst->updateMethod=self::UPDATE_LOCAL;
+//			$inst->localFile=realpath(NEnvironment::getVariable('tempDir').'/temp/browscap.ini');
 			self::$result=$inst->getBrowser($user_agent, TRUE);
 			}
 		return $return_array? self::$result : (object)self::$result;
