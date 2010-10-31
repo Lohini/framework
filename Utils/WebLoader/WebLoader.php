@@ -25,6 +25,8 @@ extends Control
 	/**#@-*/
 	/** @var string */
 	protected $sourcePath;
+	/** @var string */
+	protected $sourceUri;
 	/** @var bool */
 	protected $joinFiles=TRUE;
 	/** @var string */
@@ -91,6 +93,17 @@ extends Control
 		if ($sourcePath===FALSE)
 			throw new \FileNotFoundException("Source path '$sourcePath' doesn't exist.");
 		$this->sourcePath=$sourcePath;
+		return $this;
+	}
+
+	/**
+	 * Set source Uri
+	 * @param string $sourceUri
+	 * @return WebLoader (fluent)
+	 */
+	public function setSourceUri($sourceUri)
+	{
+		$this->sourceUri=(string)$sourceUri;
 		return $this;
 	}
 

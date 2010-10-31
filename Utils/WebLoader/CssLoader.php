@@ -30,6 +30,7 @@ extends WebLoader
 		parent::__construct($parent, $name);
 		$this->setGeneratedFileNamePrefix('cssloader-');
 		$this->setGeneratedFileNameSuffix('.css');
+		$this->sourceUri=NEnvironment::getVariable('baseUri').'css/';
 		$this->contentType='text/css';
 		$this->fileFilters[]=new CssUrlsFilter;
 	}
@@ -92,6 +93,10 @@ extends WebLoader
 	 */
 	public function renderFiles()
 	{
+		if (count($this->files)==1) { // single, don't cache
+			echo $this->getElement($this->sourceUri.$this->files[0][0], $this->files[0][1]);
+			return;
+			}
 		$filesByMedia=array();
 		foreach ($this->files as $f)
 			$filesByMedia[$f[1]][]=$f[0];

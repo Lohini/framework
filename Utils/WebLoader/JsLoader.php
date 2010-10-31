@@ -2,6 +2,7 @@
 namespace BailIff\WebLoader;
 
 use Nette\IComponentContainer,
+	Nette\Environment as NEnvironment,
 	Nette\Web\Html,
 	BailIff\WebLoader\Filters\JSMin;
 
@@ -32,6 +33,7 @@ extends WebLoader
 		parent::__construct($parent, $name);
 		$this->setGeneratedFileNamePrefix('jsloader-');
 		$this->setGeneratedFileNameSuffix('.js');
+		$this->sourceUri=NEnvironment::getVariable('baseUri').'js/';
 		$this->contentType='text/javascript';
 	}
 
@@ -78,24 +80,29 @@ extends WebLoader
 	{
 		$filenames=array();
 		$content='';
-		if (count($this->files)) {
-			// u javascriptu zalezi na poradi
-			foreach ($this->files as $file) {
-				switch ($file[1]) {
-					case self::COMPACT:
-						$content.=$this->loadFile($file[0]);
-						break;
-					case self::MINIFY:
-						$mfile=$file[0];
-						// dean edwards packer neumi cz/sk znaky!!
-						$content.=JSMin::minify($this->loadFile($file[0]));
-						break;
-					default:
-						return;
-					}
-				$filenames[]=$file[0];
+		if (($cnt=count($this->files))>0) {
+			if ($cnt==1 && $this->files[0][1]==self::COMPACT) {
+				echo $this->getElement($this->sourceUri.$this->files[0][0]);
 				}
-			echo $this->getElement($this->getPresenter()->link('WebLoader', $this->generate($filenames, $content)));
+			else {
+				// u javascriptu zalezi na poradi
+				foreach ($this->files as $file) {
+					switch ($file[1]) {
+						case self::COMPACT:
+							$content.=$this->loadFile($file[0]);
+							break;
+						case self::MINIFY:
+							$mfile=$file[0];
+							// dean edwards packer neumi cz/sk znaky!!
+							$content.=JSMin::minify($this->loadFile($file[0]));
+							break;
+						default:
+							return;
+						}
+					$filenames[]=$file[0];
+					}
+				echo $this->getElement($this->getPresenter()->link('WebLoader', $this->generate($filenames, $content)));
+				}
 			}
 		// raw code az nakonec
 		foreach ($this->codes as $code)
