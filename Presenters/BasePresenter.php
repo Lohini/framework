@@ -13,6 +13,17 @@ abstract class Base
 extends Presenter
 {
 	/**
+	 * (non-PHPdoc)
+	 * @see Nette\Application.Control::createTemplate()
+	 */
+	protected function createTemplate()
+	{
+		$template=parent::createTemplate();
+		$template->registerHelperLoader('BailIff\Templates\TemplateHelpers::loader');
+		return $template;
+	}
+
+	/**
 	 * Create CssLoader control
 	 * @return CssLoader
 	 */
