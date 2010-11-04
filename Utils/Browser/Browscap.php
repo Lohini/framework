@@ -261,6 +261,22 @@ class Browscap
 				}
 			$array[$this->_properties[$key]]=$value;
 			}
+		/**
+		 * Engine
+		 * @link http://en.wikipedia.org/wiki/Web_browser_engine
+		 */
+		$engines=array(
+			'Amaya'=>'Amaya', 'Gecko'=>'Gecko', 'KHTML'=>'KHTML', 'Presto'=>'Presto', 'Prince'=>'Prince', 'Trident'=>'Trident', 'WebKit'=>'WebKit', 'AppleWebKit' => 'WebKit',
+//			'Boxely', 'Gazelle', 'GtkHTML', 'HTMLayout', 'iCab', 'Mariner', 'Tasman', 'Tkhtml' //inactive engines
+			);
+		$array['Engine']='unknown';
+		foreach ($engines as $key => $engine) {
+			if (preg_match("* $key/*", $user_agent)) {
+				$array['Engine']= isset($engine)? $engine : $key;
+				break;
+				}
+			}
+
 		return $return_array? $array : (object)$array;
 	}
 
@@ -281,7 +297,8 @@ class Browscap
 			'browser_name',
 			'browser_name_regex',
 			'browser_name_pattern',
-			'Parent'
+			'Parent',
+			'Engine'
 			);
 
 		$this->_userAgents=array_keys($browsers);
