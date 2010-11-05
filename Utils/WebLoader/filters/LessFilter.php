@@ -1,4 +1,4 @@
-<?php
+<?php // vim: ts=4 sw=4 ai:
 namespace BailIff\WebLoader\Filters;
 
 /**
@@ -31,6 +31,7 @@ class LessFilter
 	private $media;
 	private $indentLevel;
 	private $level;
+	private $inAnimations;
 
 	private $env=array();
 	private $allParsedFiles=array();
@@ -76,6 +77,7 @@ class LessFilter
 
 	/**
 	 * compile chunk off the head of buffer
+	 * @return bool|string
 	 * @throws \Exception
 	 */
 	private function chunk()
@@ -135,11 +137,31 @@ class LessFilter
 			if ($this->literal('@media') && $this->mediaTypes($types, $rest) && $this->literal('{')) {
 				$this->media=$types;
 				$this->indentLevel++;
-				return "@media ".join(', ', $types).(!empty($rest)? " $rest" : '' )." {\n";
+				return '@media '.join(', ', $types).(!empty($rest)? " $rest" : '' )." {\n";
 				}
 			else {
 				$this->seek($s);
 				}
+
+			// css animations
+			if ($this->match('(@(-[a-z]+-)?keyframes)', $m) && $this->propertyValue($value) && $this->literal('{')) {
+				$this->indentLevel++;
+				$this->inAnimations=TRUE;
+				return $m[0].$this->compileValue($value)." {\n";
+				}
+			else {
+				$this->seek($s);
+				}
+			}
+
+		// see if we're in animations and handle pseudo classess
+		if ($this->inAnimations && $this->match("(to|from|[0-9]+%)", $m) && $this->literal('{')) {
+			$this->push();
+			$this->set('__args', array($m[1]));
+			return TRUE;
+			}
+		else {
+			$this->seek($s);
 			}
 
 		// setting variable
@@ -193,6 +215,12 @@ class LessFilter
 			if ($this->level==1 && !is_null($this->media)) {
 				$this->indentLevel--;
 				$this->media=NULL;
+				return "}\n";
+				}
+
+			if ($this->level==1 && $this->inAnimations===TRUE) {
+				$this->indentLevel--;
+				$this->inAnimations=FALSE;
 				return "}\n";
 				}
 
@@ -363,7 +391,7 @@ class LessFilter
 	 * @param string $name
 	 * @return bool
 	 */
-	function fileExists($name)
+	private function fileExists($name)
 	{
 		// sym link workaround
 		return file_exists($name) || file_exists(realpath(preg_replace('/\w+\/\.\.\//', '', $name)));
@@ -375,7 +403,7 @@ class LessFilter
 	 * @param int $d
 	 * @return array
 	 */
-	function multiplyTags($tags=array(' '), $d=NULL)
+	private function multiplyTags($tags=array(' '), $d=NULL)
 	{
 		if ($d===NULL) {
 			$d=count($this->env)-1;
@@ -405,7 +433,7 @@ class LessFilter
 	 * @param unknown_type &$exps
 	 * @return bool
 	 */
-	function expressionList(&$exps)
+	private function expressionList(&$exps)
 	{
 		$values=array();	
 
@@ -425,7 +453,7 @@ class LessFilter
 	 * @param unknown_type &$out
 	 * @return bool
 	 */
-	function expression(&$out)
+	private function expression(&$out)
 	{
 		$s=$this->seek();
 		$needWhite=TRUE;
@@ -449,7 +477,7 @@ class LessFilter
 	 * @param int $minP
 	 * @param bool $needWhite
 	 */
-	function expHelper($lhs, $minP, $needWhite=TRUE)
+	private function expHelper($lhs, $minP, $needWhite=TRUE)
 	{
 		$ss=$this->seek();
 		// try to find a valid operator
@@ -491,7 +519,7 @@ class LessFilter
 	 * @param unknown_type &$value
 	 * @return bool
 	 */
-	function propertyValue(&$value)
+	private function propertyValue(&$value)
 	{
 		$values=array();	
 		$s=null;
@@ -519,7 +547,7 @@ class LessFilter
 	 * @param array? &$value
 	 * @return bool
 	 */
-	function value(&$value)
+	private function value(&$value)
 	{
 		// try a unit
 		if ($this->unit($value)) {
@@ -579,7 +607,7 @@ class LessFilter
 	 * @param string &$media
 	 * @return bool
 	 */
-	function import(&$url, &$media)
+	private function import(&$url, &$media)
 	{
 		$s=$this->seek();
 		if (!$this->literal('@import')) {
@@ -622,7 +650,7 @@ class LessFilter
 	 * @param unknown_type &$rest
 	 * @return bool
 	 */
-	function mediaTypes(&$types, &$rest)
+	private function mediaTypes(&$types, &$rest)
 	{
 		$s=$this->seek();
 		$types=array();
@@ -646,7 +674,7 @@ class LessFilter
 	 * @param array &$var
 	 * @return bool
 	 */
-	function accessor(&$var)
+	private function accessor(&$var)
 	{
 		$s=$this->seek();
 
@@ -683,7 +711,7 @@ class LessFilter
 	 * @param string &$d
 	 * @return bool
 	 */
-	function string(&$string, &$d=NULL)
+	private function string(&$string, &$d=NULL)
 	{
 		$s=$this->seek();
 		if ($this->literal('"', FALSE)) {
@@ -710,7 +738,7 @@ class LessFilter
 	 * @param array? &$unit
 	 * @param array $allowed
 	 */
-	function unit(&$unit, $allowed=NULL)
+	private function unit(&$unit, $allowed=NULL)
 	{
 		$simpleCase= $allowed==NULL;
 		if (!$allowed) {
@@ -745,7 +773,7 @@ class LessFilter
 	 * @param array $out
 	 * @return bool
 	 */
-	function color(&$out)
+	private function color(&$out)
 	{
 		$color=array('color');
 
@@ -777,7 +805,7 @@ class LessFilter
 	 * @param string $delim
 	 * @return bool
 	 */
-	function argumentValues(&$args, $delim=';')
+	private function argumentValues(&$args, $delim=';')
 	{
 		$s=$this->seek();
 		if (!$this->literal('(')) {
@@ -815,7 +843,7 @@ class LessFilter
 	 * @param string $delim
 	 * @return bool
 	 */
-	function argumentDef(&$args, $delim=';')
+	private function argumentDef(&$args, $delim=';')
 	{
 		$s=$this->seek();
 		if (!$this->literal('(')) {
@@ -854,7 +882,7 @@ class LessFilter
 	 * @param string $delim
 	 * @return bool
 	 */
-	function tags(&$tags, $simple=FALSE, $delim=',')
+	private function tags(&$tags, $simple=FALSE, $delim=',')
 	{
 		$tags=array();
 		while ($this->tag($tt, $simple)) {
@@ -874,7 +902,7 @@ class LessFilter
 	 * @param string &$value
 	 * @return bool
 	 */
-	function tagBracket(&$value)
+	private function tagBracket(&$value)
 	{
 		$s=$this->seek();
 		if ($this->literal('[') && $this->to(']', $c, TRUE) && $this->literal(']', FALSE)) {
@@ -895,7 +923,7 @@ class LessFilter
 	 * @param bool $simple
 	 * @return bool
 	 */
-	function tag(&$tag, $simple=FALSE)
+	private function tag(&$tag, $simple=FALSE)
 	{
 		$chars= $simple? '^,:;{}\][>\(\) ' : '^,;{}[';
 
@@ -924,7 +952,7 @@ class LessFilter
 	 * @param callback? &$func
 	 * @return bool
 	 */
-	function func(&$func)
+	private function func(&$func)
 	{
 		$s=$this->seek();
 
@@ -969,7 +997,7 @@ class LessFilter
 	 * @param string &$name
 	 * @return bool
 	 */
-	function variable(&$name)
+	private function variable(&$name)
 	{
 		$s=$this->seek();
 		if ($this->literal($this->vPrefix, FALSE) && $this->keyword($name)) {
@@ -982,7 +1010,7 @@ class LessFilter
 	 * consume an assignment operator
 	 * @return bool
 	 */
-	function assign()
+	private function assign()
 	{
 		return $this->literal(':') || $this->literal('=');
 	}
@@ -992,7 +1020,7 @@ class LessFilter
 	 * @param string &$word
 	 * @return bool
 	 */
-	function keyword(&$word)
+	private function keyword(&$word)
 	{
 		if ($this->match('([\w_\-\*!"][\w\-_"]*)', $m)) {
 			$word=$m[1];
@@ -1005,7 +1033,7 @@ class LessFilter
 	 * consume an end of statement delimiter
 	 * @return bool
 	 */
-	function end()
+	private function end()
 	{
 		if ($this->literal(';')) {
 			return TRUE;
@@ -1022,7 +1050,7 @@ class LessFilter
 	 * @param unknown_type $delim
 	 * @return array|
 	 */
-	function compressList($items, $delim)
+	private function compressList($items, $delim)
 	{
 		if (count($items)==1) {
 			return $items[0];
@@ -1037,7 +1065,7 @@ class LessFilter
 	 * @param array $env
 	 * @return string
 	 */
-	function compileBlock($rtags, $env)
+	private function compileBlock($rtags, $env)
 	{
 		// don't render functions
 		// todo: this shouldn't need to happen because multiplyTags prunes them, verify
@@ -1084,7 +1112,7 @@ class LessFilter
 	 * @param int $level
 	 * @return string
 	 */
-	function indent($str, $level=NULL)
+	private function indent($str, $level=NULL)
 	{
 		if (is_null($level)) {
 			$level=$this->indentLevel;
@@ -1098,7 +1126,7 @@ class LessFilter
 	 * @param int $level
 	 * @return string
 	 */
-	function compileProperty($name, $value, $level=0)
+	private function compileProperty($name, $value, $level=0)
 	{
 		$level=$this->indentLevel+$level;
 		// output all repeated properties
@@ -1112,7 +1140,7 @@ class LessFilter
 	 * @param array $value
 	 * @return string
 	 */
-	function compileValue($value)
+	private function compileValue($value)
 	{
 		switch ($value[0]) {
 			case 'list':
@@ -1189,7 +1217,7 @@ class LessFilter
 	 * @param array $arg
 	 * @return string
 	 */
-	function lib_quote($arg)
+	private function lib_quote($arg)
 	{
 		return '"'.$this->compileValue($arg).'"';
 	}
@@ -1198,7 +1226,7 @@ class LessFilter
 	 * @param array $arg
 	 * @return string
 	 */
-	function lib_unquote($arg)
+	private function lib_unquote($arg)
 	{
 		$out=$this->compileValue($arg);
 		if ($this->quoted($out)) {
@@ -1212,7 +1240,7 @@ class LessFilter
 	 * @param string $s
 	 * @return string|boolean
 	 */
-	function quoted($s)
+	private function quoted($s)
 	{
 		if (preg_match('/^("|\').*?\1$/', $s, $m)) {
 			return $m[1];
@@ -1226,7 +1254,7 @@ class LessFilter
 	 * @return bool
 	 * @todo add hsl
 	 */
-	function funcToColor($func)
+	private function funcToColor($func)
 	{
 		$fname=$func[1];
 		if (!preg_match('/^(rgb|rgba)$/', $fname)) {
@@ -1276,7 +1304,7 @@ class LessFilter
 	 * @param array $defaultValue
 	 * @return array
 	 */
-	function reduce($var, $defaultValue=array('number', 0))
+	private function reduce($var, $defaultValue=array('number', 0))
 	{
 		$pushed=0; // number of variable names pushed
 
@@ -1318,7 +1346,7 @@ class LessFilter
 	 * @param array $right
 	 * @return array
 	 */
-	function evaluate($op, $left, $right)
+	private function evaluate($op, $left, $right)
 	{
 		$left=$this->reduce($left);
 		$right=$this->reduce($right);
@@ -1372,7 +1400,7 @@ class LessFilter
 	 * @param array $c
 	 * @return array
 	 */
-	function fixColor($c)
+	private function fixColor($c)
 	{
 		foreach (range(1, 3) as $i) {
 			if ($c[$i]<0) {
@@ -1392,7 +1420,7 @@ class LessFilter
 	 * @param array $rgt
 	 * @return array
 	 */
-	function op_number_color($op, $lft, $rgt)
+	private function op_number_color($op, $lft, $rgt)
 	{
 		if ($op=='+' || $op='*') {
 			return $this->op_color_number($op, $rgt, $lft);
@@ -1405,7 +1433,7 @@ class LessFilter
 	 * @param array $rgt
 	 * @return array
 	 */
-	function op_color_number($op, $lft, $rgt)
+	private function op_color_number($op, $lft, $rgt)
 	{
 		if ($rgt[0]=='%') {
 			$rgt[1]/=100;
@@ -1419,7 +1447,7 @@ class LessFilter
 	 * @param array $right
 	 * @return array
 	 */
-	function op_color_color($op, $left, $right)
+	private function op_color_color($op, $left, $right)
 	{
 		$out=array('color');
 		$max= count($left)>count($right)? count($left) : count($right);
@@ -1459,7 +1487,7 @@ class LessFilter
 	 * @param array $right
 	 * @return array
 	 */
-	function op_number_number($op, $left, $right)
+	private function op_number_number($op, $left, $right)
 	{
 		if ($right[0]=='%') {
 			$right[1]/=100;
@@ -1508,7 +1536,7 @@ class LessFilter
 	 * @param string? $name
 	 * @return int
 	 */
-	function pushName($name)
+	private function pushName($name)
 	{
 		$count=array_count_values($this->expandStack);
 		$count= isset($count[$name])? $count[$name] : 0;
@@ -1522,7 +1550,7 @@ class LessFilter
 	 * pop name off expand stack and return it
 	 * @return mixed
 	 */
-	function popName()
+	private function popName()
 	{
 		return array_pop($this->expandStack);
 	}
@@ -1530,7 +1558,7 @@ class LessFilter
 	/**
 	 * push a new environment
 	 */
-	function push()
+	private function push()
 	{
 		$this->level++;
 		$this->env[]=array();
@@ -1540,7 +1568,7 @@ class LessFilter
 	 * pop environment off the stack
 	 * @return mixed
 	 */
-	function pop()
+	private function pop()
 	{
 		if ($this->level==1) {
 			throw new \Exception('parse error: unexpected end of block');
@@ -1554,7 +1582,7 @@ class LessFilter
 	 * @param string $name
 	 * @param mixed $value
 	 */
-	function set($name, $value)
+	private function set($name, $value)
 	{
 		$this->env[count($this->env)-1][$name]=$value;
 	}
@@ -1564,7 +1592,7 @@ class LessFilter
 	 * @param string $name
 	 * @param mixed $value
 	 */
-	function append($name, $value)
+	private function append($name, $value)
 	{
 		$this->env[count($this->env)-1][$name][]=$value;
 	}
@@ -1574,7 +1602,7 @@ class LessFilter
 	 * @param string $name
 	 * @param mixed $value
 	 */
-	function prepend($name, $value)
+	private function prepend($name, $value)
 	{
 		if (isset($this->env[count($this->env)-1][$name])) {
 			array_unshift($this->env[count($this->env)-1][$name], $value);
@@ -1590,7 +1618,7 @@ class LessFilter
 	 * @param array $env
 	 * @return mixed
 	 */
-	function get($name, $env=NULL)
+	private function get($name, $env=NULL)
 	{
 		if (empty($env)) {
 			$env=$this->env;
@@ -1611,7 +1639,7 @@ class LessFilter
 	 * @param array $default
 	 * @return mixed
 	 */
-	function getVal($name, $skip=0, $default=array('keyword', ''))
+	private function getVal($name, $skip=0, $default=array('keyword', ''))
 	{
 		$val=$this->get($name);
 		if ($val==NULL) {
@@ -1643,7 +1671,7 @@ class LessFilter
 	 * @param array $path
 	 * @return array
 	 */
-	function getEnv($path)
+	private function getEnv($path)
 	{
 		if (!is_array($path)) {
 			$path=array($path);
@@ -1675,7 +1703,7 @@ class LessFilter
 	 * @param mixed $value
 	 * @return mixed|void
 	 */
-	function merge($name, $value)
+	private function merge($name, $value)
 	{
 		// if the current block isn't there then just set
 		$top= &$this->env[count($this->env)-1];
@@ -1696,7 +1724,7 @@ class LessFilter
 	 * @param bool $eatWhitespace
 	 * @return bool
 	 */
-	function literal($what, $eatWhitespace=TRUE)
+	private function literal($what, $eatWhitespace=TRUE)
 	{
 		// this is here mainly prevent notice from { } string accessor 
 		if ($this->count >= strlen($this->buffer)) {
@@ -1719,7 +1747,7 @@ class LessFilter
 	 * @param string $what
 	 * @return string
 	 */
-	function preg_quote($what)
+	private function preg_quote($what)
 	{
 		return preg_quote($what, '/');
 	}
@@ -1732,7 +1760,7 @@ class LessFilter
 	 * @param bool $allowNewline
 	 * @return bool
 	 */
-	function to($what, &$out, $until=FALSE, $allowNewline=FALSE)
+	private function to($what, &$out, $until=FALSE, $allowNewline=FALSE)
 	{
 		$validChars= $allowNewline? "[^\n]" : '.';
 		if (!$this->match('('.$validChars.'*?)'.$this->preg_quote($what), $m, !$until)) {
@@ -1752,7 +1780,7 @@ class LessFilter
 	 * @param bool $eatWhitespace
 	 * @return bool
 	 */
-	function match($regex, &$out, $eatWhitespace=TRUE)
+	private function match($regex, &$out, $eatWhitespace=TRUE)
 	{
 		$r="/$regex".($eatWhitespace? '\s*' : '').'/Ais';
 		if (preg_match($r, $this->buffer, $out, NULL, $this->count)) {
@@ -1769,7 +1797,7 @@ class LessFilter
 	 * @param array &$out
 	 * @return int
 	 */
-	function peek($regex, &$out=NULL)
+	private function peek($regex, &$out=NULL)
 	{
 		$r="/$regex/Ais";
 		return preg_match($r, $this->buffer, $out, NULL, $this->count);
@@ -1780,7 +1808,7 @@ class LessFilter
 	 * @param unknown_type $where
 	 * @return int|TRUE
 	 */
-	function seek($where=NULL)
+	private function seek($where=NULL)
 	{
 		if ($where===NULL) {
 			return $this->count;
@@ -1794,7 +1822,7 @@ class LessFilter
 	 * @param string $str
 	 * @return string
 	 */
-	function parse($str=NULL)
+	private function parse($str=NULL)
 	{
 		if ($str) {
 			$this->buffer=$str;
@@ -1837,7 +1865,7 @@ class LessFilter
 	 * @param string $msg
 	 * @throws \Exception
 	 */
-	function throwParseError($msg='parse error')
+	private function throwParseError($msg='parse error')
 	{
 		$line=$this->line+substr_count(substr($this->buffer, 0, $this->count), "\n");
 		if ($this->peek("(.*?)(\n|$)", $m)) {
@@ -1851,7 +1879,7 @@ class LessFilter
 	 * @return string
 	 * @todo make it work for all functions, not just url
 	 */
-	function removeComments($text)
+	private function removeComments($text)
 	{
 		$look=array('url(', '//', '/*', '"', "'");
 
