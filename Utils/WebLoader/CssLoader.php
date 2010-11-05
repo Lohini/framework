@@ -30,6 +30,7 @@ extends WebLoader
 		parent::__construct($parent, $name);
 		$this->setGeneratedFileNamePrefix('cssloader-');
 		$this->setGeneratedFileNameSuffix('.css');
+		$this->sourcePath=WWW_DIR.'/css';
 		$this->sourceUri=NEnvironment::getVariable('baseUri').'css/';
 		$this->contentType='text/css';
 		$this->fileFilters[]=new CssUrlsFilter;
@@ -71,13 +72,16 @@ extends WebLoader
 	 */
 	public function addFile($file, $media='all')
 	{
-		foreach ($this->files as $f)
-			if ($f[0]==$file)
+		foreach ($this->files as $f) {
+			if ($f[0]==$file) {
 				return;
+				}
+			}
 		if (!file_exists("$this->sourcePath/$file")) {
 			if ($this->throwExceptions) {
-				if (NEnvironment::isProduction())
+				if (NEnvironment::isProduction()) {
 					throw new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist.");
+					}
 				else {
 					Debug::log(new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."), Debug::ERROR);
 					return;
@@ -93,19 +97,23 @@ extends WebLoader
 	 */
 	public function renderFiles()
 	{
-		if (count($this->files)==1) { // single, don't cache
+		if (count($this->files)==1 && substr($this->files[0][0], -4)=='.css') { // single raw, don't cache
 			echo $this->getElement($this->sourceUri.$this->files[0][0], $this->files[0][1]);
 			return;
 			}
 		$filesByMedia=array();
-		foreach ($this->files as $f)
+		foreach ($this->files as $f) {
 			$filesByMedia[$f[1]][]=$f[0];
+			}
 		foreach ($filesByMedia as $media => $filenames) {
-			if ($this->joinFiles)
+			if ($this->joinFiles) {
 				echo $this->getElement($this->getPresenter()->link('WebLoader', $this->generate($filenames)), $media);
-			else
-				foreach ($filenames as $filename)
+				}
+			else {
+				foreach ($filenames as $filename) {
 					echo $this->getElement($this->getPresenter()->link('WebLoader', $this->generate(array($filename))), $media);
+					}
+				}
 			}
 	}
 

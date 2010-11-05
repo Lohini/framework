@@ -45,7 +45,7 @@ extends Object
 		// Replace backslashes in $path
 		$path=str_replace('\\', '/', $path);
 
-		//$path = self::cannonicalizePath($path);
+		$path = self::cannonicalizePath($path);
 		return $quote==='"'? addslashes($path) : $path;
 	}
 
@@ -98,7 +98,7 @@ extends Object
 		return preg_replace_callback(
 			$regexp,
 			function ($matches) use ($loader, $file) {
-				return "url('".$this->absolutizeUrl($matches[2], $matches[1], $file, $loader->sourcePath)."')";
+				return "url('".CssUrlsFilter::absolutizeUrl($matches[2], $matches[1], $file, $loader->sourcePath)."')";
 				},
 			$code
 			);

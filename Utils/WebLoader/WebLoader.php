@@ -41,6 +41,8 @@ extends Control
 	public $fileFilters=array();
 	/** @var array */
 	protected $files=array();
+	/** @var Cache */
+	private static $cache=NULL;
 	/** @var int */
 	public static $cacheExpire=NULL;
 	/** @var Nette\Caching\ICacheStorage */
@@ -78,8 +80,9 @@ extends Control
 			$this->addFiles(func_get_args());
 			}
 		$this->renderFiles();
-		if ($hasArgs)
+		if ($hasArgs) {
 			$this->files=$backup;
+			}
 	}
 
 	/**
@@ -90,10 +93,20 @@ extends Control
 	public function setSourcePath($sourcePath)
 	{
 		$sourcePath=realpath($sourcePath);
-		if ($sourcePath===FALSE)
+		if ($sourcePath===FALSE) {
 			throw new \FileNotFoundException("Source path '$sourcePath' doesn't exist.");
+			}
 		$this->sourcePath=$sourcePath;
 		return $this;
+	}
+
+	/**
+	 * Get sourcePath
+	 * @return string
+	 */
+	public function getSourcePath()
+	{
+		return $this->sourcePath;
 	}
 
 	/**
@@ -201,7 +214,7 @@ extends Control
 	 *
 	 *		{assign js=>array(
 	 *						'datagrid.js',
-	 *						'mootools.nette.js'=>JavaScriptLoader::MINIFY,
+	 *						'mootools.nette.js'=>JSLoader::MINIFY,
 	 *						)
 	 *			}
 	 *
@@ -211,7 +224,7 @@ extends Control
 	 *
 	 *		{control js 'datagrid.js'}
 	 *		{control js 'datagrid.js', 'jquery.nette.js'}
-	 *		{control js 'datagrid.js', 'mootools.nette.js'=>JavaScriptLoader::MINIFY}
+	 *		{control js 'datagrid.js', 'mootools.nette.js'=>JSLoader::MINIFY}
 	 *
 	 * @param array $files list of files
 	 */
@@ -219,17 +232,23 @@ extends Control
 	{
 		foreach ($files as $k => $v) {
 			if (is_int($k)) {
-				if (is_string($v))
+				if (is_string($v)) {
 					$this->addFile($v);
-				elseif (is_array($v))
-					foreach ($v as $k1 => $v1)
-						if (is_int($k1))
+					}
+				elseif (is_array($v)) {
+					foreach ($v as $k1 => $v1) {
+						if (is_int($k1)) {
 							$this->addFile($v1);
-						elseif (is_string($k1))
+							}
+						elseif (is_string($k1)) {
 							$this->addFile($k1, $v1);
+							}
+						}
+					}
 				}
-			elseif (is_string($k))
+			elseif (is_string($k)) {
 				$this->addFile ($k, $v);
+				}
 			}
 	}
 
@@ -240,11 +259,13 @@ extends Control
 	 */
 	public function getLastModified(array $files=NULL)
 	{
-		if ($files===NULL)
+		if ($files===NULL) {
 			$files=$this->files;
+			}
 		$modified=0;
-		foreach ($files as $file)
+		foreach ($files as $file) {
 			$modified=max($modified, filemtime("$this->sourcePath/$file"));
+			}
 		return $modified;
 	}
 
@@ -255,11 +276,13 @@ extends Control
 	 */
 	public function getGeneratedFilename(array $files=NULL)
 	{
-		if ($files===NULL)
+		if ($files===NULL) {
 			$files=$this->files;
+			}
 		$name=substr(md5(implode('|', $files)), 0, 12);
-		if (count($files)===1)
+		if (count($files)===1) {
 			$name.='-'.pathinfo($files[0], PATHINFO_FILENAME);
+			}
 		return $this->generatedFileNamePrefix.$name.$this->generatedFileNameSuffix;
 	}
 
@@ -270,15 +293,18 @@ extends Control
 	 */
 	public function getContent(array $files=NULL)
 	{
-		if ($files===NULL)
+		if ($files===NULL) {
 			$files=$this->files;
+			}
 		// load content
 		$content='';
-		foreach ($files as $file)
+		foreach ($files as $file) {
 			$content.=$this->loadFile($file);
+			}
 		// apply filters
-		foreach ($this->filters as $filter)
+		foreach ($this->filters as $filter) {
 			$content=call_user_func($filter, $content, $this);
+			}
 		return $content;
 	}
 
@@ -294,25 +320,27 @@ extends Control
 		$cache=self::getCache();
 
 		if ($cache[$key]===NULL) {
-			if (is_null($content))
+			if (is_null($content)) {
 				$content=$this->getContent($files);
-			foreach ($files as $file)
-			$cache->save(
-				$key,
-				array(
-					self::CONTENT_TYPE => $this->contentType,
-					self::ETAG=>md5($content)."-".dechex(time()),
-					self::CONTENT=>$content
-					),
-				array(
-					Cache::FILES => array_map(create_function("\$args,\$path='$this->sourcePath'", 'return "$path/$args";'), $files),
-					Cache::EXPIRE => self::$cacheExpire,
-					Cache::CONSTS => array(
-						'Nette\Framework::REVISION',
-						'BailIff\Core::REVISION',
+				}
+			foreach ($files as $file) {
+				$cache->save(
+					$key,
+					array(
+						self::CONTENT_TYPE => $this->contentType,
+						self::ETAG=>md5($content).'-'.dechex(time()),
+						self::CONTENT=>$content
 						),
-					)
-				);
+					array(
+						Cache::FILES => array_map(create_function("\$args,\$path='$this->sourcePath'", 'return "$path/$args";'), $files),
+						Cache::EXPIRE => self::$cacheExpire,
+						Cache::CONSTS => array(
+							'Nette\Framework::REVISION',
+							'BailIff\Core::REVISION',
+							),
+						)
+					);
+				}
 			$cache->release();
 			}
 		return $key;
@@ -324,7 +352,10 @@ extends Control
 	 */
 	protected static function getCache()
 	{
-		return new Cache(self::getCacheStorage(), 'BailIff.WebLoader');
+		if (self::$cache===NULL) {
+			self::$cache=new Cache(self::getCacheStorage(), 'BailIff.WebLoader');
+			}
+		return self::$cache;
 	}
 
 	/**
@@ -335,8 +366,9 @@ extends Control
 	protected function loadFile($file)
 	{
 		$content=file_get_contents("$this->sourcePath/$file");
-		foreach ($this->fileFilters as $filter)
+		foreach ($this->fileFilters as $filter) {
 			$content=call_user_func($filter, $content, $this, $file);
+			}
 		return $content;
 	}
 
