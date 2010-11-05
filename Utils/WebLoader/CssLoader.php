@@ -5,6 +5,7 @@ use Nette\Web\Html,
 	Nette\Environment as NEnvironment,
 	Nette\IComponentContainer,
 	Nette\Debug,
+	BailIff\WebLoader\Filters\LessFilter,
 	BailIff\WebLoader\Filters\CssUrlsFilter;
 
 /**
@@ -33,6 +34,7 @@ extends WebLoader
 		$this->sourcePath=WWW_DIR.'/css';
 		$this->sourceUri=NEnvironment::getVariable('baseUri').'css/';
 		$this->contentType='text/css';
+		$this->fileFilters[]=new LessFilter;
 		$this->fileFilters[]=new CssUrlsFilter;
 	}
 
