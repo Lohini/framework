@@ -4,6 +4,7 @@ namespace BailIff\WebLoader;
 use Nette\IComponentContainer,
 	Nette\Environment as NEnvironment,
 	Nette\Web\Html,
+	Nette\String,
 	BailIff\WebLoader\Filters\JSMin;
 
 /**
@@ -92,9 +93,16 @@ extends WebLoader
 							$content.=$this->loadFile($file[0]);
 							break;
 						case self::MINIFY:
-							$mfile=$file[0];
 							// dean edwards packer neumi cz/sk znaky!!
-							$content.=JSMin::minify($this->loadFile($file[0]));
+							if (String::endsWith($file[0], '.min.js')) { // already minified ?
+								$content.=$this->loadFile($file[0]);
+								}
+							elseif (is_file($mfile="$this->sourcePath/".substr($file[0], 0, strlen($file[0])-3).'.min.js')) { // have minified ?
+								$content.=file_get_contents($mfile);
+								}
+							else { // minify
+								$content.=JSMin::minify($this->loadFile($file[0]));
+								}
 							break;
 						default:
 							return;
