@@ -40,7 +40,7 @@ extends Control
 	/** @var array */
 	public $filters=array();
 	/** @var array */
-	public $PreFileFilters=array();
+	public $preFileFilters=array();
 	/** @var array */
 	public $fileFilters=array();
 	/** @var array */
@@ -368,7 +368,7 @@ extends Control
 				}
 			return '';
 			}
-		foreach ($this->PreFileFilters as $filter) {
+		foreach ($this->preFileFilters as $filter) {
 			$fcontent=call_user_func($filter, $content, $this, "$this->sourcePath/$file");
 			$content= is_array($fcontent)? $fcontent[PreFileFilter::CONTENT] : $fcontent;
 			foreach ($this->fileFilters as $filter) {

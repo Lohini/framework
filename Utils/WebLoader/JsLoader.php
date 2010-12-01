@@ -5,7 +5,8 @@ use Nette\IComponentContainer,
 	Nette\Environment as NEnvironment,
 	Nette\Web\Html,
 	Nette\String,
-	BailIff\WebLoader\Filters\JSMin;
+	BailIff\WebLoader\Filters\JSMin,
+	Nette\Debug;
 
 /**
  * JsLoader
@@ -32,7 +33,7 @@ extends WebLoader
 	public function __construct(IComponentContainer $parent=NULL, $name=NULL)
 	{
 		parent::__construct($parent, $name);
-		$this->setGeneratedFileNamePrefix('jsloader-');
+		$this->setGeneratedFileNamePrefix('jsldr-');
 		$this->setGeneratedFileNameSuffix('.js');
 		$this->sourceUri=NEnvironment::getVariable('baseUri').'js/';
 		$this->contentType='text/javascript';

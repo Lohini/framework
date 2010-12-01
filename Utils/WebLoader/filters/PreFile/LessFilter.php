@@ -1,7 +1,7 @@
 <?php // vim: ts=4 sw=4 ai:
 namespace BailIff\WebLoader\Filters;
 
-/**
+/*
  * lessphp v0.2.0
  * http://leafo.net/lessphp
  *
@@ -12,17 +12,20 @@ namespace BailIff\WebLoader\Filters;
  */
 /**
  * BailIff port
- * @version 1.0.0
  * @author Lopo <lopo@losys.eu>
+ * @version https://github.com/leafo/lessphp/commit/58363d02d9187e0e6183629c8025b1021ef6fb90
  */
 
 //
 // fix the alpha value with color when using a percent
 //
 
-use BailIff\WebLoader\WebLoader;
+use BailIff\WebLoader\WebLoader,
+	BailIff\WebLoader\Filters\PreFileFilter,
+	Nette\Caching\Cache;
 
 class LessFilter
+extends PreFileFilter
 {
 	private $buffer;
 	private $count;
@@ -67,7 +70,11 @@ class LessFilter
 	public $importDir='';
 
 
-	public function __construct($fname=NULL)
+	/**
+	 * @param string $fname filename
+	 * @throws \Exception
+	 */
+	public function __construct($fname=NULL, $opts=NULL)
 	{
 		if (!self::$operatorString) {
 			self::$operatorString='('.implode('|', array_map(array($this, 'preg_quote'), array_keys(self::$precedence))).')';
@@ -228,16 +235,14 @@ class LessFilter
 				return "}\n";
 				}
 
-			if ($this->level==1 && $this->inAnimations===TRUE) {
+			if ($this->level==1 && $this->inAnimations) {
 				$this->indentLevel--;
 				$this->inAnimations=FALSE;
 				return "}\n";
 				}
 
-			$tags=$this->multiplyTags();
 			$env=end($this->env);
-			$ctags=$env['__tags'];
-			unset($env['__tags']);
+			$tags=$env['__tags'];
 
 			// insert the default arguments
 			if (isset($env['__args'])) {
@@ -248,28 +253,34 @@ class LessFilter
 					}
 				}
 
-			if (!empty($tags)) {
-				$out=$this->compileBlock($tags, $env);
-				}
 			try {
-				$this->pop();
+				$block=$this->pop();
 				}
 			catch (\Exception $e) {
 				$this->seek($s);
 				$this->throwParseError($e->getMessage());
 				}
 
-			// make the block(s) available in the new current scope
-			if (!isset($env['__dontsave'])) {
-				foreach ($ctags as $t) {
-					// if the block already exists then merge
-					if ($this->get($t, array(end($this->env)))) {
-						$this->merge($t, $env);
-						}
-					else {
-						$this->set($t, $env);
+			// show the compiled block if we have the whole thing and it is visible
+			if ($this->level==1) {
+				$concreteTags=array();
+				foreach ($tags as $tag) {
+					if ($tag{0}!=$this->mPrefix) {
+						$concreteTags[]=$tag;
 						}
 					}
+				if (!empty($concreteTags)) {
+					$out=$this->compileBlock($concreteTags, $block);
+					}
+				}
+
+			// make the block(s) available in the new current scope
+			if (!isset($env['__dontsave'])) {
+				$merge_env=array();
+				foreach ($tags as $t) {
+					$merge_env[$t]=$env;
+					}
+				$this->merge($merge_env);
 				}
 			return isset($out)? $out : TRUE;
 			}
@@ -280,12 +291,14 @@ class LessFilter
 				return "/* import is disabled */\n";
 				}
 
-			$full=$this->importDir.$url;
-			if ($this->fileExists($file=$full) || $this->fileExists($file=$full.'.less')) {
-				$this->addParsedFile($file);
-				$loaded=ltrim($this->removeComments(file_get_contents($file).';'));
-				$this->buffer=substr($this->buffer, 0, $this->count).$loaded.substr($this->buffer, $this->count);
-				return TRUE;
+			foreach ((array)$this->importDir as $dir) {
+				$full=$dir.(substr($dir, -1)!='/'? '/' : '').$url;
+				if ($this->fileExists($file=$full.'.less') || $this->fileExists($file=$full)) {
+					$this->addParsedFile($file);
+					$loaded=ltrim($this->removeComments(file_get_contents($file).';'));
+					$this->buffer=substr($this->buffer, 0, $this->count).$loaded.substr($this->buffer, $this->count);
+					return TRUE;
+					}
 				}
 			return $this->indent('@import url("'.$url.'")'.($media ? ' '.$media : '').';');
 			}
@@ -297,7 +310,11 @@ class LessFilter
 				return TRUE;
 				}
 
-			// if we have arguments then insert them
+			// if we have arguments then insert them before their respective env values
+			// TODO: this is silly, because it makes it so the arguments are also mixed
+			// into the new scope. Keeping it for now though otherwise sub-blocks won't see
+			// arguments. -- change to making arg temp env and pushing and stack then recursively
+			// resolving all mixed in names.
 			if (!empty($env['__args'])) {
 				foreach ($env['__args'] as $arg) {
 					$vname=$this->vPrefix.$arg[0];
@@ -313,78 +330,32 @@ class LessFilter
 						array_unshift($env[$vname], $value);
 						}
 					else {
-						// new element
 						$env[$vname]=array($value);
 						}
 					}
 				}
 
-			// copy all properties from tmp env to current block
-			ob_start();
-			$blocks=array();
-			$toReduce=array();
+			$this->merge($env);
+
+			// reduce any immediate incoming values in order to prevent values changing
+			// due to namespace collision. This is to compensate for mixing in __args.
 			foreach ($env as $name => $value) {
-				// skip the metatdata
-				if (preg_match('/^__/', $name)) {
-					continue;
-					}
-
-				// if it is a block, remember it to compile after everything
-				// is mixed in
-				if (!isset($value[0])) {
-					$blocks[]=array($name, $value);
-					}
-				else if ($name{0}!=$this->vPrefix) {
-					$toReduce[]=$name;
-					}
-
-				// copy the data
-				// don't overwrite previous value, look in current env for name
-				if ($this->get($name, array(end($this->env)))) {
-					while ($tval=array_shift($value)) {
-						$this->append($name, $tval);
+				if ($this->isProperty($name, $value)) {
+					$reduced=array();
+					foreach ($this->get($name) as $value) {
+						$reduced[]=$this->reduce($value);
 						}
+					$this->set($name, $reduced);
 					}
-				else { 
-					$this->set($name, $value);
-					} 
 				}
 
-			// extract the args as a temp environment, put them before top
-			if (isset($env['__args'])) {
-				$tmp=array();
-				foreach ($env['__args'] as $arg) {
-					if (isset($arg[1])) {// if there is a value
-						$tmp[$this->vPrefix.$arg[0]]=array($arg[1]);
-						}
-					}
-				$top=array_pop($this->env);
-				array_push($this->env, $tmp, $top);
+			// render mixin contents if mixing into global scope
+			if ($this->level==1) {
+				return $this->compileBlock(NULL, $env, FALSE);
 				}
-
-			// reduce all values that came out of this mixin
-			foreach ($toReduce as $name) {
-				$reduced=array();
-				foreach ($this->get($name) as $value) {
-					$reduced[]=$this->reduce($value);
-					}
-				$this->set($name, $reduced);
+			else {
+				return TRUE;
 				}
-
-			if (isset($env['__args'])) {
-				// get rid of tmp
-				$top=array_pop($this->env);
-				array_pop($this->env);
-				array_push($this->env, $top);
-				}
-
-			// render sub blocks
-			foreach ($blocks as $b) {
-				$rtags=$this->multiplyTags(array($b[0]));
-				echo $this->compileBlock($rtags, $b[1]);
-				}
-
-			return ob_get_clean();
 			}
 		else {
 			$this->seek($s);
@@ -405,37 +376,6 @@ class LessFilter
 	{
 		// sym link workaround
 		return file_exists($name) || file_exists(realpath(preg_replace('/\w+\/\.\.\//', '', $name)));
-	}
-
-	/**
-	 * recursively find the cartesian product of all tags in stack
-	 * @param array $tags
-	 * @param int $d
-	 * @return array
-	 */
-	private function multiplyTags($tags=array(' '), $d=NULL)
-	{
-		if ($d===NULL) {
-			$d=count($this->env)-1;
-			}
-
-		$parents= $d==0? $this->env[$d]['__tags'] : $this->multiplyTags($this->env[$d]['__tags'], $d-1);
-
-		$rtags=array();
-		foreach ($parents as $p) {
-			foreach ($tags as $t) {
-				if ($t{0}==$this->mPrefix) {
-					continue; // skip functions
-					}
-				$d=' ';
-				if ($t{0}==':' || $t{0}==$this->selfSelector) {
-					$t=ltrim($t, $this->selfSelector);
-					$d='';
-					}
-				$rtags[]=trim($p.$d.$t);
-				}
-			}
-		return $rtags;
 	}
 
 	/**
@@ -727,7 +667,7 @@ class LessFilter
 		if ($this->literal('"', FALSE)) {
 			$delim='"';
 			}
-		else if($this->literal("'", FALSE)) {
+		elseif($this->literal("'", FALSE)) {
 			$delim="'";
 			}
 		else {
@@ -1075,45 +1015,60 @@ class LessFilter
 	 * @param array $env
 	 * @return string
 	 */
-	private function compileBlock($rtags, $env)
+	private function compileBlock($rtags, $env, $bindEnv=TRUE)
 	{
-		// don't render functions
-		// todo: this shouldn't need to happen because multiplyTags prunes them, verify
-		/*
-		foreach ($rtags as $i => $tag) {
-			if (preg_match('/( |^)%/', $tag))
-				unset($rtags[$i]);
-		}
-		 */
-		if (empty($rtags)) {
-			return '';
-			}
-
+		$children=array();
+		$visitedMixins=array(); // mixins to skip
 		$props=0;
-		// print all the visible properties
+
 		ob_start();
+		if ($bindEnv) {
+			$this->push($env);
+			}
 		foreach ($env as $name => $value) {
-			// todo: change this, poor hack
-			// make a better name storage system!!! (value types are fine)
-			// but.. don't render special properties (blocks, vars, metadata)
-			if (isset($value[0]) && $name{0}!=$this->vPrefix && $name!='__args') {
-				echo $this->compileProperty($name, $value, 1)."\n";
+			if ($this->isProperty($name, $value)) {
+				echo $this->compileProperty($name, $value, is_null($rtags)? 0 : 1)."\n";
 				$props+=count($value);
 				}
+			elseif ($this->isBlock($name, $value)) {
+				if (isset($visitedMixins[$name])) {
+					continue;
+					}
+
+				$new_tags=array();
+				// multiply tags
+				foreach ((is_null($rtags)? array('') : $rtags) as $outerTag) {
+					foreach ($value['__tags'] as $innerTag) {
+						$visitedMixins[$innerTag]=TRUE; // prevent rendering this block multiple times
+						$new_tags[]=trim($outerTag.($innerTag{0}==$this->selfSelector || $innerTag{0}==':'? ltrim($innerTag, $this->selfSelector) : " $innerTag"));
+						}
+					}
+				$children[]=$this->compileBlock($new_tags, $value);
+				}
+			}
+		if ($bindEnv) {
+			$this->pop();
 			}
 		$list=ob_get_clean();
-		if (!$props) {
-			return '';
-			}
 
-		$blockDecl=implode(", ", $rtags).' {';
-		if ($props>1) {
-			return $this->indent($blockDecl).$list.$this->indent('}');
+		if ($rtags==NULL) {
+			$out=$list;
 			}
 		else {
-			$list=' '.trim($list).' ';
-			return $this->indent($blockDecl.$list.'}');
+			$blockDecl=implode(', ', $rtags).' {';
+
+			if ($props>1) {
+				$out=$this->indent($blockDecl).$list.$this->indent('}');
+				}
+			elseif ($props==1) {
+				$list=' '.trim($list).' ';
+				$out=$this->indent($blockDecl.$list.'}');
+				}
+			else {
+				$out='';
+				}
 			}
+		return $out.implode('', $children);
 	}
 
 	/**
@@ -1322,18 +1277,18 @@ class LessFilter
 			if ($var[0]=='expression') {
 				$var=$this->evaluate($var[1], $var[2], $var[3]);
 				}
-			else if ($var[0]=='variable') {
+			elseif ($var[0]=='variable') {
 				$var=$this->getVal($var[1], $this->pushName($var[1]), $defaultValue);
 				$pushed++;
 				}
-			else if ($var[0]=='function') {
+			elseif ($var[0]=='function') {
 				$color=$this->funcToColor($var);
 				if ($color) {
 					$var=$color;
 					}
 				break; // no where to go after a function
 				}
-			else if ($var[0]=='negative') {
+			elseif ($var[0]=='negative') {
 				$value=$this->reduce($var[1]);
 				if (is_numeric($value[1])) {
 					$value[1]=-1*$value[1];
@@ -1568,10 +1523,10 @@ class LessFilter
 	/**
 	 * push a new environment
 	 */
-	private function push()
+	private function push($base=NULL)
 	{
 		$this->level++;
-		$this->env[]=array();
+		$this->env[]= is_null($base)? array() : $base;
 	}
 
 	/**
@@ -1608,6 +1563,18 @@ class LessFilter
 	}
 
 	/**
+	 * @param string $name
+	 * @param array $values
+	 */
+	private function append_all($name, $values)
+	{
+		$top=&$this->env[count($this->env)-1];
+		foreach ($values as $value) {
+			$top[$name][]=$value;
+			}
+	}
+
+	/**
 	 * put on the front of the value
 	 * @param string $name
 	 * @param mixed $value
@@ -1625,17 +1592,17 @@ class LessFilter
 	/**
 	 * get the highest occurrence of value
 	 * @param string $name
-	 * @param array $env
+	 * @param array $env_stack
 	 * @return mixed
 	 */
-	private function get($name, $env=NULL)
+	private function get($name, $env_stack=NULL)
 	{
-		if (empty($env)) {
-			$env=$this->env;
+		if (empty($env_stack)) {
+			$env_stack=$this->env;
 			}
-		for ($i=count($env)-1; $i>=0; $i--) {
-			if (isset($env[$i][$name])) {
-				return $env[$i][$name];
+		for ($i=count($env_stack)-1; $i>=0; $i--) {
+			if (isset($env_stack[$i][$name])) {
+				return $env_stack[$i][$name];
 				}
 			}
 
@@ -1708,25 +1675,64 @@ class LessFilter
 	}
 
 	/**
-	 * merge a block into the current env
-	 * @param string $name
-	 * @param mixed $value
-	 * @return mixed|void
+	 * merge $env into the environment on the top of the stack
+	 * @param array $env
 	 */
-	private function merge($name, $value)
+	private function merge($env)
 	{
-		// if the current block isn't there then just set
-		$top= &$this->env[count($this->env)-1];
-		if (!isset($top[$name])) {
-			return $this->set($name, $value);
+		// see if we have to rework __tags, mixing into some of bound blocks breaks them up
+		foreach ($env as $name => $value) {
+			if (!$this->isBlock($name, $value, FALSE)) {
+				continue;
+				}
+
+			$top=&$this->env[count($this->env)-1];
+			if (isset($top[$name]) && $top[$name]['__tags']!=$value['__tags']) {
+				$source=$top[$name]['__tags'];
+				$dest=$value['__tags'];
+
+				$shared=array_values(array_intersect($source, $dest));
+
+				$broken=array_values(array_diff($source, $dest));
+				$split=array_values(array_diff($dest, $source));
+
+				$top[$name]['__tags']=$shared;
+				foreach ($broken as $brokenName) {
+					$top[$brokenName]['__tags']=$broken;
+					}
+				foreach ($split as $splitName) {
+					$env[$splitName]['__tags']=$split;
+					}
+				}
 			}
 
-		// copy the block into the old one, including meta data
-		foreach ($value as $k => $v) {
-			// todo: merge property values instead of replacing
-			// have to check type for this
-			$top[$name][$k]=$v;
+		foreach ($env as $name => $value) {
+			if ($this->isProperty($name, $value, FALSE)) {
+				$this->append_all($name, $value);
+				}
+			elseif ($this->isBlock($name, $value, FALSE)) {
+				$top=&$this->env[count($this->env)-1];
+				if (isset($top[$name])) {
+					// echo "merging $name\n";
+					$this->push($top[$name]);
+					$this->merge($value);
+					$this->set($name, $this->pop());
+					}
+				else {
+					$this->set($name, $value);
+					}
+				}
 			}
+	}
+
+	private function isProperty($name, $value, $isConcrete=TRUE)
+	{
+		return is_array($value) && array_key_exists(0, $value) && substr($name, 0, 2)!='__' && (!$isConcrete || $name{0}!=$this->vPrefix);
+	}
+
+	private function isBlock($name, $value, $isConcrete=TRUE)
+	{
+		return is_array($value) && !array_key_exists(0, $value) && (!$isConcrete || $name{0}!=$this->mPrefix);
 	}
 
 	/**
@@ -1965,17 +1971,16 @@ class LessFilter
 	}
 
 	/**
-	 * Invoke filter
-	 * @param string code
-	 * @param WebLoader loader
-	 * @param string file
-	 * @return string
+	 * (non-PHPdoc)
+	 * @see BailIff\WebLoader\Filters.PreFileFilter::__invoke()
+	 * @throws \FileNotFoundException
 	 */
 	public static function __invoke($code, WebLoader $loader, $file=NULL)
 	{
-		if ($file===NULL || substr($file, -5)!='.less')
+		if ($file===NULL || strtolower(pathinfo($file, PATHINFO_EXTENSION))!='less') {
 			return $code;
-		$filter=new self($loader->getSourcePath()."/$file");
+			}
+		$filter=new self($file);
 		return $filter->parse($code);
 	}
 }

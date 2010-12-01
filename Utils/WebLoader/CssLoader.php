@@ -35,8 +35,8 @@ extends WebLoader
 		$this->sourcePath=WWW_DIR.'/css';
 		$this->sourceUri=NEnvironment::getVariable('baseUri').'css/';
 		$this->contentType='text/css';
-		$this->PreFileFilters[]=new LessFilter;
-		$this->PreFileFilters[]=new CCssFilter;
+		$this->preFileFilters[]=new LessFilter;
+		$this->preFileFilters[]=new CCssFilter;
 		$this->fileFilters[]=new CssUrlsFilter;
 	}
 
