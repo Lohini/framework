@@ -1,5 +1,6 @@
-<?php
+<?php // vim: ts=4 sw=4 ai:
 namespace BailIff\WebLoader\Filters;
+
 /**
  * jsmin.php - extended PHP implementation of Douglas Crockford's JSMin.
  *
@@ -181,7 +182,7 @@ class JSMin
 							break;
 							}
 						if (ord($this->a)<=self::ORD_LF) {
-							throw new JSMin_UnterminatedStringException('JSMin: Unterminated String at byte '.$this->inputIndex.": {$str}");
+							throw new JSMin_UnterminatedStringException("JSMin: Unterminated String at byte $this->inputIndex: {$str}");
 							}
 						$str.=$this->a;
 						if ($this->a==='\\') {

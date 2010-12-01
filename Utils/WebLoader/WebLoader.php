@@ -6,7 +6,9 @@ use Nette\Application\Control,
 	Nette\Caching\ICacheStorage,
 	Nette\Caching\FileStorage,
 	Nette\Environment as NEnvironment,
-	\Nette\String;
+	Nette\String,
+	BailIff\WebLoader\Filters\PreFileFilter,
+	Nette\Debug;
 
 /**
  * WebLoader
@@ -38,6 +40,8 @@ extends Control
 	/** @var array */
 	public $filters=array();
 	/** @var array */
+	public $PreFileFilters=array();
+	/** @var array */
 	public $fileFilters=array();
 	/** @var array */
 	protected $files=array();
@@ -45,7 +49,7 @@ extends Control
 	private static $cache=NULL;
 	/** @var int */
 	public static $cacheExpire=NULL;
-	/** @var Nette\Caching\ICacheStorage */
+	/** @var ICacheStorage */
 	private static $cacheStorage;
 	/** @var string */
 	protected $contentType;
@@ -53,12 +57,12 @@ extends Control
 	/**
 	 * Get html element including generated content
 	 * @param string $source
-	 * @return Nette\Web\Html
+	 * @return Html
 	 */
 	abstract public function getElement($source);
 	/**
 	 * Process files and render elements including generated content
-	 * @return Nette\Web\Html
+	 * @return Html
 	 */
 	abstract public function renderFiles();
 	/**
@@ -328,8 +332,8 @@ extends Control
 					$key,
 					array(
 						self::CONTENT_TYPE => $this->contentType,
-						self::ETAG=>md5($content).'-'.dechex(time()),
-						self::CONTENT=>$content
+						self::ETAG => md5($content),//.'-'.dechex(time()),
+						self::CONTENT => $content
 						),
 					array(
 						Cache::FILES => array_map(create_function("\$args,\$path='$this->sourcePath'", 'return "$path/$args";'), $files),
@@ -347,34 +351,49 @@ extends Control
 	}
 
 	/**
-	 * Get cache
-	 * @return Nette\Caching\Cache
-	 */
-	protected static function getCache()
-	{
-		if (self::$cache===NULL) {
-			self::$cache=new Cache(self::getCacheStorage(), 'BailIff.WebLoader');
-			}
-		return self::$cache;
-	}
-
-	/**
 	 * Load file
 	 * @param string $file filepath
 	 * @return string
 	 */
 	protected function loadFile($file)
 	{
-		$content=file_get_contents("$this->sourcePath/$file");
-		foreach ($this->fileFilters as $filter) {
-			$content=call_user_func($filter, $content, $this, $file);
+		if (($content=file_get_contents("$this->sourcePath/$file"))===FALSE) {
+			if ($this->throwExceptions) {
+				if (NEnvironment::isProduction())
+					throw new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist.");
+				else {
+					Debug::processException(new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."));
+					return '';
+					}
+				}
+			return '';
+			}
+		foreach ($this->PreFileFilters as $filter) {
+			$fcontent=call_user_func($filter, $content, $this, "$this->sourcePath/$file");
+			$content= is_array($fcontent)? $fcontent[PreFileFilter::CONTENT] : $fcontent;
+			foreach ($this->fileFilters as $filter) {
+				$content=\call_user_func($filter, $content, $this, "$this->sourcePath/$file");
+				}
 			}
 		return $content;
 	}
 
 	/**
+	 * Get cache
+	 * @return Cache
+	 */
+	protected static function getCache()
+	{
+		if (self::$cache===NULL) {
+			self::$cache=NEnvironment::getCache('BailIff.WebLoader');
+//			self::$cache=new Cache(self::getCacheStorage(), 'BailIff.WebLoader');
+			}
+		return self::$cache;
+	}
+
+	/**
 	 * Set cache storage
-	 * @param  Nette\Caching\Cache
+	 * @param  Cache
 	 */
 	protected static function setCacheStorage(ICacheStorage $storage)
 	{
@@ -383,7 +402,7 @@ extends Control
 
 	/**
 	 * Get cache storage
-	 * @return Nette\Caching\ICacheStorage
+	 * @return ICacheStorage
 	 */
 	protected static function getCacheStorage()
 	{
@@ -391,7 +410,7 @@ extends Control
 			$dir=NEnvironment::getVariable('tempDir').'/cache';
 			umask(0000);
 			@mkdir($dir, 0755); // @ - directory may exists
-			self::$cacheStorage=new FileStorage($dir);
+			self::$cacheStorage=new WebLoaderCacheStorage($dir);
 			}
 		return self::$cacheStorage;
 	}
@@ -404,6 +423,22 @@ extends Control
 	 */
 	public static function getItem($key)
 	{
-		return self::getCache()->offsetGet($key);
+		$cache=self::getCache();
+		$item=$cache->offsetGet($key);
+		$content=$item[self::CONTENT];
+		if (preg_match_all('/{\[of#(?P<filter>.*?)#(?P<key>.*?)#cf\]}/m', $content, $matches)) {
+			for ($i=0; $i<count($matches[0]); $i++) {
+				$content=str_replace(
+						$matches[0][$i],
+						call_user_func(__NAMESPACE__.'\Filters\\'.$matches['filter'][$i].'Filter::getItem', $matches['key'][$i]),
+						$content
+						);
+				}
+			}
+		return array(
+			self::CONTENT_TYPE => $item[self::CONTENT_TYPE],
+			self::ETAG => md5($content),
+			self::CONTENT => $content
+			);
 	}
 }

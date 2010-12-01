@@ -13,7 +13,7 @@ use Nette\Web\Html,
  *
  * @author Jan Marek
  * @license MIT
- * @author Lopo <lopo@losys.eu>
+ * @author Lopo <lopo@losys.eu> BailIff port
  */
 class CssLoader
 extends WebLoader
@@ -23,18 +23,18 @@ extends WebLoader
 
 	/**
 	 * Construct
-	 * @param Nette\IComponentContainer $parent
+	 * @param IComponentContainer $parent
 	 * @param string $name
 	 */
 	public function __construct(IComponentContainer $parent=NULL, $name=NULL)
 	{
 		parent::__construct($parent, $name);
-		$this->setGeneratedFileNamePrefix('cssloader-');
+		$this->setGeneratedFileNamePrefix('cssldr-');
 		$this->setGeneratedFileNameSuffix('.css');
 		$this->sourcePath=WWW_DIR.'/css';
 		$this->sourceUri=NEnvironment::getVariable('baseUri').'css/';
 		$this->contentType='text/css';
-		$this->fileFilters[]=new LessFilter;
+		$this->PreFileFilters[]=new LessFilter;
 		$this->fileFilters[]=new CssUrlsFilter;
 	}
 
@@ -99,7 +99,7 @@ extends WebLoader
 	 */
 	public function renderFiles()
 	{
-		if (count($this->files)==1 && substr($this->files[0][0], -4)=='.css') { // single raw, don't cache
+		if (count($this->files)==1 && substr($this->files[0][0], -4)=='.css') { // single raw, don't parse|cache
 			echo $this->getElement($this->sourceUri.$this->files[0][0], $this->files[0][1]);
 			return;
 			}
@@ -130,5 +130,37 @@ extends WebLoader
 				->type('text/css')
 				->media($media)
 				->href($source);
+	}
+
+	/**
+	 * Generate compiled+compacted file and render link
+	 * @example {control css:compact 'file.css', 'file2.css'}
+	 */
+	public function renderCompact()
+	{
+		if (($hasArgs=(func_num_args()>0)) && func_num_args()==1) {
+			$arg=func_get_arg(0);
+			$file= is_array($arg)? $arg : array($arg => 'all');
+			if (strtolower(substr(key($file), -4))=='.css') {
+				echo $this->getElement($this->sourceUri.key($file), current($file));
+				return;
+				}
+			}
+		if ($hasArgs) {
+			$backup=$this->files;
+			$this->clear();
+			$this->addFiles(func_get_args());
+			}
+	
+		$filesByMedia=array();
+		foreach ($this->files as $f) {
+			$filesByMedia[$f[1]][]=$f[0];
+			}
+		foreach ($filesByMedia as $media => $filenames) {
+			echo $this->getElement($this->getPresenter()->link('WebLoader', $this->generate($filenames)), $media);
+			}
+		if ($hasArgs) {
+			$this->files=$backup;
+			}
 	}
 }
