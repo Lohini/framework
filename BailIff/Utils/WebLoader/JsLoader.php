@@ -6,6 +6,7 @@ use Nette\IComponentContainer,
 	Nette\Web\Html,
 	Nette\String,
 	BailIff\WebLoader\Filters\JSMin,
+	BailIff\WebLoader\Filters\JavaScriptPacker,
 	Nette\Debug;
 
 /**
@@ -21,6 +22,7 @@ extends WebLoader
 	/**#@+ cache content */
 	const COMPACT='c';
 	const MINIFY='m';
+	const PACK='p';
 	/**#@-*/
 	/** @var array */
 	public $codes=array();
@@ -35,6 +37,7 @@ extends WebLoader
 		parent::__construct($parent, $name);
 		$this->setGeneratedFileNamePrefix('jsldr-');
 		$this->setGeneratedFileNameSuffix('.js');
+		$this->sourcePath=WWW_DIR.'/js';
 		$this->sourceUri=NEnvironment::getVariable('baseUri').'js/';
 		$this->contentType='text/javascript';
 	}
@@ -104,6 +107,10 @@ extends WebLoader
 							else { // minify
 								$content.=JSMin::minify($this->loadFile($file[0]));
 								}
+							break;
+						case self::PACK:
+							$jsp=new JavaScriptPacker($this->loadFile($file[0]), 'Normal', TRUE, FALSE);
+							$content.=$jsp->pack();
 							break;
 						default:
 							return;

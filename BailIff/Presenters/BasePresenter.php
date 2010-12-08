@@ -41,10 +41,7 @@ extends Presenter
 	 */
 	protected function createComponentJs()
 	{
-		$js=new JsLoader;
-		// cesta na disku ke zdroji
-		$js->setSourcePath(WWW_DIR."/js");
-		return $js;
+		return new JsLoader;
 	}
 
 	/**
