@@ -10,6 +10,7 @@ Requirements
 
 - PHP 5.3 or later
 - Nette Framework 2.0-dev
+- dibi (Lopo's modification: https://github.com/Lopo/dibi)
 
 
 -----
