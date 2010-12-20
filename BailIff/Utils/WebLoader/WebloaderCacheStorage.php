@@ -5,8 +5,7 @@ use Nette\Caching\FileStorage,
 	Nette\Caching\Cache;
 /**
  * WebLoader cache storage.
- *
- * @author     David Grudl
+ * @author Lopo <lopo@losys.eu>
  */
 class WebLoaderCacheStorage
 extends FileStorage
