@@ -13,6 +13,7 @@ Optional
 --------
 - Leafo's lessphp (https://github.com/leafo/lessphp) for Less PreFile filter in WebLoader
 - JSMin from Minify (http://code.google.com/p/minify/) for JS minify filter in WebLoader
+- Packer JavaScript en PHP (http://joliclic.free.fr/php/javascript-packer/en/) for JS packer filter in WebLoader
 
 -----
 repository: https://github.com/Lopo/nette

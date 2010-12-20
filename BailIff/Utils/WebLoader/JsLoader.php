@@ -5,8 +5,6 @@ use Nette\IComponentContainer,
 	Nette\Environment as NEnvironment,
 	Nette\Web\Html,
 	Nette\String,
-	BailIff\WebLoader\Filters\JSMin,
-	BailIff\WebLoader\Filters\JavaScriptPacker,
 	Nette\Debug;
 
 /**
@@ -105,11 +103,11 @@ extends WebLoader
 								$content.=file_get_contents($mfile);
 								}
 							else { // minify
-								$content.=JSMin::minify($this->loadFile($file[0]));
+								$content.=\JSMin::minify($this->loadFile($file[0]));
 								}
 							break;
 						case self::PACK:
-							$jsp=new JavaScriptPacker($this->loadFile($file[0]), 'Normal', TRUE, FALSE);
+							$jsp=new \JavaScriptPacker($this->loadFile($file[0]));
 							$content.=$jsp->pack();
 							break;
 						default:
