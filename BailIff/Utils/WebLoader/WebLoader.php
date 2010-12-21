@@ -8,6 +8,7 @@ use Nette\Application\Control,
 	Nette\Environment as NEnvironment,
 	Nette\String,
 	BailIff\WebLoader\Filters\PreFileFilter,
+	BailIff\WebLoader\WebLoaderCacheStorage,
 	Nette\Debug;
 
 /**
