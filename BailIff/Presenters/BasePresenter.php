@@ -7,11 +7,22 @@ use Nette\Application\Presenter,
 	BailIff\WebLoader\CssLoader,
 	BailIff\WebLoader\JsLoader,
 	Nette\Web\IHttpResponse,
-	Nette\String;
+	Nette\String,
+	Nette\Forms\Form;
 
 abstract class Base
 extends Presenter
 {
+	/**
+	 * (non-PHPdoc)
+	 * @see Nette\Application.Presenter::startup()
+	 */
+	protected function startup()
+	{
+		parent::startup();
+		Form::extensionMethod('addPswd', function (Form $form, $name, $label) { return $form[$name]=new PswdInput($label); });
+	}
+
 	/**
 	 * (non-PHPdoc)
 	 * @see Nette\Application.Control::createTemplate()
