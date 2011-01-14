@@ -5,6 +5,7 @@ use Nette\Application\Control,
 	Nette\Caching\Cache,
 	Nette\Caching\ICacheStorage,
 	Nette\Caching\FileStorage,
+	BailIff\Environment,
 	Nette\Environment as NEnvironment,
 	Nette\String,
 	BailIff\WebLoader\Filters\PreFileFilter,
@@ -314,7 +315,7 @@ extends Control
 	}
 
 	/**
-	 * Load content and save file
+	 * Load content and save cache
 	 * @param array $files
 	 * @param mixed $content
 	 * @return string filename of generated file
@@ -328,6 +329,7 @@ extends Control
 			if (is_null($content)) {
 				$content=$this->getContent($files);
 				}
+			$sPath=$this->sourcePath;
 			foreach ($files as $file) {
 				$cache->save(
 					$key,
@@ -337,7 +339,7 @@ extends Control
 						self::CONTENT => $content
 						),
 					array(
-						Cache::FILES => array_map(create_function("\$args,\$path='$this->sourcePath'", 'return "$path/$args";'), $files),
+						Cache::FILES => array_map(function($args) use ($sPath) { return "$sPath/$args"; }, $files),
 						Cache::EXPIRE => self::$cacheExpire,
 						Cache::CONSTS => array(
 							'Nette\Framework::REVISION',
@@ -355,6 +357,7 @@ extends Control
 	 * Load file
 	 * @param string $file filepath
 	 * @return string
+	 * @throws FileNotFoundException
 	 */
 	protected function loadFile($file)
 	{
@@ -373,7 +376,7 @@ extends Control
 			$fcontent=call_user_func($filter, $content, $this, "$this->sourcePath/$file");
 			$content= is_array($fcontent)? $fcontent[PreFileFilter::CONTENT] : $fcontent;
 			foreach ($this->fileFilters as $filter) {
-				$content=\call_user_func($filter, $content, $this, "$this->sourcePath/$file");
+				$content=call_user_func($filter, $content, $this, "$this->sourcePath/$file");
 				}
 			}
 		return $content;
@@ -386,8 +389,7 @@ extends Control
 	protected static function getCache()
 	{
 		if (self::$cache===NULL) {
-			self::$cache=NEnvironment::getCache('BailIff.WebLoader');
-//			self::$cache=new Cache(self::getCacheStorage(), 'BailIff.WebLoader');
+			self::$cache=Environment::getCache('WebLoader');
 			}
 		return self::$cache;
 	}
@@ -420,7 +422,6 @@ extends Control
 	 * Retrieves the specified item from the cache or NULL if the key is not found (\ArrayAccess implementation).
 	 * @param  string key
 	 * @return mixed|NULL
-	 * @throws \InvalidArgumentException
 	 */
 	public static function getItem($key)
 	{

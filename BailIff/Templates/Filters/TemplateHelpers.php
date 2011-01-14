@@ -12,6 +12,7 @@ final class TemplateHelpers
 {
 	/**
 	 * Static class - cannot be instantiated.
+	 * @throws LogicException
 	 */
 	final public function __construct()
 	{
@@ -43,6 +44,7 @@ final class TemplateHelpers
 	/**
 	 * Office XML Date formatting
 	 * @param string|int|DateTime $date
+	 * @return DateTime|NULL
 	 */
 	public static function oxmlDate($date)
 	{
@@ -52,6 +54,7 @@ final class TemplateHelpers
 	/**
 	 * Office XML DateTime formatting
 	 * @param string|int|DateTime $date
+	 * @return DateTime|NULL
 	 */
 	public static function oxmlDateTime($date)
 	{

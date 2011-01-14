@@ -3,7 +3,7 @@ namespace BailIff\WebLoader\Filters;
 
 use Nette\Object,
 	BailIff\WebLoader\WebLoader,
-	Nette\Environment as NEnvironment,
+	BailIff\Environment,
 	Nette\Caching\Cache;
 /**
  * Base class for PreFile filters
@@ -42,7 +42,7 @@ abstract class PreFileFilter
 	protected static function getCache()
 	{
 		if (self::$cache===NULL) {
-			self::$cache=NEnvironment::getCache('BailIff.WebLoader');
+			self::$cache=Environment::getCache('WebLoader');
 			}
 		return self::$cache;
 	}

@@ -27,6 +27,11 @@ final class Network
 		return array(($long&((pow(2, $prefix)-1)<<(32-$prefix)))+1, ($long|(pow(2, 32-$prefix)-1))-1);
 	}
 
+	/**
+	 * check if $net contains $host
+	 * @param string $host IP
+	 * @param array|string $net
+	 */
 	public static function HostInCIDR($host, $net)
 	{
 		if ($host==$net)

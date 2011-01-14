@@ -228,6 +228,10 @@ extends PreFileFilter
 		return "{[of#CCss#$key#cf]}";
 	}
 
+	/**
+	 * @param string $file
+	 * @return string
+	 */
 	public function complete($file)
 	{
 		// X grade CSS means the browser doesn't see the CSS at all
@@ -244,6 +248,7 @@ extends PreFileFilter
 
 	/**
 	 * Get the user's browser information
+	 * @return array
 	 */
 	public static function getUserBrowser()
 	{
@@ -312,7 +317,7 @@ extends PreFileFilter
 
 	/**
 	 * Based on the browser grouping we set a short hand method for access
-	 * @param array $aGroups group information
+	 * @param array $groups group information
 	 */
 	private function setBrowserGroup($groups)
 	{

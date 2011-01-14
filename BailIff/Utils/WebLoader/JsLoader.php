@@ -65,7 +65,7 @@ extends WebLoader
 	/**
 	 * Add code
 	 * @var string only raw javascript code no files, send to output
-	 * 
+	 *
 	 * in case you want to send some javascript code, that is generated in presenters, and should not be cached, and it is easier to create this code in presenters
 	 * something like this
 	 * <script type="text/javascript">BASE_IMAGES={$baseUri}'design/images/';</script>
@@ -88,6 +88,7 @@ extends WebLoader
 				echo $this->getElement($this->sourceUri.$this->files[0][0]);
 				}
 			else {
+				$dc=get_declared_classes();
 				// u javascriptu zalezi na poradi
 				foreach ($this->files as $file) {
 					switch ($file[1]) {
@@ -99,16 +100,44 @@ extends WebLoader
 							if (String::endsWith($file[0], '.min.js')) { // already minified ?
 								$content.=$this->loadFile($file[0]);
 								}
-							elseif (is_file($mfile="$this->sourcePath/".substr($file[0], 0, strlen($file[0])-3).'.min.js')) { // have minified ?
+							elseif (is_file($mfile="$this->sourcePath/".substr($file[0], 0, -3).'.min.js')) { // have minified ?
 								$content.=file_get_contents($mfile);
 								}
-							else { // minify
+							elseif (in_array('JSMin', $dc) || class_exists('JSMin')) { // minify
 								$content.=\JSMin::minify($this->loadFile($file[0]));
+								}
+							else {
+								if ($this->throwExceptions) {
+									if (NEnvironment::isProduction())
+										throw new \FileNotFoundException("Don't have JSMin class.");
+									else {
+										Debug::processException(new \FileNotFoundException("Don't have JSMin class"));
+										}
+									}
+								$content.=$this->loadFile($file[0]);
 								}
 							break;
 						case self::PACK:
-							$jsp=new \JavaScriptPacker($this->loadFile($file[0]));
-							$content.=$jsp->pack();
+							if (String::endsWith($file[0], '.pack.js')) { // already packed ?
+								$content.=$this->loadFile($file[0]);
+								}
+							elseif (is_file($pfile="$this->sourcePath/".substr($file[0], 0, -3).'.pack.js')) { // have packed ?
+								$content.=file_get_contents($pfile);
+								}
+							elseif (in_array('JavaScriptPacker', $dc) || class_exists('JavaScriptPacker')) {
+								$jsp=new \JavaScriptPacker($this->loadFile($file[0]));
+								$content.=$jsp->pack();
+								}
+							else {
+								if ($this->throwExceptions) {
+									if (NEnvironment::isProduction())
+										throw new \FileNotFoundException("Don't have JavaScriptPacker class.");
+									else {
+										Debug::processException(new \FileNotFoundException("Don't have JavaScriptPacker class"));
+										}
+									}
+								$content.=$this->loadFile($file[0]);
+								}
 							break;
 						default:
 							return;

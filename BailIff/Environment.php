@@ -12,11 +12,19 @@ use Nette\Object,
 class Environment
 extends Object
 {
-	static public function loadConfig($file=NULL)
+	/** @var ArrayObject */
+	private static $config;
+
+
+	/**
+	 * Load global configuration from file and process it.
+	 * @param string|Config file name or Config object
+	 * @return ArrayObject
+	 */
+	public static function loadConfig($file=NULL)
 	{
-		$config=NEnvironment::loadConfig($file);
 //		NEnvironment::getSession()->start();
-		return $config;
+		return self::$config=NEnvironment::getConfigurator()->loadConfig($file!==NULL? $file : '%appDir%/config.ini');
 	}
 
 	static public function getApplication()
@@ -26,7 +34,7 @@ extends Object
 
 	/**
 	 * @param string $namespace
-	 * @return Nette\Caching\Cache
+	 * @return Cache
 	 */
 	static public function getCache($namespace='')
 	{
@@ -34,7 +42,7 @@ extends Object
 	}
 
 	/**
-	 * @return Nette\ITranslator
+	 * @return ITranslator
 	 */
 	static public function getTranslator()
 	{
@@ -48,9 +56,11 @@ extends Object
 	 */
 	static public function getConfig($key, $default=NULL)
 	{
-		$data=NEnvironment::getConfig('bailiff');
-		if (empty($data) || !isset($data->$key))
-			return $default;
-		return $data->$key;
+		if (func_num_args()) {
+			return isset(self::$config[$key]) ? self::$config[$key] : $default;
+			}
+		else {
+			return self::$config;
+			}
 	}
 }

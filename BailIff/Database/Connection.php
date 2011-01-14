@@ -1,8 +1,7 @@
 <?php // vim: set ts=4 sw=4 ai:
 namespace BailIff\Database;
 
-use BailIff\Environment,
-	Nette\Environment as NEnvironment;
+use BailIff\Environment;
 
 class Connection
 extends \DibiConnection
@@ -17,20 +16,21 @@ extends \DibiConnection
 	 * @throws \RuntimeException
 	 * @return Connection
 	 */
-	static public function initializeAll()
+	static public function initialize()
 	{
 		$gconf=Environment::getConfig('databases');
 		if (!isset($gconf->primary)) {
-			throw new \RuntimeException("PrimaryDB isn't set (databases.primary)");
+			throw new \RuntimeException("Primary database isn't set (databases.primary)");
 			}
 		self::$primary=$gconf->primary;
 		foreach (Environment::getConfig('database') as $dbk => $dbc) {
-			if (is_a($dbc, 'Nette\\Config\\Config')) {
+			if (is_a($dbc, 'Nette\Config\Config')) {
 				$c=\dibi::connect($dbc, $dbk);
 				if ($gconf->profiler) {
-					$profiler= (is_numeric($conf->profiler) || is_bool($conf->profiler))?
-						new \DibiProfiler(array('explain' => TRUE))
-						: new $conf->profiler;
+					$profiler=
+						(is_numeric($conf->profiler) || is_bool($conf->profiler))
+							? new \DibiProfiler(array('explain' => TRUE))
+							: new $conf->profiler;
 					$profiler->setFile(VAR_DIR."/log/db_$dbk.log");
 					$c->setProfiler($profiler);
 					}
@@ -41,7 +41,7 @@ extends \DibiConnection
 
 	/**
 	 * @param string $name
-	 * @return Connection
+	 * @return DibiConnection
 	 */
 	static public function getConnection($name=NULL)
 	{

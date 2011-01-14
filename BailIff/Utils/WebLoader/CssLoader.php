@@ -142,9 +142,10 @@ extends WebLoader
 	{
 		if (($hasArgs=(func_num_args()>0)) && func_num_args()==1) {
 			$arg=func_get_arg(0);
-			$file= is_array($arg)? $arg : array($arg => 'all');
-			if (strtolower(substr(key($file), -4))=='.css') {
-				echo $this->getElement($this->sourceUri.key($file), current($file));
+			$file= is_array($arg)? key($arg) : $arg;
+			$media= is_array($arg)? $arg[$file] : 'all'; 
+			if (strtolower(substr($file, -4))=='.css') {
+				echo $this->getElement($this->sourceUri.$file, $media);
 				return;
 				}
 			}

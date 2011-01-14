@@ -12,6 +12,17 @@ class LessFilter
 extends PreFileFilter
 {
 	/**
+	 * Check if we have Leafo's lessc
+	 * @throws \NotSupportedException
+	 */
+	public function __construct()
+	{
+		if (!in_array('lessc', get_declared_classes()) && !class_exists('lessc')) {
+			throw new \NotSupportedException("Don't have Leafo's lessc");
+			}
+	}
+
+	/**
 	 * (non-PHPdoc)
 	 * @see BailIff\WebLoader\Filters.PreFileFilter::__invoke()
 	 * @throws \FileNotFoundException

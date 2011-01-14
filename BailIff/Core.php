@@ -9,12 +9,19 @@ use Nette\Object;
  * @author Lopo <lopo@losys.eu>
  */
 final class Core
-extends Object
 {
 	/**#@+ BailIff version ID's */
 	const NAME='BailIff';
-	const VERSION='0.0.1-dev';
+	const VERSION='0.0.2-dev';
 	const REVISION='$WCREV$ released on $WCDATE$';
 	const DEVELOPMENT=TRUE;
 	/**#@-*/
+
+	/**
+	 * Static class - cannot be instantiated.
+	 */
+	final public function __construct()
+	{
+		throw new \LogicException("Can't instantiate static class ".get_class($this));
+	}
 }
