@@ -7,6 +7,7 @@ use Nette\Web\Html,
 	Nette\Debug,
 	BailIff\WebLoader\Filters\LessFilter,
 	BailIff\WebLoader\Filters\CCssFilter,
+	BailIff\WebLoader\Filters\XCssFilter,
 	BailIff\WebLoader\Filters\CssUrlsFilter;
 
 /**
@@ -37,6 +38,7 @@ extends WebLoader
 		$this->contentType='text/css';
 		$this->preFileFilters[]=new LessFilter;
 		$this->preFileFilters[]=new CCssFilter;
+		$this->preFileFilters[]=new XCssFilter;
 		$this->fileFilters[]=new CssUrlsFilter;
 	}
 
