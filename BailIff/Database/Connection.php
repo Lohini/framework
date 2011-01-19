@@ -26,17 +26,16 @@ extends \DibiConnection
 		foreach (Environment::getConfig('database') as $dbk => $dbc) {
 			if (is_a($dbc, 'Nette\Config\Config')) {
 				$c=\dibi::connect($dbc, $dbk);
-				if ($gconf->profiler) {
-					$profiler=
-						(is_numeric($conf->profiler) || is_bool($conf->profiler))
+				if (($cp= isset($conf->profiler)? $conf->profiler : (isset($gconf->profiler)? $gconf->profiler : FALSE))!==FALSE && $cp!=0) {
+					$profiler= (is_numeric($cp) || is_bool($cp))
 							? new \DibiProfiler(array('explain' => TRUE))
-							: new $conf->profiler;
+							: new $cp
+							;
 					$profiler->setFile(VAR_DIR."/log/db_$dbk.log");
 					$c->setProfiler($profiler);
 					}
 				}
 			}
-		return self::getConnection();
 	}
 
 	/**
