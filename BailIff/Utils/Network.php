@@ -1,5 +1,5 @@
 <?php // vim: ts=4 sw=4 ai:
-namespace BailIff;
+namespace BailIff\Utils;
 
 /**
  * BailIff Network
