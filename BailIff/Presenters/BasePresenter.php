@@ -12,7 +12,7 @@ use Nette\Application\Presenter,
 	BailIff\Forms\PswdInput,
 	BailIff\Forms\CBox3S;
 
-abstract class Base
+abstract class BasePresenter
 extends Presenter
 {
 	/**
