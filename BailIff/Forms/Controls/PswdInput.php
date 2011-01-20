@@ -1,5 +1,5 @@
 <?php // vim: set ts=4 sw=4 ai:
-namespace BailIff\Controls;
+namespace BailIff\Forms;
 
 use Nette\Framework,
 	Nette\Forms\TextInput,
