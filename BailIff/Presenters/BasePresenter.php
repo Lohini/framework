@@ -10,7 +10,8 @@ use Nette\Application\Presenter,
 	Nette\String,
 	Nette\Forms\Form,
 	BailIff\Forms\PswdInput,
-	BailIff\Forms\CBox3S;
+	BailIff\Forms\CBox3S,
+	BailIff\Forms\DatePicker;
 
 abstract class BasePresenter
 extends Presenter
@@ -24,6 +25,7 @@ extends Presenter
 		parent::startup();
 		Form::extensionMethod('addPswd', function (Form $form, $name, $label) { return $form[$name]=new PswdInput($label); });
 		Form::extensionMethod('addCBox3S', function (Form $form, $name, $label) { return $form[$name]=new CBox3S($label); });
+		Form::extensionMethod('addDatePicker', function (Form $form, $name, $label) { return $form[$name]=new DatePicker($label); });
 	}
 
 	/**
