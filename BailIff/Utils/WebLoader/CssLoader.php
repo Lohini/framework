@@ -1,4 +1,4 @@
-<?php // vim: ts=4 sw=4 ai:
+<?php // vim: set ts=4 sw=4 ai:
 namespace BailIff\WebLoader;
 
 use Nette\Web\Html,
@@ -15,7 +15,7 @@ use Nette\Web\Html,
  *
  * @author Jan Marek
  * @license MIT
- * @author Lopo <lopo@losys.eu> BailIff port
+ * @author Lopo <lopo@losys.eu>
  */
 class CssLoader
 extends WebLoader
@@ -24,7 +24,6 @@ extends WebLoader
 	private $absolutizeUrls=TRUE;
 
 	/**
-	 * Construct
 	 * @param IComponentContainer $parent
 	 * @param string $name
 	 */
@@ -137,7 +136,7 @@ extends WebLoader
 	}
 
 	/**
-	 * Generate compiled+compacted file and render link
+	 * Generates compiled+compacted file and render link
 	 * @example {control css:compact 'file.css', 'file2.css'}
 	 */
 	public function renderCompact()
@@ -163,6 +162,31 @@ extends WebLoader
 			}
 		foreach ($filesByMedia as $media => $filenames) {
 			echo $this->getElement($this->getPresenter()->link('WebLoader', $this->generate($filenames)), $media);
+			}
+		if ($hasArgs) {
+			$this->files=$backup;
+			}
+	}
+
+	/**
+	 * Generate compiled files and render links
+	 * @example {control css:singles 'file.css', 'file2.css'}
+	 */
+	public function renderSingles()
+	{
+		if ($hasArgs=(func_num_args()>0)) {
+			$backup=$this->files;
+			$this->clear();
+			$this->addFiles(func_get_args());
+			}
+
+		foreach ($this->files as $f) {
+			if (strtolower(substr($f[0], -4))=='.css') {
+				echo $this->getElement($this->sourceUri.$f[0], $f[1]);
+				}
+			else {
+				echo $this->getElement($this->getPresenter()->link('WebLoader', $this->generate($f[0])), $f[1]);
+				}
 			}
 		if ($hasArgs) {
 			$this->files=$backup;

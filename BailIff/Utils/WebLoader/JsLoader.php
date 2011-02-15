@@ -1,4 +1,4 @@
-<?php  // vim: ts=4 sw=4 ai:
+<?php  // vim: set ts=4 sw=4 ai:
 namespace BailIff\WebLoader;
 
 use Nette\IComponentContainer,
@@ -26,7 +26,6 @@ extends WebLoader
 	public $codes=array();
 
 	/**
-	 * Construct
 	 * @param IComponentContainer parent
 	 * @param string name
 	 */
@@ -46,13 +45,16 @@ extends WebLoader
 	 */
 	public function addFile($file, $processing=self::COMPACT)
 	{
-		foreach ($this->files as $f)
-			if ($f[0]==$file)
+		foreach ($this->files as $f) {
+			if ($f[0]==$file) {
 				return;
+				}
+			}
 		if (!file_exists("$this->sourcePath/$file")) {
 			if ($this->throwExceptions) {
-				if (NEnvironment::isProduction())
+				if (NEnvironment::isProduction()) {
 					throw new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist.");
+					}
 				else {
 					Debug::processException(new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."));
 					return;
@@ -108,8 +110,9 @@ extends WebLoader
 								}
 							else {
 								if ($this->throwExceptions) {
-									if (NEnvironment::isProduction())
+									if (NEnvironment::isProduction()) {
 										throw new \FileNotFoundException("Don't have JSMin class.");
+										}
 									else {
 										Debug::processException(new \FileNotFoundException("Don't have JSMin class"));
 										}
@@ -130,8 +133,9 @@ extends WebLoader
 								}
 							else {
 								if ($this->throwExceptions) {
-									if (NEnvironment::isProduction())
+									if (NEnvironment::isProduction()) {
 										throw new \FileNotFoundException("Don't have JavaScriptPacker class.");
+										}
 									else {
 										Debug::processException(new \FileNotFoundException("Don't have JavaScriptPacker class"));
 										}
@@ -173,5 +177,82 @@ extends WebLoader
 		return Html::el('script')
 				->type('text/javascript')
 				->setHtml($code);
+	}
+
+	/**
+	 * Generate compiled files and render links
+	 * @example {control js:singles 'file.js', 'file2.js'}
+	 */
+	public function renderSingles()
+	{
+		if ($hasArgs=(func_num_args()>0)) {
+			$backup=$this->files;
+			$this->clear();
+			$this->addFiles(func_get_args());
+			}
+		$dc=get_declared_classes();
+		// u javascriptu zalezi na poradi
+		foreach ($this->files as $file) {
+			switch ($file[1]) {
+				case self::COMPACT:
+					echo $this->getElement($this->sourceUri.$file[0]);
+					break;
+				case self::MINIFY:
+					// dean edwards packer neumi cz/sk znaky!!
+					if (String::endsWith($file[0], '.min.js')) { // already minified ?
+						echo $this->getElement($this->sourceUri.$file[0]);
+						}
+					elseif (is_file("$this->sourcePath/".substr($file[0], 0, -3).'.min.js')) { // have minified ?
+						echo $this->getElement($this->sourceUri.substr($file[0], 0, -3).'.min.js');
+						}
+					elseif (in_array('JSMin', $dc) || class_exists('JSMin')) { // minify
+						$content=\JSMin::minify($this->loadFile($file[0]));
+						echo $this->getElement($this->getPresenter()->link('WebLoader', $this->generate(array($file[0]), $content)));
+						}
+					else {
+						if ($this->throwExceptions) {
+							if (NEnvironment::isProduction())
+								throw new \FileNotFoundException("Don't have JSMin class.");
+							else {
+								Debug::processException(new \FileNotFoundException("Don't have JSMin class"));
+								}
+							}
+						echo $this->getElement($this->sourceUri.$file[0]);
+						}
+					break;
+				case self::PACK:
+					if (String::endsWith($file[0], '.pack.js')) { // already packed ?
+						echo $this->getElement($this->sourceUri.$file[0]);
+						}
+					elseif (is_file($pfile="$this->sourcePath/".substr($file[0], 0, -3).'.pack.js')) { // have packed ?
+						echo $this->getElement($this->sourceUri.substr($file[0], 0, -3).'.pack.js');
+						}
+					elseif (in_array('JavaScriptPacker', $dc) || class_exists('JavaScriptPacker')) {
+						$jsp=new \JavaScriptPacker($this->loadFile($file[0]));
+						$content=$jsp->pack();
+						echo $this->getElement($this->getPresenter()->link('WebLoader', $this->generate(array($file[0]), $content)));
+						}
+					else {
+						if ($this->throwExceptions) {
+							if (NEnvironment::isProduction())
+								throw new \FileNotFoundException("Don't have JavaScriptPacker class.");
+							else {
+								Debug::processException(new \FileNotFoundException("Don't have JavaScriptPacker class"));
+								}
+							}
+						echo $this->getElement($this->sourceUri.$file[0]);
+						}
+					break;
+				default:
+					return;
+					}
+			}
+		// raw code az nakonec
+		foreach ($this->codes as $code) {
+			echo $this->getCodeElement($code);
+			}
+		if ($hasArgs) {
+			$this->files=$backup;
+			}
 	}
 }
