@@ -160,11 +160,11 @@ extends TextInput
 					);
 			}
 		if (count($data)) {
-			$fid=array();
 			$data['fid']=$this->getForm()->getElementPrototype()->id;
-			$container->add(Html::el('script', array('type' => 'text/javascript'))
-							->add("/* <![CDATA[ */\n$('#$id').ready(PswdInput('$id', ".TemplateHelpers::escapeJs($data)."));\n/* ]]> */")
-							);
+			$container->add(
+				Html::el('script', array('type' => 'text/javascript'))
+					->add("/* <![CDATA[ */\n$('#$id').ready(PswdInput('$id', ".TemplateHelpers::escapeJs($data)."));\n/* ]]> */")
+				);
 			}
 		return $container;
 	}

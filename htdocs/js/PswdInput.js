@@ -1,3 +1,4 @@
+// vim: set ts=4 sw=4 ai:
 var _d=document,
 	_w=window;
 function PswdInput(id, d)
@@ -8,11 +9,10 @@ function PswdInput(id, d)
 
 	function encod(ps)
 	{
-		var cl= m===true? 0 : 1,
-			ms='',
+		var ms='',
 			i;
 		for (i=0; i<ps.length; i++) {
-			if (i<ps.length-cl) {
+			if (i<ps.length-(m===true? 0 : 1)) {
 				ms+=d.masked.symbol;
 				}
 			else {
@@ -21,6 +21,7 @@ function PswdInput(id, d)
 			}
 		return ms;
 	}
+
 	function doMasking()
 	{
 		var pp='',
@@ -178,7 +179,7 @@ function PswdInput(id, d)
 			});
 		t.bind('propertychange', function() { doMasking();});
 		t.keyup(function(e) {
-			if(!/^(9|1[678]|224|3[789]|40)$/.test(e.keyCode.toString())) {
+			if (!/^(9|1[678]|224|3[789]|40)$/.test(e.keyCode.toString())) {
 				m=false;
 				doMasking();
 				}
