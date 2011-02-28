@@ -112,11 +112,11 @@ extends WebLoader
 			}
 		foreach ($filesByMedia as $media => $filenames) {
 			if ($this->joinFiles) {
-				echo $this->getElement($this->getPresenter()->link('WebLoader', $this->generate($filenames)), $media);
+				echo $this->getElement($this->getPresenter()->link(':WebLoader:', $this->generate($filenames)), $media);
 				}
 			else {
 				foreach ($filenames as $filename) {
-					echo $this->getElement($this->getPresenter()->link('WebLoader', $this->generate(array($filename))), $media);
+					echo $this->getElement($this->getPresenter()->link(':WebLoader:', $this->generate(array($filename))), $media);
 					}
 				}
 			}
@@ -161,7 +161,7 @@ extends WebLoader
 			$filesByMedia[$f[1]][]=$f[0];
 			}
 		foreach ($filesByMedia as $media => $filenames) {
-			echo $this->getElement($this->getPresenter()->link('WebLoader', $this->generate($filenames)), $media);
+			echo $this->getElement($this->getPresenter()->link(':WebLoader:', $this->generate($filenames)), $media);
 			}
 		if ($hasArgs) {
 			$this->files=$backup;
@@ -169,7 +169,7 @@ extends WebLoader
 	}
 
 	/**
-	 * Generate compiled files and render links
+	 * Generates compiled files and render links
 	 * @example {control css:singles 'file.css', 'file2.css'}
 	 */
 	public function renderSingles()
@@ -185,7 +185,7 @@ extends WebLoader
 				echo $this->getElement($this->sourceUri.$f[0], $f[1]);
 				}
 			else {
-				echo $this->getElement($this->getPresenter()->link('WebLoader', $this->generate($f[0])), $f[1]);
+				echo $this->getElement($this->getPresenter()->link(':WebLoader:', $this->generate($f[0])), $f[1]);
 				}
 			}
 		if ($hasArgs) {

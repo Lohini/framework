@@ -148,7 +148,7 @@ extends WebLoader
 						}
 					$filenames[]=$file[0];
 					}
-				echo $this->getElement($this->getPresenter()->link('WebLoader', $this->generate($filenames, $content)));
+				echo $this->getElement($this->getPresenter()->link(':WebLoader:', $this->generate($filenames, $content)));
 				}
 			}
 		// raw code az nakonec
@@ -180,7 +180,7 @@ extends WebLoader
 	}
 
 	/**
-	 * Generate compiled files and render links
+	 * Generates compiled files and render links
 	 * @example {control js:singles 'file.js', 'file2.js'}
 	 */
 	public function renderSingles()
@@ -207,7 +207,7 @@ extends WebLoader
 						}
 					elseif (in_array('JSMin', $dc) || class_exists('JSMin')) { // minify
 						$content=\JSMin::minify($this->loadFile($file[0]));
-						echo $this->getElement($this->getPresenter()->link('WebLoader', $this->generate(array($file[0]), $content)));
+						echo $this->getElement($this->getPresenter()->link(':WebLoader:', $this->generate(array($file[0]), $content)));
 						}
 					else {
 						if ($this->throwExceptions) {
@@ -230,7 +230,7 @@ extends WebLoader
 					elseif (in_array('JavaScriptPacker', $dc) || class_exists('JavaScriptPacker')) {
 						$jsp=new \JavaScriptPacker($this->loadFile($file[0]));
 						$content=$jsp->pack();
-						echo $this->getElement($this->getPresenter()->link('WebLoader', $this->generate(array($file[0]), $content)));
+						echo $this->getElement($this->getPresenter()->link(':WebLoader:', $this->generate(array($file[0]), $content)));
 						}
 					else {
 						if ($this->throwExceptions) {

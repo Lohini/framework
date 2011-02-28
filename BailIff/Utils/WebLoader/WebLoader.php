@@ -1,16 +1,16 @@
-<?php // vim: ts=4 sw=4 ai:
+<?php // vim: set ts=4 sw=4 ai:
 namespace BailIff\WebLoader;
 
 use Nette\Application\Control,
 	Nette\Caching\Cache,
 	Nette\Caching\ICacheStorage,
 	Nette\Caching\FileStorage,
-	BailIff\Environment,
 	Nette\Environment as NEnvironment,
 	Nette\String,
+	Nette\Debug,
+	BailIff\Environment,
 	BailIff\WebLoader\Filters\PreFileFilter,
-	BailIff\WebLoader\WebLoaderCacheStorage,
-	Nette\Debug;
+	BailIff\WebLoader\WebLoaderCacheStorage;
 
 /**
  * WebLoader
@@ -171,7 +171,6 @@ extends Control
 	 * Add files
 	 *
 	 * Three ways how to set css files.
-	 *
 	 * 1. Media is not set, this type of files will be packed/minimized to file with media = screen,
 	 *
 	 *		{assign css=>array(
@@ -179,30 +178,24 @@ extends Control
 	 *						'web/menu.css',
 	 *						)
 	 *			}
-	 *
 	 * 2. Media is set, files will be separated by media, there will be to much packs as much is types of media (every pack will be minimized),
-	 *
 	 *		{assign css=>array(
 	 *						'web/screen.css'=>'screen,projection,tv',
 	 *						'web/print.css'=>'print',
 	 *						)
 	 *			}
-	 *
 	 * 3. You can combine ways.
 	 *		{assign css=>array(
 	 *						'web/screen.css',
 	 *						'web/print.css'=>'print',
 	 *						)
 	 *			}
-	 *
 	 * {$control['css']->addFiles($css)}
 	 *
 	 * At the end you can render all saved files with widget
-	 *
 	 *		{control css}
 	 *
 	 * Alternatively you can render files directly, the same result like the lines above is:
-	 *
 	 *		{control css 'web/screen.css'}
 	 *		{control css 'web/screen.css', 'web/menu.css'}
 	 *		{control css 'web/screen.css', 'web/print.css'=>'print'}
@@ -211,19 +204,16 @@ extends Control
 	 * But in this case you render files set only in render, not the before saved files from presenter etc.
 	 *
 	 * Adding of javascript files is similar, but if there is not set type of processing, there is automaticaly set default type COMPACT, actually it means compact without minimizing.
-	 *
 	 *		{assign js=>array(
 	 *						'datagrid.js',
 	 *						'mootools.nette.js',
 	 *						)
 	 *			}
-	 *
 	 *		{assign js=>array(
 	 *						'datagrid.js',
 	 *						'mootools.nette.js'=>JSLoader::MINIFY,
 	 *						)
 	 *			}
-	 *
 	 *		{$control['js']->addFiles($js)}
 	 *
 	 *		{control js}
@@ -428,7 +418,7 @@ extends Control
 		$cache=self::getCache();
 		$item=$cache->offsetGet($key);
 		$content=$item[self::CONTENT];
-		if (preg_match_all('/{\[of#(?P<filter>.*?)#(?P<key>.*?)#cf\]}/m', $content, $matches)) {
+		if (preg_match_all('/{\[of#(?P<filter>.*?)#(?P<key>.*?)#cf\]}/m', $content, $matches)) { // XXX remake to use preg_replace_callback ?
 			for ($i=0; $i<count($matches[0]); $i++) {
 				$content=str_replace(
 						$matches[0][$i],
@@ -442,5 +432,14 @@ extends Control
 			self::ETAG => md5($content),
 			self::CONTENT => $content
 			);
+	}
+
+	/**
+	 * Remove all cached items
+	 */
+	public static function clean()
+	{
+		$cache=self::getCache();
+		$cache->clean(array(Cache::ALL => TRUE));
 	}
 }
