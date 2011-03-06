@@ -24,6 +24,8 @@ extends WebLoader
 	/**#@-*/
 	/** @var array */
 	public $codes=array();
+	/** @var bool */
+	public $useHeadJs=TRUE;
 
 	/**
 	 * @param IComponentContainer parent
@@ -87,7 +89,9 @@ extends WebLoader
 		$content='';
 		if (($cnt=count($this->files))>0) {
 			if ($cnt==1 && $this->files[0][1]==self::COMPACT) {
-				echo $this->getElement($this->sourceUri.$this->files[0][0]);
+				echo $this->useHeadJs
+					? $this->getHeadJsElement($this->sourceUri.$this->files[0][0])
+					: $this->getElement($this->sourceUri.$this->files[0][0]);
 				}
 			else {
 				$dc=get_declared_classes();
@@ -148,12 +152,15 @@ extends WebLoader
 						}
 					$filenames[]=$file[0];
 					}
-				echo $this->getElement($this->getPresenter()->link(':WebLoader:', $this->generate($filenames, $content)));
+				echo $this->useHeadJs
+					? $this->getHeadJsElement($this->getPresenter()->link(':WebLoader:', $this->generate($filenames, $content)))
+					: $this->getElement($this->getPresenter()->link(':WebLoader:', $this->generate($filenames, $content)));
 				}
 			}
 		// raw code az nakonec
-		foreach ($this->codes as $code)
+		foreach ($this->codes as $code) {
 			echo $this->getCodeElement($code);
+			}
 	}
 
 	/**
@@ -177,6 +184,18 @@ extends WebLoader
 		return Html::el('script')
 				->type('text/javascript')
 				->setHtml($code);
+	}
+
+	/**
+	 * Get script code element
+	 * @param string $source
+	 * @return Html
+	 */
+	public function getHeadJsElement($source)
+	{
+		return Html::el('script')
+				->type('text/javascript')
+				->setHtml("head.js('$source');");
 	}
 
 	/**
@@ -255,4 +274,5 @@ extends WebLoader
 			$this->files=$backup;
 			}
 	}
+
 }
