@@ -120,14 +120,12 @@ implements IDebugPanel
 			$data=json_decode(file_get_contents('php://input'));
 			$translator=NEnvironment::getService('Nette\ITranslator');
 			if ($data) {
-\Nette\Debug::fireLog($data);
 				if ($session) {
 					$stack= isset($session['stack'])? $session['stack'] : array();
 					}
 
 				$translator->lang=$data->{self::LANGUAGE_KEY};
 				$file=$data->{self::FILE_KEY};
-\Nette\Debug::fireLog("file: '$file'");
 				unset($data->{self::LANGUAGE_KEY}, $data->{self::FILE_KEY});
 				foreach ($data as $string => $value) {
 					$translator->setTranslation($string, $value, $file);
