@@ -33,6 +33,7 @@ extends Presenter
 	{
 		$template=parent::createTemplate();
 		$template->registerHelperLoader('BailIff\Templates\TemplateHelpers::loader');
+		$template->setTranslator(NEnvironment::getService('Nette\ITranslator'));
 		return $template;
 	}
 
