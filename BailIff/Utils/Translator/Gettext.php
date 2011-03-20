@@ -582,7 +582,6 @@ implements IEditable
 		foreach ($offsets as $offset) {
 			$mo.=pack('i', $offset);
 			}
-
 		file_put_contents($file, $mo.$ids.$strings);
 	}
 

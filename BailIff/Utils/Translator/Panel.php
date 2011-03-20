@@ -62,7 +62,7 @@ implements IDebugPanel
 	public function getTab()
 	{
 		ob_start();
-		require __DIR__.'/tab.phtml';
+		require __DIR__.'/tab.latte';
 		return ob_get_clean();
 	}
 
@@ -99,7 +99,7 @@ implements IDebugPanel
 			}
 
 		ob_start();
-		require __DIR__.'/panel.phtml';
+		require __DIR__.'/panel.latte';
 		return ob_get_clean();
 	}
 
