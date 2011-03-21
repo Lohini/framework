@@ -18,4 +18,4 @@ Optional
 - Tero Piirainen's Head JS (http://headjs.com/) for JsLoader
 
 -----
-repository: https://github.com/Lopo/nette
+repository: https://github.com/Lopo/BailIff
