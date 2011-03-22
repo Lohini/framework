@@ -13,6 +13,10 @@ use Nette\Application\Presenter,
 abstract class BasePresenter
 extends Presenter
 {
+	/** @persistent string */
+	public $lang='en';
+
+
 	/**
 	 * (non-PHPdoc)
 	 * @see Nette\Application.Presenter::startup()
@@ -33,7 +37,9 @@ extends Presenter
 	{
 		$template=parent::createTemplate();
 		$template->registerHelperLoader('BailIff\Templates\TemplateHelpers::loader');
-		$template->setTranslator(NEnvironment::getService('Nette\ITranslator'));
+		$translator=NEnvironment::getService('Nette\ITranslator');
+		$translator->setLang($this->lang);
+		$template->setTranslator($translator);
 		return $template;
 	}
 
