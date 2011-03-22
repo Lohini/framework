@@ -3,17 +3,31 @@ namespace BailIff\Presenters;
 
 use Nette\Application\Presenter,
 	Nette\Environment as NEnvironment,
+	Nette\Forms\Form,
+	BailIff\Environment,
 	BailIff\WebLoader\CssLoader,
 	BailIff\WebLoader\JsLoader,
-	Nette\Forms\Form,
 	BailIff\Forms\PswdInput,
 	BailIff\Forms\CBox3S,
 	BailIff\Forms\DatePicker;
 
+/**
+ * Base presenter class
+ * @author Lopo <lopo@losys.eu>
+ */
 abstract class BasePresenter
 extends Presenter
 {
-	/** @persistent string */
+	/**#@+ Base presenter flash messages class */
+	const FLASH_SUCCESS='success';
+	const FLASH_ERROR='error';
+	const FLASH_INFO='info';
+	const FLASH_WARNING='warning';
+	/**#@-*/
+	/**
+	 * @var string
+	 * @persistent string
+	 */
 	public $lang='en';
 
 
@@ -31,6 +45,19 @@ extends Presenter
 
 	/**
 	 * (non-PHPdoc)
+	 * @see Nette\Application.Presenter::beforeRender()
+	 */
+	protected function beforeRender()
+	{
+		$user=NEnvironment::getUser();
+		$this->template->user= $user->isLoggedIn()? $user->getIdentity() : NULL;
+		$this->template->webName=SITE;
+		$this->template->titleSeparator=Environment::getConfig('titleSeparator', ' | ');
+		$this->template->lang=$this->lang;
+	}
+
+	/**
+	 * (non-PHPdoc)
 	 * @see Nette\Application.Control::createTemplate()
 	 */
 	protected function createTemplate()
@@ -44,15 +71,53 @@ extends Presenter
 	}
 
 	/**
+	 * (non-PHPdoc)
+	 * @see Nette\Application.Presenter::formatLayoutTemplateFiles()
+	 */
+	public function formatLayoutTemplateFiles($presenter, $layout)
+	{
+		$user=NEnvironment::getUser();
+		$i=$user->getIdentity();
+		$skin= ($user->isLoggedIn() && isset($i->skin))? $i->skin : 'default';
+		$skinDir=realpath(APP_DIR."/skins/$skin");
+		$path='/'.str_replace(':', 'Module/', $presenter);
+		$pathP=substr_replace($path, '', strrpos($path, '/'), 0);
+		$list=array(
+			"$skinDir$pathP/@$layout.latte",
+			"$skinDir$pathP.@$layout.latte",
+			);
+		while (($path=substr($path, 0, strrpos($path, '/')))!==FALSE) {
+			$list[]="$skinDir$path/@$layout.latte";
+			}
+		return $list;
+	}
+
+	/**
+	 * (non-PHPdoc)
+	 * @see Nette\Application.Presenter::formatTemplateFiles()
+	 */
+	public function formatTemplateFiles($presenter, $view)
+	{
+		$user=NEnvironment::getUser();
+		$i=$user->getIdentity();
+		$skin= ($user->isLoggedIn() && isset($i->skin))? $i->skin : 'default';
+		$skinDir=realpath(NEnvironment::getVariable('appDir')."/skins/$skin");
+		$path='/'.str_replace(':', 'Module/', $presenter);
+		$pathP=substr_replace($path, '', strrpos($path, '/'), 0);
+		$path=substr_replace($path, '', strrpos($path, '/'));
+		return array(
+			"$skinDir$pathP/$view.latte",
+			"$skinDir$pathP.$view.latte",
+			);
+	}
+
+	/**
 	 * Creates CssLoader control
 	 * @return CssLoader
 	 */
 	protected function createComponentCss()
 	{
-		$css=new CssLoader;
-		// cesta na disku ke zdroji
-		$css->setSourcePath(WWW_DIR."/css");
-		return $css;
+		return new CssLoader;
 	}
 
 	/**
