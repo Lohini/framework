@@ -1,6 +1,6 @@
 <?php // vim: set ts=4 sw=4 ai:
 /**
- * BailIff (version 0.0.2-dev $WCREV$ released on $WCDATE$)
+ * BailIff (version 0.0.3-dev $WCREV$ released on $WCDATE$)
  *
  * @author Lopo <lopo@losys.eu>
  * @copyright Copyright (c) 2010-2011 Pavol Hluchy (Lopo)
@@ -9,11 +9,11 @@
 // define basic constants
 define('BAILIFF', TRUE);
 define('BAILIFF_DIR', __DIR__);
-define('BAILIFF_VERSION_ID', 2); //0.0.2
+define('BAILIFF_VERSION_ID', 3); //0.0.3
 define('BAILIFF_PACKAGE', '5.3');
 // check required PHP version
 if (!version_compare(phpversion(), BAILIFF_PACKAGE, '>=')) {
-	die('This system requires PHP version '.BAILIFF_PACKAGE.' or greater, '.phpversion().' used.');
+	die('This system requires PHP version '.BAILIFF_PACKAGE.' or newer, '.phpversion().' used.');
 	}
 // check presence of Nette Framework
 if (!is_file(LIBS_DIR.'/Nette/loader.php')) {
