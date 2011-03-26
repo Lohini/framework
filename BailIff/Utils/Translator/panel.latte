@@ -165,12 +165,12 @@ JSON.stringify=JSON.stringify || function (obj) {
 			v=obj[n];
 			t=typeof(v);
 			if (t=="string") {
-				v='"'+v+'"';
+				v='"'+v.replace(/\"/g, '\\"')+'"';
 				}
 			else if (t=="object" && v!==null) {
 				v=JSON.stringify(v);
 				}
-			json.push((arr? '' : '"'+n+'":')+String(v));
+			json.push((arr? '' : '"'+n.replace(/\"/g, '\\"')+'":')+String(v));
 			}
 		return (arr? '[' : '{')+String(json)+(arr? ']' : '}');
 		}
