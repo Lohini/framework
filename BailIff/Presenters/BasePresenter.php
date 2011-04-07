@@ -9,7 +9,8 @@ use Nette\Application\Presenter,
 	BailIff\WebLoader\JsLoader,
 	BailIff\Forms\PswdInput,
 	BailIff\Forms\CBox3S,
-	BailIff\Forms\DatePicker;
+	BailIff\Forms\DatePicker,
+	BailIff\Components\Gravatar;
 
 /**
  * Base presenter class
@@ -127,5 +128,14 @@ extends Presenter
 	protected function createComponentJs()
 	{
 		return new JsLoader;
+	}
+
+	/**
+	 * Creates Gravatar img component
+	 * @return Gravatar
+	 */
+	protected function createComponentGravatar()
+	{
+		return new Gravatar;
 	}
 }
