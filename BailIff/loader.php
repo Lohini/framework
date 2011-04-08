@@ -17,7 +17,7 @@ if (!version_compare(phpversion(), BAILIFF_PACKAGE, '>=')) {
 	}
 // check presence of Nette Framework
 if (!is_file(LIBS_DIR.'/Nette/loader.php')) {
-	die('Copy Nette Framework to /libs/ directory.');
+	die('Copy Nette Framework to '.LIBS_DIR.' directory.');
 	}
 // load Nette Framework
 require_once LIBS_DIR.'/Nette/loader.php';
@@ -26,6 +26,8 @@ if (!version_compare(\Nette\Framework::VERSION, '2.0-dev', '>=')) {
 	die('This BailIff requires Nette version 2.0-dev or newer, '.\Nette\Framework::VERSION.' used.');
 	}
 // load BailIff
-require_once __DIR__.'/Environment.php';
+require_once BAILIFF_DIR.'/Loaders/BailIffLoader.php';
+\BailIff\Loaders\BailIffLoader::getInstance()->register();
+\Nette\Environment::setConfigurator(new \BailIff\Configurator);
 
 @header('X-Powered-By: Nette Framework with BailIff');
