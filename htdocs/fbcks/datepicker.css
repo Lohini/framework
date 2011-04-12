@@ -1,0 +1,7 @@
+@CHARSET "UTF-8";
+input.datepicker {
+	border: 1px solid #000000;
+	color: black;
+	background: transparent url('/img/ico/calendar.png') no-repeat right;
+	padding: 0.2em
+	}

@@ -2,12 +2,13 @@
 namespace BailIff\Forms;
 
 use Nette\Forms\TextInput,
-	Nette\Web\Html;
+	Nette\Web\Html,
+	Nette\Environment as NEnvironment;
 
 /**
  * DatePicker input control
  *
- * @author Tomáš Kraina, Roman Sklenář, Lopo
+ * @author Lopo <lopo@losys.eu>
  */
 class DatePicker
 extends TextInput
@@ -24,28 +25,25 @@ extends TextInput
 
 	/**
 	 * Returns control's value
-	 * @return mixed 
+	 * @return mixed
 	 */
 	public function getValue()
 	{
 		if (strlen($this->value)) {
-			$tmp=preg_replace('~([[:space:]])~', '', $this->value);
-			$tmp=explode('.', $tmp);
 			// database format Y-m-d
-			return "{$tmp[2]}-{$tmp[1]}-{$tmp[0]}";
-		}
+			return date('Y-m-d', strtotime($this->value));
+			}
 		return $this->value;
 	}
 
 	/**
 	 * Sets control's value
-	 * @param  string
+	 * @param string
 	 * @return void
 	 */
 	public function setValue($value)
 	{
-		$value=preg_replace('~([0-9]{4})-([0-9]{2})-([0-9]{2})~', '$3.$2.$1', $value);
-		parent::setValue($value);
+		parent::setValue(date('d.m.Y', strtotime($value)));
 	}
 
 	/**
@@ -54,20 +52,42 @@ extends TextInput
 	 */
 	public function getControl()
 	{
+		$basePath=preg_replace('#https?://[^/]+#A', '', rtrim(NEnvironment::getVariable('baseUri', NULL), '/'));
+		$t=$this->getTranslator();
+		if ($t===NULL) {
+			$t=NEnvironment::getApplication()->getContext()->getService('Nette\ITranslator');
+			}
+		$lng=$t->getLang();
+		if ($lng=='en') {
+			$regional="$('input#".$this->getHtmlId()."').datepicker();";
+			}
+		else {
+			$regional="yepnope({
+							test: $.datepicker.regional['$lng'],
+							nope: '$basePath/js/ui/i18n/jquery-ui-i18n.js',
+							complete: function() {
+								$('input#".$this->getHtmlId()."').datepicker($.datepicker.regional['$lng']);
+								}
+							});";
+			}
 		$control=parent::getControl();
+		$control->type='date';
 		$control->class='datepicker';
 		$control->value=$this->value;
 		$control->setName($control->getName(), false); // enable add()
-		$control->add(Html::el('script', array('type'=>'text/javascript'))->add("$(function() {
-				$('#$control->id').datepicker({
-					dateFormat: 'dd.mm.yy',
-					firstDay: 1,
-					changeMonth: true,
-					changeYear: true,
-					duration: 'fast'
-					},
-				$.datepicker.regional['sk']);
-				});"));
+		$control->add(Html::el('script', array('type'=>'text/javascript'))->add("yepnope({
+			test: Modernizr.inputtypes && Modernizr.inputtypes.date,
+			nope: '$basePath/fbcks/datepicker.css',
+			callback: function() {
+				yepnope({
+					test: $.ui,
+					nope: ['$basePath/js/jquery-ui.js', '$basePath/css/jquery-ui.css'],
+					complete: function() {
+						$regional
+						}
+					});
+				}
+			});"));
 		return $control;
 	}
 }

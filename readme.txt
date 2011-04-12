@@ -8,6 +8,7 @@ Requirements
 - PHP 5.3 or later
 - Nette Framework 2.0-dev (https://github.com/nette/nette)
 - dibi (https://github.com/dg/dibi)
+- Modernizr (http://www.modernizr.com/) - custom build (full with yepnope)
 
 Optional
 --------
