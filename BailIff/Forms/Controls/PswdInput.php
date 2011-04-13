@@ -1,18 +1,17 @@
 <?php // vim: set ts=4 sw=4 ai:
 namespace BailIff\Forms;
 
-use Nette\Framework,
+use Nette\Environment as NEnvironment,
 	Nette\Forms\TextInput,
-	Nette\Forms\Form,
 	Nette\Web\Html,
-	Nette\Templates\TemplateHelpers,
-	Nette\Json;
+	Nette\Templates\TemplateHelpers;
 
 /**
  * Improved password input control
  * - CAPS-LOCK warning
  * - show password checkbox
  * - masked password
+ *
  * @author Lopo <lopo@losys.eu>
  */
 class PswdInput
@@ -20,20 +19,11 @@ extends TextInput
 {
 	/** @var Html */
 	protected $container;
-	/**
-	 * using CAPS-lock warning
-	 * @var bool
-	 */
+	/** @var bool use CAPS-lock warning */
 	public $useClWarning=TRUE;
-	/**
-	 * using Show Password Checkbox
-	 * @var bool
-	 */
+	/** @var bool use Show Password Checkbox */
 	public $useShowPswd=FALSE;
-	/**
-	 * using masking
-	 * @var bool
-	 */
+	/** @var bool use masking */
 	public $useMasked=FALSE;
 	/** @var string */
 	public $strClWarning='Caps-lock is ON!';
@@ -56,7 +46,7 @@ extends TextInput
 	/** @var string */
 	public $cbDesc='Show the password as plain text (not advisable in a public place)';
 	/** @var string */
-	public $icoShowPswd='data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAKAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAABwX/xAAkEAACAQMDAwUAAAAAAAAAAAABAgMABBEFBhITIWEiIzFCUf/EABUBAQEAAAAAAAAAAAAAAAAAAAUG/8QAHhEAAQMEAwAAAAAAAAAAAAAAAgABAwQFETGB4fD/2gAMAwEAAhEDEQA/AD3au14LTacOnah0lm1hJHuQwHNAFzGF8qfUfJ70XXO29WguZYTYzuY3KckUkHBxkH8pUS4maJC0shIUYJY1Olurjqv78vyfuamIbhLGRFvPuuEmVKDsy//Z';
+	public $icoShowPswd='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAU5JREFUeNpsjUtLAmEUht9vvDDjJW2azGvSootSrQIjkDYGQmMILQslClob9Q8iaOc62rVsWxgt/Af9hajoZkVjojnOzDdfk1IYdODlPZzzvOcAfXWyD5Fdx8rsJlYuyBD7d9xP4+aBqTFBRjQXREgO7hZ52cX/A65lEZ9bms5UL95QrdQwk05mvmd/wAE3yE5RyMMTdp5fPuOs8gg4RGdpnc97XSC/YCGL5OTseAqaitGRdleoK0hMRFIby0h0QckH29aqx7rm5/D5gdBgGyFfDzRVcJsrQl7yw2Y73sP84kI4Bw3ErDeAtgpJ6EB0atBbGiQvCcSG1XvycCocStFwnFAKh9PA9oEJZpo4Kmlo1Q0wg0LpqHf2ZoNE7bUmqKaDYyYKaQu0Qk+3FIZGrTcUTQMRu/LeudJVGjApAxjDEN/zVwVdJ2Bo6Xj5EmAAZKeAFvt4RVYAAAAASUVORK5CYII=';
 	/** @var string */
 	public $cssShowPswd='label.show-password {
 	white-space: nowrap;
@@ -66,15 +56,9 @@ extends TextInput
 	letter-spacing: -0.05em;
 	background: url(%s) no-repeat 100%% 60%%;
 	}';
-	/**
-	 * masking char
-	 * @var string
-	 */
-	public $symbol='u25cf'; //'●'
-	/**
-	 * reset control on pageload
-	 * @var bool
-	 */
+	/** @var string masking char */
+	public $symbol='●';
+	/** @var bool reset control on pageload */
 	public $rstMasked=TRUE;
 
 
@@ -91,7 +75,7 @@ extends TextInput
 	}
 
 	/**
-	 * Returns control's value.
+	 * Returns control's value
 	 * @return mixed
 	 */
 	public function getValue()
@@ -100,7 +84,7 @@ extends TextInput
 	}
 
 	/**
-	 * Sets control's value.
+	 * Sets control's value
 	 * @param mixed $value
 	 * @return PswdInput provides a fluent interface
 	 */
@@ -111,6 +95,7 @@ extends TextInput
 	}
 
 	/**
+	 * Returns control's container prototype
 	 * @return Html
 	 */
 	final public function getContainerPrototype()
@@ -119,13 +104,13 @@ extends TextInput
 	}
 
 	/**
-	 * Generates control's HTML element.
+	 * Generates control's HTML element
 	 * @return Html
 	 */
 	public function getControl()
 	{
+		$basePath=preg_replace('#https?://[^/]+#A', '', rtrim(NEnvironment::getVariable('baseUri', NULL), '/'));
 		$control=parent::getControl();
-		$id=$control->id;
 		$container=Html::el('span', array('style' => 'position: relative; float: left;'))
 					->add($control);
 		$style=Html::el('style');
@@ -142,34 +127,43 @@ extends TextInput
 		$data=array();
 		if ($this->useClWarning && !$this->useMasked) {
 			$data['clwarning']=array(
-					'str' => $this->strClWarning,
+					'str' => $this->translate($this->strClWarning)
 					);
 			}
 		if ($this->useShowPswd && !$this->useMasked) {
 			$data['showpswd']=array(
 					'cb' => array(
-						'label' => $this->cbLabel,
-						'desc' => $this->cbDesc
+						'label' => $this->translate($this->cbLabel),
+						'desc' => $this->translate($this->cbDesc)
 						)
 					);
 			}
 		if ($this->useMasked) {
 			$data['masked']=array(
-					'symbol' => Json::decode('"\\'.$this->symbol.'"'),
+					'symbol' => $this->symbol,
 					'reset' => $this->rstMasked
 					);
 			}
 		if (count($data)) {
 			$data['fid']=$this->getForm()->getElementPrototype()->id;
 			$container->add(
-				Html::el('script', array('type' => 'text/javascript'))
-					->add("/* <![CDATA[ */\n$('#$id').ready(PswdInput('$id', ".TemplateHelpers::escapeJs($data)."));\n/* ]]> */")
-				);
+					Html::el(
+						'script',
+						array('type' => 'text/javascript')
+						)
+						->add("head.js(
+							'$basePath/js/PswdInput.js',
+							function() {
+								PswdInput('{$control->id}', ".TemplateHelpers::escapeJs($data).');
+								}
+							);')
+					);
 			}
 		return $container;
 	}
 
 	/**
+	 * Returns control's label
 	 * @param string $caption
 	 * @return Html
 	 */

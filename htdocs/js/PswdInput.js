@@ -1,18 +1,19 @@
 // vim: set ts=4 sw=4 ai:
-var _d=document,
-	_w=window;
 function PswdInput(id, d)
 {
-	var p=$('#'+id),
+	var _d=document,
+		_w=window,
+		p=$('#'+id),
 		frm=$('#'+d.fid),
 		wn, t, h, m, tr, cb, sf, hf;
 
 	function encod(ps)
 	{
-		var ms='',
+		var cl= m===true? 0 : 1,
+			ms='',
 			i;
 		for (i=0; i<ps.length; i++) {
-			if (i<ps.length-(m===true? 0 : 1)) {
+			if (i<ps.length-cl) {
 				ms+=d.masked.symbol;
 				}
 			else {
@@ -21,7 +22,6 @@ function PswdInput(id, d)
 			}
 		return ms;
 	}
-
 	function doMasking()
 	{
 		var pp='',
@@ -47,87 +47,6 @@ function PswdInput(id, d)
 			}
 	}
 
-	if (d.clwarning && !d.masked) {
-		wn=$(_d.createElement('strong'))
-			.attr({
-				'class': 'capslock-warning',
-				'title': d.clwarning.str
-				})
-			.html(d.clwarning.str)
-			.hide()
-			.insertAfter(p);
-		p.keypress(function(e) {
-			var cc=e.charCode,
-				character;
-			if (typeof cc==='undefined') {
-				cc=e.keyCode;
-				}
-			character=String.fromCharCode(cc);
-			if ((/^[A-Z]$/.test(character) && !e.shiftKey) || (/^[a-z]$/.test(character) && e.shiftKey)) {
-				wn.show();
-				}
-			else if (wn.is(':visible')) {
-				wn.hide();
-				}
-			});
-		p.blur(function() {
-			if (wn.is(':visible')) {
-				wn.hide();
-				}
-			});
-		p.keydown(function(e) {
-			if (e.keyCode===20 && wn.is(':visible')) {
-				wn.hide();
-				}
-			});
-		}
-	if (d.showpswd && !d.masked) {
-		t=$(_d.createElement('input'))
-			.attr({
-				'id': 'tf-'+id,
-				'type': 'text',
-				'autocomplete': 'off',
-				'class': p.attr('class')
-				})
-			.hide()
-			.insertAfter(p);
-		cb=$(_d.createElement('input'))
-			.attr({
-				'type': 'checkbox',
-				'title': d.showpswd.cb.desc
-				});
-		$(_d.createElement('label'))
-			.attr({
-				'for': 'tf-'+id,
-				'title': d.showpswd.cb.desc,
-				'class': 'show-password'
-				})
-			.css({
-				'display': 'block',
-				'position': 'static',
-				'float': 'none',
-				'width': 'auto'
-				})
-			.append(cb)
-			.append(
-				$(_d.createElement('span'))
-					.css('display', 'inline-block')
-					.html(d.showpswd.cb.label)
-				)
-			.appendTo(p.parent());
-		p.change(function() { t.val(p.val());});
-		t.change(function() { p.val(t.val());});
-		cb.click(function() {
-			sf=cb.is(':checked')? t : p;
-			hf=cb.is(':checked')? p : t;
-			sf.val(hf.hide().val()).show();
-			});
-		frm.submit(function() {
-			if (!t.is(':hidden')) {
-				p.val(t.val());
-				}
-			});
-		}
 	if (d.masked) {
 		p.attr('autocomplete', 'off').hide();
 		if (d.masked.reset) {
@@ -194,4 +113,87 @@ function PswdInput(id, d)
 			frm.get(0).reset();
 			}
 		} // d.masked
+	else {
+		if (d.clwarning) {
+			wn=$(_d.createElement('strong'))
+				.attr({
+					'class': 'capslock-warning',
+					'title': d.clwarning.str
+					})
+				.html(d.clwarning.str)
+				.hide()
+				.insertAfter(p);
+			p.keypress(function(e) {
+				var cc=e.charCode,
+					character;
+				if (typeof cc=='undefined') {
+					cc=e.keyCode;
+					}
+				character=String.fromCharCode(cc);
+				if ((/^[A-Z]$/.test(character) && !e.shiftKey) || (/^[a-z]$/.test(character) && e.shiftKey)) {
+					wn.show();
+					}
+				else if (wn.is(':visible')) {
+					wn.hide();
+					}
+				});
+			p.blur(function() {
+				if (wn.is(':visible')) {
+					wn.hide();
+					}
+				});
+			p.keydown(function(e) {
+				if (e.keyCode===20 && wn.is(':visible')) {
+					wn.hide();
+					}
+				});
+			}
+		if (d.showpswd) {
+			t=$(_d.createElement('input'))
+				.attr({
+					'id': 'tf-'+id,
+					'type': 'text',
+					'autocomplete': 'off',
+					'class': p.attr('class')
+					})
+				.hide()
+				.insertAfter(p);
+			cb=$(_d.createElement('input'))
+				.attr({
+					'type': 'checkbox',
+					'title': d.showpswd.cb.desc
+					});
+			$(_d.createElement('label'))
+				.attr({
+					'for': 'tf-'+id,
+					'title': d.showpswd.cb.desc,
+					'class': 'show-password'
+					})
+				.css({
+					'display': 'block',
+					'position': 'static',
+					'float': 'none',
+					'width': 'auto'
+					})
+				.append(cb)
+				.append(
+					$(_d.createElement('span'))
+						.css('display', 'inline-block')
+						.html(d.showpswd.cb.label)
+					)
+				.appendTo(p.parent());
+			p.change(function() { t.val(p.val());});
+			t.change(function() { p.val(t.val());});
+			cb.click(function() {
+				sf=cb.is(':checked')? t : p;
+				hf=cb.is(':checked')? p : t;
+				sf.val(hf.hide().val()).show();
+				});
+			frm.submit(function() {
+				if (!t.is(':hidden')) {
+					p.val(t.val());
+					}
+				});
+			}
+		}
 }
