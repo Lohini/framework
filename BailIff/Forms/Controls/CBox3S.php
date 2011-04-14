@@ -1,12 +1,14 @@
 <?php // vim: set ts=4 sw=4 ai:
 namespace BailIff\Forms;
 
-use Nette\Forms\FormControl,
+use Nette\Environment as NEnvironment,
+	Nette\Forms\FormControl,
 	Nette\Web\Html,
 	Nette\Templates\TemplateHelpers;
 
 /**
- * 3-state checkbox input control.
+ * 3-state checkbox input control
+ *
  * @author Lopo <lopo@losys.eu>
  */
 class CBox3S
@@ -23,6 +25,7 @@ extends FormControl
 		1 => 'check.png'
 		);
 
+
 	/**
 	 * @param string $label
 	 */
@@ -34,7 +37,7 @@ extends FormControl
 	}
 
 	/**
-	 * Returns control's value.
+	 * Returns control's value
 	 * @return mixed
 	 */
 	public function getValue()
@@ -43,16 +46,20 @@ extends FormControl
 	}
 
 	/**
-	 * Sets control's value.
+	 * Sets control's value
 	 * @param string $value
+	 * @throws InvalidArgumentException
 	 */
 	public function setValue($value)
 	{
+		if (!in_array($value, array(-1, 0, 1))) {
+			throw new InvalidArgumentException("Invalid argument passed, one of [-1, 0, 1] expected, '$value' given.");
+			}
 		parent::setValue($value);
 	}
 
 	/**
-	 * Returns container HTML element template.
+	 * Returns container HTML element template
 	 * @return Html
 	 */
 	final public function getContainerPrototype()
@@ -61,29 +68,31 @@ extends FormControl
 	}
 
 	/**
-	 * Generates control's HTML element.
+	 * Generates control's HTML element
 	 * @return Html
 	 */
 	public function getControl()
 	{
+		$basePath=preg_replace('#https?://[^/]+#A', '', rtrim(NEnvironment::getVariable('baseUri', NULL), '/'));
 		$control=parent::getControl();
-		$name=$control->name;
-		$id=$control->id;
 		$data=array(
-			'img_path' => $this->img_path,
-			'value' => $this->getValue()!==NULL? (int)$this->getValue() : 0,
-			'imgs' => $this->images
+			'value' => $this->getValue()!==NULL? (int)$this->getValue() : 0
 			);
-		$container=Html::el('span')
-					->add($control)
-					->add(Html::el('script', array('type' => 'text/javascript'))
-						->add("$('#$id').ready(CBox3S('$id', ".TemplateHelpers::escapeJs($data).'));')
-						);
-		return $container;
+		return Html::el('span')
+				->add($control)
+				->addClass('ui-icon')
+				->add(Html::el('script', array('type' => 'text/javascript'))
+					->add("head.js(
+						'$basePath/js/CBox3S.js',
+						function() {
+							CBox3S('{$control->id}', ".TemplateHelpers::escapeJs($data).');
+							}
+						);')
+					);
 	}
 
 	/**
-	 * Generates label's HTML element.
+	 * Generates label's HTML element
 	 * @param string $caption
 	 * @return Html
 	 */
