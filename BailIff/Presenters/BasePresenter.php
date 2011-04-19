@@ -7,9 +7,10 @@ use Nette\Application\UI\Presenter,
 	BailIff\Environment,
 	BailIff\WebLoader\CssLoader,
 	BailIff\WebLoader\JsLoader,
-	BailIff\Forms\PswdInput,
-	BailIff\Forms\CBox3S,
-	BailIff\Forms\DatePicker,
+	BailIff\Forms\Controls\PswdInput,
+	BailIff\Forms\Controls\CBox3S,
+	BailIff\Forms\Controls\DatePicker,
+	BailIff\Forms\Controls\ResetButton,
 	BailIff\Components\Gravatar;
 
 /**
@@ -42,6 +43,7 @@ extends Presenter
 		Form::extensionMethod('addPswd', function (Form $form, $name, $label) { return $form[$name]=new PswdInput($label); });
 		Form::extensionMethod('addCBox3S', function (Form $form, $name, $label) { return $form[$name]=new CBox3S($label); });
 		Form::extensionMethod('addDatePicker', function (Form $form, $name, $label) { return $form[$name]=new DatePicker($label); });
+		Form::extensionMethod('addReset', function (Form $form, $name, $label) { return $form[$name]=new ResetButton($label); });
 	}
 
 	/**
