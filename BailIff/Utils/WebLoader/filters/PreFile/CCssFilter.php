@@ -11,27 +11,27 @@ namespace BailIff\WebLoader\Filters;
  * Language:    PHP
  * License:     CDDL v1.0
  * Project:     COnditional-CSS
- * 
+ *
  * Copyright 2007-2008 Allan Jardine, all rights reserved.
  *
  * This source file is free software, under the U4EA Common Development and
  * Distribution License (U4EA CDDL) v1.0 only, as supplied with this software.
  * This license is also available online:
  *   http://www.sprymedia.co.uk/license/u4ea_cddl
- * 
- * This source file is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+ *
+ * This source file is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE. See the CDDL for more details.
- * 
+ *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * DESCRIPTION
- * 
+ *
  * c-css is a program which allows IE style conditional comments to be
  * inserted inline with CSS statements, and then be parsed out as required
- * for individual web browsers. This allows easy targeting of styles to 
+ * for individual web browsers. This allows easy targeting of styles to
  * different browsers, and different versions of browsers as required by the
  * developer, such that browser CSS bugs can be easily over come.
- * 
+ *
  * The bowsers which are currently supported are:
  *   Internet Explorer (v2 up) - IE
  *   Internet Explorer Mac - IEMac
@@ -43,13 +43,13 @@ namespace BailIff\WebLoader\Filters;
  *   IE Mobile - IEmob
  *   PSP Web browser - PSP
  *   NetFront - NetF
- * 
+ *
  * The syntax used for the conditional comments is:
  *   [if {!} {browser}]
  *   [if {!} {browser_group}]
  *   [if {!} {browser} {version}]
  *   [if {!} {condition} {browser} {version}]
- * 
+ *
  * Examples:
  *   [if ! Gecko]#column_right {
  *     [if cssA]float:left;
@@ -63,18 +63,18 @@ namespace BailIff\WebLoader\Filters;
  *     [if gt IE 6] gt-ie6: 100%;
  *     [if ! lte IE 6] not-lte-ie6: 100%;
  *   }
- * 
- * As can be seen from above a conditional comment can be applied to either 
+ *
+ * As can be seen from above a conditional comment can be applied to either
  * a whole CSS block, or to individual rules.
  */
 /**
  * BailIff port
  * @author Lopo <lopo@losys.eu>
  */
-use BailIff\WebLoader\Filters\PreFileFilter,
-	BailIff\WebLoader\WebLoader,
-	Nette\String,
-	Nette\Environment as NEnvironment;
+use Nette\StringUtils,
+	Nette\Environment as NEnvironment,
+	BailIff\WebLoader\Filters\PreFileFilter,
+	BailIff\WebLoader\WebLoader;
 
 class CCssFilter
 extends PreFileFilter
@@ -91,7 +91,7 @@ extends PreFileFilter
 	private $userVersion=0;
 	/**
 	 * Browsers can be groups together such that a single conditional
-	 *   statement can refer to multiple browsers. For example 'cssA' might be 
+	 *   statement can refer to multiple browsers. For example 'cssA' might be
 	 *   top level css support
 	 *   The sub arrays must have the following information:
 	 *      string:grade - CSS group name for easy groupng of statements
@@ -205,7 +205,7 @@ extends PreFileFilter
 		if ($file===NULL || strtolower(pathinfo($file, PATHINFO_EXTENSION))!='ccss') {
 			return $code;
 			}
-		$key=String::webalize("ccss-$file");
+		$key=StringUtils::webalize("ccss-$file");
 		$cache=self::getCache();
 		$browser=self::getUserBrowser();
 		if (($cached=$cache[$key])!==NULL) {
@@ -406,7 +406,7 @@ extends PreFileFilter
 	 */
 	private function cssImport($importStatement, $import, $fullImport)
 	{
-		if ($import) { // XXX 
+		if ($import) { // XXX
 			$tmpCSS=$this->parseImport($importStatement);
 			if (strtolower(substr($tmpCSS, -4))!='.css' && strtolower(substr($tmpCSS, -5))!='.ccss') { // import only raw css and ccss
 				$this->css=str_replace($fullImport, '', $this->css);
@@ -483,7 +483,7 @@ extends PreFileFilter
 		else if (count($aCC)==4 && !strpos($aCC[3], '.')) { /* if {condition} {browser} {version} */
 			$sLocalUserVersion=intval($sLocalUserVersion);
 			}
-		
+
 		// Just the browser
 		if (count($aCC)==2) {
 			if ($this->userBrowser==$aCC[1] || $this->userGroup==$aCC[1]) {
@@ -529,7 +529,7 @@ extends PreFileFilter
 					// Drop the block from the output string
 					$this->css=str_replace($CSSBlock[0][$i], '', $this->css);
 					}
-				// If it should be then remove the conditional comment from the start 
+				// If it should be then remove the conditional comment from the start
 				// of the block
 				else {
 					$block=preg_replace('/\[if .*?\]/', '', $block, 1);

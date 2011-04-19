@@ -1,7 +1,7 @@
 <?php // vim: ts=4 sw=4 ai:
 namespace BailIff\WebLoader;
 
-use Nette\Caching\FileStorage,
+use Nette\Caching\Storages\FileStorage,
 	Nette\Caching\Cache;
 /**
  * WebLoader cache storage.

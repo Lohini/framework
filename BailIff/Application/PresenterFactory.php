@@ -2,9 +2,9 @@
 namespace BailIff\Application;
 
 use Nette\Environment as NEnvironment,
-	Nette\String,
-	Nette\Loaders\LimitedScope,
-	Nette\Reflection\ClassReflection,
+	Nette\StringUtils,
+	Nette\Utils\LimitedScope,
+	Nette\Reflection\ClassType,
 	Nette\Application\InvalidPresenterException;
 
 class PresenterFactory
@@ -35,12 +35,12 @@ extends \Nette\Application\PresenterFactory
 	 */
 	public function getPresenterClass(& $name)
 	{
-		if (!is_string($name) || !String::match($name, "#^[a-zA-Z\x7f-\xff][a-zA-Z0-9\x7f-\xff:]*$#")) {
+		if (!is_string($name) || !StringUtils::match($name, "#^[a-zA-Z\x7f-\xff][a-zA-Z0-9\x7f-\xff:]*$#")) {
 			throw new InvalidPresenterException("Presenter name must be alphanumeric string, '$name' is invalid.");
 			}
 
 		$class=$this->formatPresenterClasses($name);
-		$reflection=new ClassReflection($class);
+		$reflection=new ClassType($class);
 		$class=$reflection->getName();
 		if (!$reflection->implementsInterface('Nette\Application\IPresenter')) {
 			throw new InvalidPresenterException("Cannot load presenter '$name', class '$class' is not Nette\\Application\\IPresenter implementor.");
@@ -83,8 +83,8 @@ extends \Nette\Application\PresenterFactory
 	public function unformatPresenterClass($class)
 	{
 		$mapper=function($presenter) use ($class) {
-			if (String::startsWith($class, $presenter['prefix'])
-				&& String::match($class, '/'.$presenter['replace'].(String::endsWith($presenter['replace'], "\\")? "\\" : '').'/')
+			if (StringUtils::startsWith($class, $presenter['prefix'])
+				&& StringUtils::match($class, '/'.$presenter['replace'].(StringUtils::endsWith($presenter['replace'], "\\")? "\\" : '').'/')
 				) {
 				return $presenter;
 				}

@@ -2,7 +2,7 @@
 namespace BailIff\WebLoader\Filters;
 
 use Nette\Environment as NEnvironment,
-    Nette\String,
+    Nette\StringUtils,
     Nette\Object,
 	BailIff\WebLoader\WebLoader;
 
@@ -34,7 +34,7 @@ extends Object
 		$basePath=rtrim(NEnvironment::getVariable('baseUri'), '/');
 
 		// inside document root
-		if (String::startsWith($cssFile, $docroot)) {
+		if (StringUtils::startsWith($cssFile, $docroot)) {
 			$path=$basePath.substr(dirname($cssFile), strlen($docroot)).DIRECTORY_SEPARATOR.$url;
 			}
 		// outside document root

@@ -1,10 +1,10 @@
 <?php // vim: set ts=4 sw=4 ai:
 namespace BailIff\WebLoader;
 
-use Nette\Web\Html,
+use Nette\Utils\Html,
 	Nette\Environment as NEnvironment,
-	Nette\IComponentContainer,
-	Nette\Debug,
+	Nette\ComponentModel\IContainer,
+	Nette\Diagnostics\Debugger,
 	BailIff\WebLoader\Filters\LessFilter,
 	BailIff\WebLoader\Filters\CCssFilter,
 	BailIff\WebLoader\Filters\XCssFilter,
@@ -24,10 +24,10 @@ extends WebLoader
 	private $absolutizeUrls=TRUE;
 
 	/**
-	 * @param IComponentContainer $parent
+	 * @param IContainer $parent
 	 * @param string $name
 	 */
-	public function __construct(IComponentContainer $parent=NULL, $name=NULL)
+	public function __construct(IContainer $parent=NULL, $name=NULL)
 	{
 		parent::__construct($parent, $name);
 		$this->setGeneratedFileNamePrefix('cssldr-');
@@ -88,7 +88,7 @@ extends WebLoader
 					throw new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist.");
 					}
 				else {
-					Debug::log(new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."), Debug::ERROR);
+					Debugger::log(new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."), Debugger::ERROR);
 					return;
 					}
 				}
@@ -144,7 +144,7 @@ extends WebLoader
 		if (($hasArgs=(func_num_args()>0)) && func_num_args()==1) {
 			$arg=func_get_arg(0);
 			$file= is_array($arg)? key($arg) : $arg;
-			$media= is_array($arg)? $arg[$file] : 'all'; 
+			$media= is_array($arg)? $arg[$file] : 'all';
 			if (strtolower(substr($file, -4))=='.css') {
 				echo $this->getElement($this->sourceUri.$file, $media);
 				return;
@@ -155,7 +155,7 @@ extends WebLoader
 			$this->clear();
 			$this->addFiles(func_get_args());
 			}
-	
+
 		$filesByMedia=array();
 		foreach ($this->files as $f) {
 			$filesByMedia[$f[1]][]=$f[0];

@@ -28,7 +28,7 @@ namespace BailIff\Utils\Translator;
 
 use Nette\Object,
 	Nette\Environment as NEnvironment,
-	Nette\String,
+	Nette\StringUtils,
 	Nette\Caching\Cache,
 	BailIff\Environment,
 	BailIff\Utils\Translator\IEditable,
@@ -164,10 +164,10 @@ implements IEditable
 		};
 
 		$input=$read(1);
-		if (String::lower(substr(dechex($input[1]), -8))=='950412de') {
+		if (StringUtils::lower(substr(dechex($input[1]), -8))=='950412de') {
 			$endian=FALSE;
 			}
-		elseif (String::lower(substr(dechex($input[1]), -8))=='de120495') {
+		elseif (StringUtils::lower(substr(dechex($input[1]), -8))=='de120495') {
 			$endian=TRUE;
 			}
 		else {
@@ -206,8 +206,8 @@ implements IEditable
 					$this->parseMetadata($translation, $identifier);
 					continue;
 					}
-				$original=explode(String::chr(0x00), $original);
-				$translation=explode(String::chr(0x00), $translation);
+				$original=explode(StringUtils::chr(0x00), $original);
+				$translation=explode(StringUtils::chr(0x00), $translation);
 				$this->dictionary[is_array($original)? $original[0] : $original]['original']=$original;
 				$this->dictionary[is_array($original)? $original[0] : $original]['translation']=$translation;
 				$this->dictionary[is_array($original)? $original[0] : $original]['file']=$identifier;
@@ -552,22 +552,22 @@ implements IEditable
 
 		$metadata=implode("\n", $this->generateMetadata($identifier));
 		$items=count($dictionary)+1;
-		$ids=String::chr(0x00);
-		$strings=$metadata.String::chr(0x00);
+		$ids=StringUtils::chr(0x00);
+		$strings=$metadata.StringUtils::chr(0x00);
 		$idsOffsets=array(0, 28+$items*16);
 		$stringsOffsets=array(array(0, strlen($metadata)));
 
 		foreach ($dictionary as $key => $value) {
 			$id=$key;
 			if (is_array($value['original']) && count($value['original'])>1) {
-				$id.=String::chr(0x00).end($value['original']);
+				$id.=StringUtils::chr(0x00).end($value['original']);
 				}
-			$string=implode(String::chr(0x00), $value['translation']);
+			$string=implode(StringUtils::chr(0x00), $value['translation']);
 			$idsOffsets[]=strlen($id);
 			$idsOffsets[]=strlen($ids)+28+$items*16;
 			$stringsOffsets[]=array(strlen($strings), strlen($string));
-			$ids.=$id.String::chr(0x00);
-			$strings.=$string.String::chr(0x00);
+			$ids.=$id.StringUtils::chr(0x00);
+			$strings.=$string.StringUtils::chr(0x00);
 			}
 
 		$valuesOffsets=array();

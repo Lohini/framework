@@ -1,9 +1,8 @@
 <?php //vim: set ts=4 sw=4 ai:
 namespace BailIff\Components;
 
-use Nette\Web\Html;
-
-use Nette\Application\Control;
+use Nette\Application\UI\Control,
+	Nette\Utils\Html;
 
 /**
  * @author Lopo <lopo@losys.eu>

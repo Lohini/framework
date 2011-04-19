@@ -1,8 +1,8 @@
 <?php // vim: set ts=4 sw=4 ai:
 namespace BailIff\Forms;
 
-use Nette\Forms\TextInput,
-	Nette\Web\Html,
+use Nette\Forms\Controls\TextInput,
+	Nette\Utils\Html,
 	Nette\Environment as NEnvironment;
 
 /**
@@ -55,7 +55,7 @@ extends TextInput
 		$basePath=preg_replace('#https?://[^/]+#A', '', rtrim(NEnvironment::getVariable('baseUri', NULL), '/'));
 		$t=$this->getTranslator();
 		if ($t===NULL) {
-			$t=NEnvironment::getApplication()->getContext()->getService('Nette\ITranslator');
+			$t=NEnvironment::getApplication()->getContext()->getService('Nette\Localization\ITranslator');
 			}
 		$lng=$t->getLang();
 		if ($lng=='en') {

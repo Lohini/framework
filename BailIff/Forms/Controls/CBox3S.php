@@ -2,9 +2,9 @@
 namespace BailIff\Forms;
 
 use Nette\Environment as NEnvironment,
-	Nette\Forms\FormControl,
-	Nette\Web\Html,
-	Nette\Templates\TemplateHelpers;
+	Nette\Forms\Controls\BaseControl,
+	Nette\Utils\Html,
+	Nette\Templating\DefaultHelpers;
 
 /**
  * 3-state checkbox input control
@@ -12,7 +12,7 @@ use Nette\Environment as NEnvironment,
  * @author Lopo <lopo@losys.eu>
  */
 class CBox3S
-extends FormControl
+extends BaseControl
 {
 	/** @var Html container element template */
 	protected $container;
@@ -85,7 +85,7 @@ extends FormControl
 					->add("head.js(
 						'$basePath/js/CBox3S.js',
 						function() {
-							CBox3S('{$control->id}', ".TemplateHelpers::escapeJs($data).');
+							CBox3S('{$control->id}', ".DefaultHelpers::escapeJs($data).');
 							}
 						);')
 					);

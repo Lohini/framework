@@ -2,9 +2,9 @@
 namespace BailIff\WebLoader\Filters;
 
 use Nette\Object,
+	Nette\Caching\Cache,
 	BailIff\WebLoader\WebLoader,
-	BailIff\Environment,
-	Nette\Caching\Cache;
+	BailIff\Environment;
 /**
  * Base class for PreFile filters
  * @author Lopo <lopo@losys.eu>

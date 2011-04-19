@@ -1,7 +1,7 @@
 <?php // vim: set ts=4 sw=4 ai:
 namespace BailIff\Presenters;
 
-use Nette\Application\Presenter,
+use Nette\Application\UI\Presenter,
 	Nette\Environment as NEnvironment,
 	Nette\Forms\Form,
 	BailIff\Environment,
@@ -64,8 +64,8 @@ extends Presenter
 	protected function createTemplate()
 	{
 		$template=parent::createTemplate();
-		$template->registerHelperLoader('BailIff\Templates\TemplateHelpers::loader');
-		$translator=NEnvironment::getService('Nette\ITranslator');
+		$template->registerHelperLoader('BailIff\Templating\TemplateHelpers::loader');
+		$translator=NEnvironment::getService('Nette\Localization\ITranslator');
 		$translator->setLang($this->lang);
 		$template->setTranslator($translator);
 		return $template;

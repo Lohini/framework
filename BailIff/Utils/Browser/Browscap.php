@@ -2,8 +2,8 @@
 namespace BailIff\Browser;
 
 use Nette\Caching\Cache,
-	Nette\Caching\ICacheStorage,
-	Nette\Caching\FileStorage,
+	Nette\Caching\IStorage,
+	Nette\Caching\Storages\FileStorage,
 	Nette\Environment as NEnvironment;
 
 /**
@@ -176,7 +176,7 @@ class Browscap
 	private $_properties=array();
 	/** @var int */
 	public static $cacheExpire=NULL;
-	/** @var Nette\Caching\ICacheStorage */
+	/** @var Nette\Caching\IStorage */
 	private static $cacheStorage;
 	/** @var array */
 	private static $result=NULL;
@@ -578,13 +578,13 @@ class Browscap
 	 * @param  Nette\Caching\Cache
 	 * @return void
 	 */
-	protected static function setCacheStorage(ICacheStorage $storage)
+	protected static function setCacheStorage(IStorage $storage)
 	{
 		self::$cacheStorage=$storage;
 	}
 
 	/**
-	 * @return Nette\Caching\ICacheStorage
+	 * @return Nette\Caching\IStorage
 	 */
 	protected static function getCacheStorage()
 	{

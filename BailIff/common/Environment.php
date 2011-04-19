@@ -2,7 +2,7 @@
 namespace BailIff;
 
 use Nette\Environment as NEnvironment,
-	BailIff\Configurator;
+	BailIff\DI\Configurator;
 
 /**
  * BailIff Environment
@@ -50,7 +50,7 @@ final class Environment
 	 */
 	static public function getTranslator()
 	{
-		return NEnvironment::getService('Nette\ITranslator');
+		return NEnvironment::getService('Nette\Localization\ITranslator');
 	}
 
 	/**

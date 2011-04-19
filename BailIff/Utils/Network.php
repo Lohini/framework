@@ -18,12 +18,14 @@ final class Network
 	{
 		$ip=explode('.', trim(strtok($net, '/'), '.'));
 		$bits=strtok('/');
-		if ($bits!==FALSE && ($bits<1 || $bits>31))
+		if ($bits!==FALSE && ($bits<1 || $bits>31)) {
 			throw new \ArgumentOutOfRangeException('address prefix size must be between 1 and 31');
+			}
 		$prefix=max(($bits!==FALSE? $bits : count($ip)<<3), (4-count($ip))<<3);
 		$long=0;
-		for ($i=0; $i<4; $i++)
+		for ($i=0; $i<4; $i++) {
 			$long+= isset($ip[$i])? $ip[$i]<<((3-$i)<<3) : 0;
+			}
 		return array(($long&((pow(2, $prefix)-1)<<(32-$prefix)))+1, ($long|(pow(2, 32-$prefix)-1))-1);
 	}
 
@@ -34,16 +36,19 @@ final class Network
 	 */
 	public static function HostInCIDR($host, $net)
 	{
-		if ($host==$net)
+		if ($host==$net) {
 			return TRUE;
+			}
 		$ip=ip2long($host);
 		if (is_array($net)) {
 			foreach ($net as $n) {
-				if ($host==$n)
+				if ($host==$n) {
 					return TRUE;
+					}
 				$range=self::CIDR2LongRange($n);
-				if ($ip>=$range[0] && $ip<=$range[1])
+				if ($ip>=$range[0] && $ip<=$range[1]) {
 					return TRUE;
+					}
 				}
 			return FALSE;
 			}

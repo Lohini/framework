@@ -1,7 +1,7 @@
 <?php // vim: ts=4 sw=4 ai:
 namespace BailIff\Browser;
 
-use Nette\String,
+use Nette\StringUtils,
 	Nette\Environment as NEnvironment;
 
 /**
@@ -13,8 +13,9 @@ class Browser
 {
 	public static function getLanguagesPriority()
 	{
-		if (!$header=NEnvironment::getHttpRequest()->getHeader('accept-language'))
+		if (!$header=NEnvironment::getHttpRequest()->getHeader('accept-language')) {
 			return NULL;
+			}
 		$prefered_languages=array();
 		if (preg_match_all("#([^;,]+)(;[^,0-9]*([0-9\.]+)[^,]*)?#i", $header, $matches, PREG_SET_ORDER)) {
 			$priority=1.0;
@@ -191,8 +192,9 @@ class Browser
 			'yi' => 'Yiddish',
 			'zu' => 'Zulu'
 			);
-		if (!array_key_exists($lng=String::lower($lng), $a_languages))
+		if (!array_key_exists($lng=StringUtils::lower($lng), $a_languages)) {
 			return FALSE;
+			}
 		return $a_languages[$lng];
 	}
 }

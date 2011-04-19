@@ -1,7 +1,7 @@
 <?php // vim: set ts=4 sw=4 ai:
 namespace BailIff\Utils\Translator;
 
-use Nette\ITranslator;
+use Nette\Localization\ITranslator;
 
 interface IEditable
 extends ITranslator

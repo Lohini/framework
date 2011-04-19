@@ -2,9 +2,9 @@
 namespace BailIff\Forms;
 
 use Nette\Environment as NEnvironment,
-	Nette\Forms\TextInput,
-	Nette\Web\Html,
-	Nette\Templates\TemplateHelpers;
+	Nette\Forms\Controls\TextInput,
+	Nette\Utils\Html,
+	Nette\Templating\DefaultHelpers;
 
 /**
  * Improved password input control
@@ -154,21 +154,11 @@ extends TextInput
 						->add("head.js(
 							'$basePath/js/PswdInput.js',
 							function() {
-								PswdInput('{$control->id}', ".TemplateHelpers::escapeJs($data).');
+								PswdInput('{$control->id}', ".DefaultHelpers::escapeJs($data).');
 								}
 							);')
 					);
 			}
 		return $container;
-	}
-
-	/**
-	 * Returns control's label
-	 * @param string $caption
-	 * @return Html
-	 */
-	public function getLabel($caption=NULL)
-	{
-		return parent::getLabel($caption);
 	}
 }

@@ -1,11 +1,11 @@
 <?php  // vim: set ts=4 sw=4 ai:
 namespace BailIff\WebLoader;
 
-use Nette\IComponentContainer,
+use Nette\ComponentModel\IContainer,
 	Nette\Environment as NEnvironment,
-	Nette\Web\Html,
-	Nette\String,
-	Nette\Debug;
+	Nette\Utils\Html,
+	Nette\StringUtils,
+	Nette\Diagnostics\Debugger;
 
 /**
  * JsLoader
@@ -28,10 +28,10 @@ extends WebLoader
 	public $useHeadJs=TRUE;
 
 	/**
-	 * @param IComponentContainer parent
+	 * @param IContainer parent
 	 * @param string name
 	 */
-	public function __construct(IComponentContainer $parent=NULL, $name=NULL)
+	public function __construct(IContainer $parent=NULL, $name=NULL)
 	{
 		parent::__construct($parent, $name);
 		$this->setGeneratedFileNamePrefix('jsldr-');
@@ -58,7 +58,7 @@ extends WebLoader
 					throw new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist.");
 					}
 				else {
-					Debug::processException(new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."));
+					Debugger::processException(new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."));
 					return;
 					}
 				}
@@ -103,7 +103,7 @@ extends WebLoader
 							break;
 						case self::MINIFY:
 							// dean edwards packer neumi cz/sk znaky!!
-							if (String::endsWith($file[0], '.min.js')) { // already minified ?
+							if (StringUtils::endsWith($file[0], '.min.js')) { // already minified ?
 								$content.=$this->loadFile($file[0]);
 								}
 							elseif (is_file($mfile="$this->sourcePath/".substr($file[0], 0, -3).'.min.js')) { // have minified ?
@@ -118,14 +118,14 @@ extends WebLoader
 										throw new \FileNotFoundException("Don't have JSMin class.");
 										}
 									else {
-										Debug::processException(new \FileNotFoundException("Don't have JSMin class"));
+										Debugger::processException(new \FileNotFoundException("Don't have JSMin class"));
 										}
 									}
 								$content.=$this->loadFile($file[0]);
 								}
 							break;
 						case self::PACK:
-							if (String::endsWith($file[0], '.pack.js')) { // already packed ?
+							if (StringUtils::endsWith($file[0], '.pack.js')) { // already packed ?
 								$content.=$this->loadFile($file[0]);
 								}
 							elseif (is_file($pfile="$this->sourcePath/".substr($file[0], 0, -3).'.pack.js')) { // have packed ?
@@ -141,7 +141,7 @@ extends WebLoader
 										throw new \FileNotFoundException("Don't have JavaScriptPacker class.");
 										}
 									else {
-										Debug::processException(new \FileNotFoundException("Don't have JavaScriptPacker class"));
+										Debugger::processException(new \FileNotFoundException("Don't have JavaScriptPacker class"));
 										}
 									}
 								$content.=$this->loadFile($file[0]);
@@ -218,7 +218,7 @@ extends WebLoader
 					break;
 				case self::MINIFY:
 					// dean edwards packer neumi cz/sk znaky!!
-					if (String::endsWith($file[0], '.min.js')) { // already minified ?
+					if (StringUtils::endsWith($file[0], '.min.js')) { // already minified ?
 						echo $this->getElement($this->sourceUri.$file[0]);
 						}
 					elseif (is_file("$this->sourcePath/".substr($file[0], 0, -3).'.min.js')) { // have minified ?
@@ -233,14 +233,14 @@ extends WebLoader
 							if (NEnvironment::isProduction())
 								throw new \FileNotFoundException("Don't have JSMin class.");
 							else {
-								Debug::processException(new \FileNotFoundException("Don't have JSMin class"));
+								Debugger::processException(new \FileNotFoundException("Don't have JSMin class"));
 								}
 							}
 						echo $this->getElement($this->sourceUri.$file[0]);
 						}
 					break;
 				case self::PACK:
-					if (String::endsWith($file[0], '.pack.js')) { // already packed ?
+					if (StringUtils::endsWith($file[0], '.pack.js')) { // already packed ?
 						echo $this->getElement($this->sourceUri.$file[0]);
 						}
 					elseif (is_file($pfile="$this->sourcePath/".substr($file[0], 0, -3).'.pack.js')) { // have packed ?
@@ -256,7 +256,7 @@ extends WebLoader
 							if (NEnvironment::isProduction())
 								throw new \FileNotFoundException("Don't have JavaScriptPacker class.");
 							else {
-								Debug::processException(new \FileNotFoundException("Don't have JavaScriptPacker class"));
+								Debugger::processException(new \FileNotFoundException("Don't have JavaScriptPacker class"));
 								}
 							}
 						echo $this->getElement($this->sourceUri.$file[0]);

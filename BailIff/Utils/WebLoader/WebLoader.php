@@ -1,13 +1,13 @@
 <?php // vim: set ts=4 sw=4 ai:
 namespace BailIff\WebLoader;
 
-use Nette\Application\Control,
+use Nette\Application\UI\Control,
 	Nette\Caching\Cache,
-	Nette\Caching\ICacheStorage,
-	Nette\Caching\FileStorage,
+	Nette\Caching\IStorage,
+	Nette\Caching\Storages\FileStorage,
 	Nette\Environment as NEnvironment,
-	Nette\String,
-	Nette\Debug,
+	Nette\StringUtils,
+	Nette\Diagnostics\Debugger,
 	BailIff\Environment,
 	BailIff\WebLoader\Filters\PreFileFilter,
 	BailIff\WebLoader\WebLoaderCacheStorage;
@@ -51,7 +51,7 @@ extends Control
 	private static $cache=NULL;
 	/** @var int */
 	public static $cacheExpire=NULL;
-	/** @var ICacheStorage */
+	/** @var IStorage */
 	private static $cacheStorage;
 	/** @var string */
 	protected $contentType;
@@ -312,7 +312,7 @@ extends Control
 	 */
 	protected function generate($files, $content=NULL)
 	{
-		$key=String::webalize($this->getGeneratedFilename($files));
+		$key=StringUtils::webalize($this->getGeneratedFilename($files));
 		$cache=self::getCache();
 
 		if ($cache[$key]===NULL) {
@@ -356,7 +356,7 @@ extends Control
 				if (NEnvironment::isProduction())
 					throw new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist.");
 				else {
-					Debug::processException(new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."));
+					Debugger::processException(new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."));
 					return '';
 					}
 				}
@@ -386,16 +386,16 @@ extends Control
 
 	/**
 	 * Set cache storage
-	 * @param  Cache
+	 * @param IStorage $storage
 	 */
-	protected static function setCacheStorage(ICacheStorage $storage)
+	protected static function setCacheStorage(IStorage $storage)
 	{
 		self::$cacheStorage=$storage;
 	}
 
 	/**
 	 * Get cache storage
-	 * @return ICacheStorage
+	 * @return IStorage
 	 */
 	protected static function getCacheStorage()
 	{

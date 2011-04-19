@@ -1,13 +1,13 @@
 <?php // vim: set ts=4 sw=4 ai:
 namespace BailIff\Utils\Translator;
 
-use Nette\IDebugPanel,
+use Nette\Diagnostics\IPanel,
 	Nette\Environment as NEnvironment,
-	Nette\Debug,
+	Nette\Diagnostics\Debugger,
 	BailIff\Environment;
 
 class Panel
-implements IDebugPanel
+implements IPanel
 {
 	const XHR_HEADER='X-Translation-Client';
 	const SESSION_NAMESPACE='BailIffTranslator-Panel';
@@ -72,7 +72,7 @@ implements IDebugPanel
 	 */
 	public function getPanel()
 	{
-		$translator=NEnvironment::getService('Nette\ITranslator');
+		$translator=NEnvironment::getService('Nette\Localization\ITranslator');
 		$files=array_keys($translator->getFiles());
 		$strings=$translator->getStrings();
 
@@ -118,7 +118,7 @@ implements IDebugPanel
 		$request=NEnvironment::getHttpRequest();
 		if ($request->isPost() && $request->isAjax() && $request->getHeader(self::XHR_HEADER)) {
 			$data=json_decode(file_get_contents('php://input'));
-			$translator=NEnvironment::getService('Nette\ITranslator');
+			$translator=NEnvironment::getService('Nette\Localization\ITranslator');
 			if ($data) {
 				if ($session) {
 					$stack= isset($session['stack'])? $session['stack'] : array();
@@ -170,6 +170,6 @@ implements IDebugPanel
 	 */
 	public static function register(IEditable $translator=NULL, $layout=NULL, $height=NULL)
 	{
-		Debug::addPanel(new static($layout, $height));
+		Debugger::addPanel(new static($layout, $height));
 	}
 }
