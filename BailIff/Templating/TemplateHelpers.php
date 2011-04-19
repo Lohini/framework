@@ -1,7 +1,5 @@
 <?php // vim: set ts=4 sw=4 ai:
-namespace BailIff\Templates;
-
-use Nette\Tools;
+namespace BailIff\Templating;
 
 /**
  * BailIff TemplateHelpers
@@ -26,16 +24,16 @@ final class TemplateHelpers
 	 */
 	public static function loader($helper)
 	{
-		$callback=callback('BailIff\Templates\TemplateHelpers', $helper);
+		$callback=callback('BailIff\Templating\TemplateHelpers', $helper);
 		if ($callback->isCallable()) {
 			return $callback;
 			}
 		// fallback
-		$callback=callback('Nette\Templates\TemplateHelpers', $helper);
+		$callback=callback('Nette\Templating\TemplateHelpers', $helper);
 		if ($callback->isCallable()) {
 			return $callback;
 			}
-		$callback=callback('Nette\String', $helper);
+		$callback=callback('Nette\StringUtils', $helper);
 		if ($callback->isCallable()) {
 			return $callback;
 			}
@@ -48,7 +46,11 @@ final class TemplateHelpers
 	 */
 	public static function oxmlDate($date)
 	{
-		return $date==NULL? NULL : Tools::createDateTime($date)->format('Y-m-d')."T00:00:00.000";
+		if ($date==NULL) {
+			return NULL;
+			}
+		$dt=new DateTime($date);
+		return $dt->format('Y-m-d')."T00:00:00.000";
 	}
 
 	/**
@@ -58,7 +60,11 @@ final class TemplateHelpers
 	 */
 	public static function oxmlDateTime($date)
 	{
-		return $date==NULL? NULL : Tools::createDateTime($date)->format('Y-m-d\TH:i:s').".000";
+		if ($date==NULL) {
+			return NULL;
+			}
+		$dt=new DateTime($date);
+		return $dt->format('Y-m-d\TH:i:s').".000";
 	}
 
 	/**
