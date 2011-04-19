@@ -5,6 +5,7 @@ use Nette\Utils\Html,
 	Nette\Environment as NEnvironment,
 	Nette\ComponentModel\IContainer,
 	Nette\Diagnostics\Debugger,
+	Nette\FileNotFoundException,
 	BailIff\WebLoader\Filters\LessFilter,
 	BailIff\WebLoader\Filters\CCssFilter,
 	BailIff\WebLoader\Filters\XCssFilter,
@@ -85,10 +86,10 @@ extends WebLoader
 		if (!file_exists("$this->sourcePath/$file")) {
 			if ($this->throwExceptions) {
 				if (NEnvironment::isProduction()) {
-					throw new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist.");
+					throw new FileNotFoundException("File '$this->sourcePath/$file' doesn't exist.");
 					}
 				else {
-					Debugger::log(new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."), Debugger::ERROR);
+					Debugger::log(new FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."), Debugger::ERROR);
 					return;
 					}
 				}

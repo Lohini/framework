@@ -1,7 +1,8 @@
 <?php // vim: ts=4 sw=4 ai:
 namespace BailIff\WebLoader\Filters;
 
-use BailIff\WebLoader\Filters\PreFileFilter,
+use Nette\NotSupportedException,
+	BailIff\WebLoader\Filters\PreFileFilter,
 	BailIff\WebLoader\WebLoader;
 
 /**
@@ -19,14 +20,13 @@ extends PreFileFilter
 	public function __construct()
 	{
 		if (!in_array('xCSS', get_declared_classes()) && !class_exists('xCSS')) {
-			throw new \NotSupportedException("Don't have Pawlik's xCSS");
+			throw new NotSupportedException("Don't have Pawlik's xCSS");
 			}
 	}
 
 	/**
 	 * (non-PHPdoc)
 	 * @see BailIff\WebLoader\Filters.PreFileFilter::__invoke()
-	 * @throws \FileNotFoundException
 	 */
 	public static function __invoke($code, WebLoader $loader, $file=NULL)
 	{

@@ -30,6 +30,8 @@ use Nette\Object,
 	Nette\Environment as NEnvironment,
 	Nette\StringUtils,
 	Nette\Caching\Cache,
+	Nette\DirectoryNotFoundException,
+	Nette\InvalidStateException,
 	BailIff\Environment,
 	BailIff\Utils\Translator\IEditable,
 	BailIff\Utils\Translator\PluralForms;
@@ -65,7 +67,7 @@ implements IEditable
 	 * Constructor
 	 * @param array $files
 	 * @param string $lang
-	 * @throws InvalidStateException
+	 * @throws InvalidArgumentException
 	 */
 	public function __construct(array $files=NULL, $lang=NULL)
 	{
@@ -77,7 +79,7 @@ implements IEditable
 			$this->lang=NEnvironment::getVariable('lang');
 			}
 		if (empty($this->lang)) {
-			throw new \InvalidStateException('Language must be defined');
+			throw new \InvalidArgumentException('Language must be defined');
 			}
 		$storage=NEnvironment::getSession(self::SESSION_NAMESPACE);
 		if (!isset($storage->newStrings) || !is_array($storage->newStrings)) {
@@ -90,6 +92,7 @@ implements IEditable
 	 * @param string $dir
 	 * @param string $identifier
 	 * @throws InvalidArgumentException
+	 * @throws DirectoryNotFoundException
 	 */
 	public function addFile($dir, $identifier)
 	{
@@ -104,7 +107,7 @@ implements IEditable
 			$this->files[$identifier]=$dir;
 			}
 		else {
-			throw new \InvalidArgumentException("Directory '$dir' doesn't exist.");
+			throw new DirectoryNotFoundException("Directory '$dir' doesn't exist.");
 			}
 	}
 
@@ -116,7 +119,7 @@ implements IEditable
 	{
 		if (!$this->loaded) {
 			if (empty($this->files)) {
-				throw new \InvalidStateException('Language file(s) must be defined.');
+				throw new InvalidStateException('Language file(s) must be defined.');
 				}
 			$cache=Environment::getCache(self::SESSION_NAMESPACE);
 			if (self::$cache && isset($cache['dictionary-'.$this->lang])) {
@@ -391,7 +394,7 @@ implements IEditable
 	public function save($file)
 	{
 		if (!$this->loaded) {
-			throw new \InvalidStateException('Nothing to save, translations are not loaded.');
+			throw new InvalidStateException('Nothing to save, translations are not loaded.');
 			}
 		if (!isset($this->files[$file])) {
 			throw new \InvalidArgumentException("Gettext file identified as '$file' does not exist.");

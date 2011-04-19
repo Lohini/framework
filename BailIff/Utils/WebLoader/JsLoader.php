@@ -5,7 +5,8 @@ use Nette\ComponentModel\IContainer,
 	Nette\Environment as NEnvironment,
 	Nette\Utils\Html,
 	Nette\StringUtils,
-	Nette\Diagnostics\Debugger;
+	Nette\Diagnostics\Debugger,
+	Nette\FileNotFoundException;
 
 /**
  * JsLoader
@@ -55,10 +56,10 @@ extends WebLoader
 		if (!file_exists("$this->sourcePath/$file")) {
 			if ($this->throwExceptions) {
 				if (NEnvironment::isProduction()) {
-					throw new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist.");
+					throw new FileNotFoundException("File '$this->sourcePath/$file' doesn't exist.");
 					}
 				else {
-					Debugger::processException(new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."));
+					Debugger::processException(new FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."));
 					return;
 					}
 				}
@@ -115,10 +116,10 @@ extends WebLoader
 							else {
 								if ($this->throwExceptions) {
 									if (NEnvironment::isProduction()) {
-										throw new \FileNotFoundException("Don't have JSMin class.");
+										throw new FileNotFoundException("Don't have JSMin class.");
 										}
 									else {
-										Debugger::processException(new \FileNotFoundException("Don't have JSMin class"));
+										Debugger::processException(new FileNotFoundException("Don't have JSMin class"));
 										}
 									}
 								$content.=$this->loadFile($file[0]);
@@ -138,10 +139,10 @@ extends WebLoader
 							else {
 								if ($this->throwExceptions) {
 									if (NEnvironment::isProduction()) {
-										throw new \FileNotFoundException("Don't have JavaScriptPacker class.");
+										throw new FileNotFoundException("Don't have JavaScriptPacker class.");
 										}
 									else {
-										Debugger::processException(new \FileNotFoundException("Don't have JavaScriptPacker class"));
+										Debugger::processException(new FileNotFoundException("Don't have JavaScriptPacker class"));
 										}
 									}
 								$content.=$this->loadFile($file[0]);
@@ -201,6 +202,7 @@ extends WebLoader
 	/**
 	 * Generates compiled files and render links
 	 * @example {control js:singles 'file.js', 'file2.js'}
+	 * @throws FileNotFoundException
 	 */
 	public function renderSingles()
 	{
@@ -231,9 +233,9 @@ extends WebLoader
 					else {
 						if ($this->throwExceptions) {
 							if (NEnvironment::isProduction())
-								throw new \FileNotFoundException("Don't have JSMin class.");
+								throw new FileNotFoundException("Don't have JSMin class.");
 							else {
-								Debugger::processException(new \FileNotFoundException("Don't have JSMin class"));
+								Debugger::processException(new FileNotFoundException("Don't have JSMin class"));
 								}
 							}
 						echo $this->getElement($this->sourceUri.$file[0]);
@@ -254,9 +256,9 @@ extends WebLoader
 					else {
 						if ($this->throwExceptions) {
 							if (NEnvironment::isProduction())
-								throw new \FileNotFoundException("Don't have JavaScriptPacker class.");
+								throw new FileNotFoundException("Don't have JavaScriptPacker class.");
 							else {
-								Debugger::processException(new \FileNotFoundException("Don't have JavaScriptPacker class"));
+								Debugger::processException(new FileNotFoundException("Don't have JavaScriptPacker class"));
 								}
 							}
 						echo $this->getElement($this->sourceUri.$file[0]);

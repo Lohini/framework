@@ -1,6 +1,8 @@
 <?php // vim: ts=4 sw=4 ai:
 namespace BailIff\Utils;
 
+use Nette\ArgumentOutOfRangeException;
+
 /**
  * BailIff Network
  *
@@ -19,7 +21,7 @@ final class Network
 		$ip=explode('.', trim(strtok($net, '/'), '.'));
 		$bits=strtok('/');
 		if ($bits!==FALSE && ($bits<1 || $bits>31)) {
-			throw new \ArgumentOutOfRangeException('address prefix size must be between 1 and 31');
+			throw new ArgumentOutOfRangeException('address prefix size must be between 1 and 31');
 			}
 		$prefix=max(($bits!==FALSE? $bits : count($ip)<<3), (4-count($ip))<<3);
 		$long=0;

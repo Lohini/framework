@@ -73,6 +73,7 @@ namespace BailIff\WebLoader\Filters;
  */
 use Nette\StringUtils,
 	Nette\Environment as NEnvironment,
+	Nette\FileNotFoundException,
 	BailIff\WebLoader\Filters\PreFileFilter,
 	BailIff\WebLoader\WebLoader;
 
@@ -198,7 +199,7 @@ extends PreFileFilter
 	/**
 	 * (non-PHPdoc)
 	 * @see BailIff\WebLoader\Filters.PreFileFilter::__invoke()
-	 * @throws \FileNotFoundException
+	 * @throws FileNotFoundException
 	 */
 	public static function __invoke($code, WebLoader $loader=NULL, $file=NULL)
 	{
@@ -217,7 +218,7 @@ extends PreFileFilter
 				}
 			}
 		if (realpath($file)===FALSE) {
-			throw new \FileNotFoundException("Source file '$file' doesn't exist.");
+			throw new FileNotFoundException("Source file '$file' doesn't exist.");
 			}
 
 		$filter=new self;

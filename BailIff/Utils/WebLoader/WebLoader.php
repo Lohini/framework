@@ -8,6 +8,7 @@ use Nette\Application\UI\Control,
 	Nette\Environment as NEnvironment,
 	Nette\StringUtils,
 	Nette\Diagnostics\Debugger,
+	Nette\FileNotFoundException,
 	BailIff\Environment,
 	BailIff\WebLoader\Filters\PreFileFilter,
 	BailIff\WebLoader\WebLoaderCacheStorage;
@@ -100,7 +101,7 @@ extends Control
 	{
 		$sourcePath=realpath($sourcePath);
 		if ($sourcePath===FALSE) {
-			throw new \FileNotFoundException("Source path '$sourcePath' doesn't exist.");
+			throw new FileNotFoundException("Source path '$sourcePath' doesn't exist.");
 			}
 		$this->sourcePath=$sourcePath;
 		return $this;
@@ -354,9 +355,9 @@ extends Control
 		if (($content=file_get_contents("$this->sourcePath/$file"))===FALSE) {
 			if ($this->throwExceptions) {
 				if (NEnvironment::isProduction())
-					throw new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist.");
+					throw new FileNotFoundException("File '$this->sourcePath/$file' doesn't exist.");
 				else {
-					Debugger::processException(new \FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."));
+					Debugger::processException(new FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."));
 					return '';
 					}
 				}
