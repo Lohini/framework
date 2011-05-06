@@ -6,7 +6,7 @@ to Nette Framework.
 Requirements
 ------------
 - PHP 5.3 or later
-- Nette Framework 2.0-dev (https://github.com/nette/nette)
+- Nette Framework - Lopo's cache-ns-delete branch (https://github.com/Lopo/nette/tree/cache-ns-delete)
 - dibi (https://github.com/dg/dibi)
 - Modernizr (http://www.modernizr.com/) - custom build (full with yepnope)
 - Tero Piirainen's Head JS (http://headjs.com/)
