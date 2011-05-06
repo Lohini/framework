@@ -104,7 +104,7 @@ extends Presenter
 		$user=NEnvironment::getUser();
 		$i=$user->getIdentity();
 		$skin= ($user->isLoggedIn() && isset($i->skin))? $i->skin : 'default';
-		$skinDir=realpath(NEnvironment::getVariable('appDir')."/skins/$skin");
+		$skinDir=realpath(APP_DIR."/skins/$skin");
 		$path='/'.str_replace(':', 'Module/', $presenter);
 		$pathP=substr_replace($path, '', strrpos($path, '/'), 0);
 		$path=substr_replace($path, '', strrpos($path, '/'));

@@ -4,7 +4,7 @@ namespace BailIff\WebLoader;
 use Nette\ComponentModel\IContainer,
 	Nette\Environment as NEnvironment,
 	Nette\Utils\Html,
-	Nette\StringUtils,
+	Nette\Utils\Strings,
 	Nette\Diagnostics\Debugger,
 	Nette\FileNotFoundException;
 
@@ -104,7 +104,7 @@ extends WebLoader
 							break;
 						case self::MINIFY:
 							// dean edwards packer neumi cz/sk znaky!!
-							if (StringUtils::endsWith($file[0], '.min.js')) { // already minified ?
+							if (Strings::endsWith($file[0], '.min.js')) { // already minified ?
 								$content.=$this->loadFile($file[0]);
 								}
 							elseif (is_file($mfile="$this->sourcePath/".substr($file[0], 0, -3).'.min.js')) { // have minified ?
@@ -126,7 +126,7 @@ extends WebLoader
 								}
 							break;
 						case self::PACK:
-							if (StringUtils::endsWith($file[0], '.pack.js')) { // already packed ?
+							if (Strings::endsWith($file[0], '.pack.js')) { // already packed ?
 								$content.=$this->loadFile($file[0]);
 								}
 							elseif (is_file($pfile="$this->sourcePath/".substr($file[0], 0, -3).'.pack.js')) { // have packed ?
@@ -220,7 +220,7 @@ extends WebLoader
 					break;
 				case self::MINIFY:
 					// dean edwards packer neumi cz/sk znaky!!
-					if (StringUtils::endsWith($file[0], '.min.js')) { // already minified ?
+					if (Strings::endsWith($file[0], '.min.js')) { // already minified ?
 						echo $this->getElement($this->sourceUri.$file[0]);
 						}
 					elseif (is_file("$this->sourcePath/".substr($file[0], 0, -3).'.min.js')) { // have minified ?
@@ -242,7 +242,7 @@ extends WebLoader
 						}
 					break;
 				case self::PACK:
-					if (StringUtils::endsWith($file[0], '.pack.js')) { // already packed ?
+					if (Strings::endsWith($file[0], '.pack.js')) { // already packed ?
 						echo $this->getElement($this->sourceUri.$file[0]);
 						}
 					elseif (is_file($pfile="$this->sourcePath/".substr($file[0], 0, -3).'.pack.js')) { // have packed ?
@@ -296,7 +296,7 @@ extends WebLoader
 					break;
 				case self::MINIFY:
 					// dean edwards packer neumi cz/sk znaky!!
-					if (StringUtils::endsWith($file[0], '.min.js')) { // already minified ?
+					if (Strings::endsWith($file[0], '.min.js')) { // already minified ?
 						echo $this->getElement($this->sourceUri.$file[0]);
 						}
 					elseif (is_file("$this->sourcePath/".substr($file[0], 0, -3).'.min.js')) { // have minified ?
@@ -307,7 +307,7 @@ extends WebLoader
 						}
 					break;
 				case self::PACK:
-					if (StringUtils::endsWith($file[0], '.pack.js')) { // already packed ?
+					if (Strings::endsWith($file[0], '.pack.js')) { // already packed ?
 						echo $this->getElement($this->sourceUri.$file[0]);
 						}
 					elseif (is_file($pfile="$this->sourcePath/".substr($file[0], 0, -3).'.pack.js')) { // have packed ?
@@ -330,4 +330,3 @@ extends WebLoader
 			}
 	}
 }
-
