@@ -193,4 +193,24 @@ extends WebLoader
 			$this->files=$backup;
 			}
 	}
+
+	/**
+	 * Generates and render links - no processing
+	 * @example {control css:static 'file.css', 'file2.css'}
+	 */
+	public function renderSingles()
+	{
+		if ($hasArgs=(func_num_args()>0)) {
+			$backup=$this->files;
+			$this->clear();
+			$this->addFiles(func_get_args());
+			}
+
+		foreach ($this->files as $f) {
+			echo $this->getElement($this->sourceUri.$f[0], $f[1]);
+			}
+		if ($hasArgs) {
+			$this->files=$backup;
+			}
+	}
 }

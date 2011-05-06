@@ -277,4 +277,57 @@ extends WebLoader
 			}
 	}
 
+	/**
+	 * Generates and render links - no processing
+	 * @example {control js:static 'file.js', 'file2.js'}
+	 */
+	public function renderStatic()
+	{
+		if ($hasArgs=(func_num_args()>0)) {
+			$backup=$this->files;
+			$this->clear();
+			$this->addFiles(func_get_args());
+			}
+		// u javascriptu zalezi na poradi
+		foreach ($this->files as $file) {
+			switch ($file[1]) {
+				case self::COMPACT:
+					echo $this->getElement($this->sourceUri.$file[0]);
+					break;
+				case self::MINIFY:
+					// dean edwards packer neumi cz/sk znaky!!
+					if (StringUtils::endsWith($file[0], '.min.js')) { // already minified ?
+						echo $this->getElement($this->sourceUri.$file[0]);
+						}
+					elseif (is_file("$this->sourcePath/".substr($file[0], 0, -3).'.min.js')) { // have minified ?
+						echo $this->getElement($this->sourceUri.substr($file[0], 0, -3).'.min.js');
+						}
+					else {
+						echo $this->getElement($this->sourceUri.$file[0]);
+						}
+					break;
+				case self::PACK:
+					if (StringUtils::endsWith($file[0], '.pack.js')) { // already packed ?
+						echo $this->getElement($this->sourceUri.$file[0]);
+						}
+					elseif (is_file($pfile="$this->sourcePath/".substr($file[0], 0, -3).'.pack.js')) { // have packed ?
+						echo $this->getElement($this->sourceUri.substr($file[0], 0, -3).'.pack.js');
+						}
+					else {
+						echo $this->getElement($this->sourceUri.$file[0]);
+						}
+					break;
+				default:
+					return;
+					}
+			}
+		// raw code az nakonec
+		foreach ($this->codes as $code) {
+			echo $this->getCodeElement($code);
+			}
+		if ($hasArgs) {
+			$this->files=$backup;
+			}
+	}
 }
+
