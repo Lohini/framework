@@ -40,6 +40,7 @@ extends WebLoader
 		$this->preFileFilters[]=new \BailIff\WebLoader\Filters\LessFilter;
 		$this->preFileFilters[]=new \BailIff\WebLoader\Filters\CCssFilter;
 		$this->preFileFilters[]=new \BailIff\WebLoader\Filters\XCssFilter;
+		$this->preFileFilters[]=new \BailIff\WebLoader\Filters\SassFilter;
 		$this->fileFilters[]=new CssUrlsFilter;
 	}
 
