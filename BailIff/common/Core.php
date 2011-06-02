@@ -1,18 +1,22 @@
 <?php // vim: set ts=4 sw=4 ai:
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
 namespace BailIff;
 
-use Nette\Object;
-
 /**
- * BailIff Core
- *
+ * BailIff system
+ * 
  * @author Lopo <lopo@losys.eu>
  */
 final class Core
 {
 	/**#@+ BailIff version ID's */
 	const NAME='BailIff';
-	const VERSION='0.0.3-dev';
+	const VERSION='0.0.4-dev';
 	const REVISION='$WCREV$ released on $WCDATE$';
 	const DEVELOPMENT=TRUE;
 	/**#@-*/
@@ -22,6 +26,6 @@ final class Core
 	 */
 	final public function __construct()
 	{
-		throw new \LogicException("Can't instantiate static class ".get_class($this));
+		throw new \Nette\StaticClassException("Can't instantiate static class ".get_class($this));
 	}
 }
