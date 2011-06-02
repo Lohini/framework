@@ -39,6 +39,7 @@ extends \Nette\Loaders\AutoLoader
 		'bailiff\forms\rendering\formrenderer' => '/Forms/Rendering/FormRenderer.php',
 		'bailiff\loaders\bailiffloader' => '/Loaders/BailIffLoader.php',
 		'bailiff\localization\ieditable' => '/Localization/IEditable.php',
+		'bailiff\localization\languages' => '/Localization/Languages.php',
 		'bailiff\localization\panel' => '/Localization/Panel.php',
 		'bailiff\localization\pluralforms' => '/Localization/PluralForms.php',
 		'bailiff\localization\translator' => '/Localization/Translator.php',
