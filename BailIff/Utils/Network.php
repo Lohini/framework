@@ -1,7 +1,11 @@
 <?php // vim: ts=4 sw=4 ai:
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
 namespace BailIff\Utils;
-
-use Nette\ArgumentOutOfRangeException;
 
 /**
  * BailIff Network
@@ -13,15 +17,15 @@ final class Network
 	/**
 	 * computes range of IP addresses from IPv4 CIDR notation {@link http://en.wikipedia.org/wiki/CIDR_notation}
 	 * @param string CIDR
-	 * @return array((long)min, (long)max)
-	 * @throws \ArgumentOutOfRangeException
+	 * @return array ((long)min, (long)max)
+	 * @throws \Nette\ArgumentOutOfRangeException
 	 */
 	public static function CIDR2LongRange($net)
 	{
 		$ip=explode('.', trim(strtok($net, '/'), '.'));
 		$bits=strtok('/');
 		if ($bits!==FALSE && ($bits<1 || $bits>31)) {
-			throw new ArgumentOutOfRangeException('address prefix size must be between 1 and 31');
+			throw new \Nette\ArgumentOutOfRangeException('Address prefix size must be between 1 and 31');
 			}
 		$prefix=max(($bits!==FALSE? $bits : count($ip)<<3), (4-count($ip))<<3);
 		$long=0;
