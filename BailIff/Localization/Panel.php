@@ -1,13 +1,19 @@
 <?php // vim: set ts=4 sw=4 ai:
-namespace BailIff\Utils\Translator;
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
+namespace BailIff\Localization;
 
-use Nette\Diagnostics\IPanel,
+use Nette\Diagnostics\IBarPanel,
 	Nette\Environment as NEnvironment,
 	Nette\Diagnostics\Debugger,
 	BailIff\Environment;
 
 class Panel
-implements IPanel
+implements IBarPanel
 {
 	const XHR_HEADER='X-Translation-Client';
 	const SESSION_NAMESPACE='BailIffTranslator-Panel';
@@ -72,7 +78,7 @@ implements IPanel
 	 */
 	public function getPanel()
 	{
-		$translator=NEnvironment::getService('Nette\Localization\ITranslator');
+		$translator=NEnvironment::getService('translator');
 		$files=array_keys($translator->getFiles());
 		$strings=$translator->getStrings();
 
@@ -118,7 +124,7 @@ implements IPanel
 		$request=NEnvironment::getHttpRequest();
 		if ($request->isPost() && $request->isAjax() && $request->getHeader(self::XHR_HEADER)) {
 			$data=json_decode(file_get_contents('php://input'));
-			$translator=NEnvironment::getService('Nette\Localization\ITranslator');
+			$translator=NEnvironment::getService('translator');
 			if ($data) {
 				if ($session) {
 					$stack= isset($session['stack'])? $session['stack'] : array();

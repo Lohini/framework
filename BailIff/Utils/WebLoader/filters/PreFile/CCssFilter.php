@@ -1,6 +1,11 @@
 <?php // vim: ts=4 sw=4 ai:
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
 namespace BailIff\WebLoader\Filters;
-
 /*
  * File:        c-css.php
  * CVS:         $Id$
@@ -70,12 +75,11 @@ namespace BailIff\WebLoader\Filters;
 /**
  * BailIff port
  * @author Lopo <lopo@losys.eu>
+ * @filesource http://www.conditional-css.com/media/src/Conditional-CSS.zip
  */
-use Nette\StringUtils,
-	Nette\Environment as NEnvironment,
-	Nette\FileNotFoundException,
-	BailIff\WebLoader\Filters\PreFileFilter,
-	BailIff\WebLoader\WebLoader;
+
+use Nette\Utils\Strings,
+	Nette\Environment as NEnvironment;
 
 class CCssFilter
 extends PreFileFilter
@@ -197,16 +201,15 @@ extends PreFileFilter
 	}
 
 	/**
-	 * (non-PHPdoc)
-	 * @see BailIff\WebLoader\Filters.PreFileFilter::__invoke()
+	 * @see PreFileFilter::__invoke()
 	 * @throws FileNotFoundException
 	 */
-	public static function __invoke($code, WebLoader $loader=NULL, $file=NULL)
+	public static function __invoke($code, \BailIff\WebLoader\WebLoader $loader=NULL, $file=NULL)
 	{
 		if ($file===NULL || strtolower(pathinfo($file, PATHINFO_EXTENSION))!='ccss') {
 			return $code;
 			}
-		$key=StringUtils::webalize("ccss-$file");
+		$key=Strings::webalize("ccss-$file");
 		$cache=self::getCache();
 		$browser=self::getUserBrowser();
 		if (($cached=$cache[$key])!==NULL) {
@@ -218,7 +221,7 @@ extends PreFileFilter
 				}
 			}
 		if (realpath($file)===FALSE) {
-			throw new FileNotFoundException("Source file '$file' doesn't exist.");
+			throw new \Nette\FileNotFoundException("Source file '$file' doesn't exist.");
 			}
 
 		$filter=new self;
@@ -581,8 +584,7 @@ extends PreFileFilter
 	}
 
 	/**
-	 * (non-PHPdoc)
-	 * @see BailIff\WebLoader\Filters.PreFileFilter::getItem()
+	 * @see PreFileFilter::getItem()
 	 */
 	public static function getItem($key)
 	{

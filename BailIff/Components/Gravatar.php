@@ -1,14 +1,17 @@
-<?php //vim: set ts=4 sw=4 ai:
+<?php // vim: set ts=4 sw=4 ai:
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
 namespace BailIff\Components;
-
-use Nette\Application\UI\Control,
-	Nette\Utils\Html;
 
 /**
  * @author Lopo <lopo@losys.eu>
  */
 class Gravatar
-extends Control
+extends \Nette\Application\UI\Control
 {
 	/** @var int Size in pixels */
 	public $size=32;
@@ -30,7 +33,7 @@ extends Control
 			.'?d='.$this->default
 			.'&s='.$this->size
 			.($this->rating!==NULL? '&r='.$this->rating : '');
-		$img=Html::el('img')
+		$img=\Nette\Utils\Html::el('img')
 			->src($url)
 			->alt('')
 			->width($this->size)

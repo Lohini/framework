@@ -1,9 +1,12 @@
 <?php // vim: ts=4 sw=4 ai:
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
 namespace BailIff\WebLoader\Filters;
 
-use Nette\NotSupportedException,
-	BailIff\WebLoader\WebLoader,
-	BailIff\WebLoader\Filters\PreFileFilter;
 /**
  * BailIff wrapping class for Leafo's lessphp
  * @link https://github.com/leafo/lessphp
@@ -14,20 +17,19 @@ extends PreFileFilter
 {
 	/**
 	 * Check if we have Leafo's lessc
-	 * @throws \NotSupportedException
+	 * @throws NotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!in_array('lessc', get_declared_classes()) && !class_exists('lessc')) {
-			throw new NotSupportedException("Don't have Leafo's lessc");
+			throw new \Nette\NotSupportedException("Don't have Leafo's lessc");
 			}
 	}
 
 	/**
-	 * (non-PHPdoc)
-	 * @see BailIff\WebLoader\Filters.PreFileFilter::__invoke()
+	 * @see PreFileFilter::__invoke()
 	 */
-	public static function __invoke($code, WebLoader $loader, $file=NULL)
+	public static function __invoke($code, \BailIff\WebLoader\WebLoader $loader, $file=NULL)
 	{
 		if ($file===NULL || strtolower(pathinfo($file, PATHINFO_EXTENSION))!='less') {
 			return $code;

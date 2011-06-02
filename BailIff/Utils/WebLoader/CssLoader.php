@@ -1,14 +1,15 @@
-<?php // vim: set ts=4 sw=4 ai:
+<?php // vim: ts=4 sw=4 ai:
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
 namespace BailIff\WebLoader;
 
 use Nette\Utils\Html,
 	Nette\Environment as NEnvironment,
-	Nette\ComponentModel\IContainer,
 	Nette\Diagnostics\Debugger,
-	Nette\FileNotFoundException,
-	BailIff\WebLoader\Filters\LessFilter,
-	BailIff\WebLoader\Filters\CCssFilter,
-	BailIff\WebLoader\Filters\XCssFilter,
 	BailIff\WebLoader\Filters\CssUrlsFilter;
 
 /**
@@ -28,17 +29,17 @@ extends WebLoader
 	 * @param IContainer $parent
 	 * @param string $name
 	 */
-	public function __construct(IContainer $parent=NULL, $name=NULL)
+	public function __construct(\Nette\ComponentModel\IContainer $parent=NULL, $name=NULL)
 	{
 		parent::__construct($parent, $name);
 		$this->setGeneratedFileNamePrefix('cssldr-');
 		$this->setGeneratedFileNameSuffix('.css');
 		$this->sourcePath=WWW_DIR.'/css';
-		$this->sourceUri=NEnvironment::getVariable('baseUri').'css/';
+		$this->sourceUri=NEnvironment::getService('httpRequest')->getUrl()->getBaseUrl().'css/';
 		$this->contentType='text/css';
-		$this->preFileFilters[]=new LessFilter;
-		$this->preFileFilters[]=new CCssFilter;
-		$this->preFileFilters[]=new XCssFilter;
+		$this->preFileFilters[]=new \BailIff\WebLoader\Filters\LessFilter;
+		$this->preFileFilters[]=new \BailIff\WebLoader\Filters\CCssFilter;
+		$this->preFileFilters[]=new \BailIff\WebLoader\Filters\XCssFilter;
 		$this->fileFilters[]=new CssUrlsFilter;
 	}
 
@@ -73,7 +74,6 @@ extends WebLoader
 	}
 
 	/**
-	 * (non-PHPdoc)
 	 * @see BailIff\WebLoader.WebLoader::addFile()
 	 */
 	public function addFile($file, $media='all')
@@ -85,11 +85,11 @@ extends WebLoader
 			}
 		if (!file_exists("$this->sourcePath/$file")) {
 			if ($this->throwExceptions) {
-				if (NEnvironment::isProduction()) {
-					throw new FileNotFoundException("File '$this->sourcePath/$file' doesn't exist.");
+				if ($this->getPresenter(FALSE)->getContext()->params['productionMode']) {
+					throw new \Nette\FileNotFoundException("File '$this->sourcePath/$file' doesn't exist.");
 					}
 				else {
-					Debugger::log(new FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."), Debugger::ERROR);
+					Debugger::log(new \Nette\FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."), Debugger::ERROR);
 					return;
 					}
 				}
@@ -98,7 +98,6 @@ extends WebLoader
 	}
 
 	/**
-	 * (non-PHPdoc)
 	 * @see BailIff\WebLoader.WebLoader::renderFiles()
 	 */
 	public function renderFiles()
@@ -124,7 +123,6 @@ extends WebLoader
 	}
 
 	/**
-	 * (non-PHPdoc)
 	 * @see BailIff\WebLoader.WebLoader::getElement()
 	 */
 	public function getElement($source, $media='all')
@@ -186,7 +184,7 @@ extends WebLoader
 				echo $this->getElement($this->sourceUri.$f[0], $f[1]);
 				}
 			else {
-				echo $this->getElement($this->getPresenter()->link(':WebLoader:', $this->generate($f[0])), $f[1]);
+				echo $this->getElement($this->getPresenter()->link(':WebLoader:', $this->generate(array($f[0]))), $f[1]);
 				}
 			}
 		if ($hasArgs) {
@@ -198,7 +196,7 @@ extends WebLoader
 	 * Generates and render links - no processing
 	 * @example {control css:static 'file.css', 'file2.css'}
 	 */
-	public function renderSingles()
+	public function renderStatic()
 	{
 		if ($hasArgs=(func_num_args()>0)) {
 			$backup=$this->files;

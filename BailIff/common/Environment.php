@@ -1,8 +1,14 @@
 <?php // vim: set ts=4 sw=4 ai:
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
 namespace BailIff;
 
 use Nette\Environment as NEnvironment,
-	BailIff\DI\Configurator;
+	BailIff\Configurator;
 
 /**
  * BailIff Environment
@@ -16,21 +22,8 @@ final class Environment
 
 
 	/**
-	 * Loads global configuration from file and processes it
-	 *
-	 * @param string|Config file name or Config object
-	 * @param bool|Config append new config to existing|given ?
-	 * @return ArrayObject
+	 * @return \Nette\Application\Application
 	 */
-	public static function loadConfig($file=NULL, $append=NULL)
-	{
-//		NEnvironment::getSession()->start();
-		if ($append===NULL || $append===FALSE) {
-			return self::$config=NEnvironment::getConfigurator()->loadConfig($file!==NULL? $file : '%appDir%/config.neon');
-			}
-		return self::$config=Configurator::mergeConfigs($append===TRUE? self::$config : $append, NEnvironment::getConfigurator()->loadConfig($file!==NULL? $file : '%appDir%/config.neon'));
-	}
-
 	static public function getApplication()
 	{
 		return NEnvironment::getApplication();
@@ -38,7 +31,7 @@ final class Environment
 
 	/**
 	 * @param string $namespace
-	 * @return Cache
+	 * @return \Nette\Caching\Cache
 	 */
 	static public function getCache($namespace='')
 	{
@@ -46,11 +39,11 @@ final class Environment
 	}
 
 	/**
-	 * @return ITranslator
+	 * @return \Nette\Localization\ITranslator
 	 */
 	static public function getTranslator()
 	{
-		return NEnvironment::getService('Nette\Localization\ITranslator');
+		return NEnvironment::getService('translator');
 	}
 
 	/**
@@ -82,5 +75,20 @@ final class Environment
 				}
 			}
 		return '/';
+	}
+
+	/**
+	 * Loads global configuration from file and processes it
+	 *
+	 * @param string|Config file name or Config object
+	 * @param bool|Config append new config to existing|given ?
+	 * @return ArrayObject
+	 */
+	public static function loadConfig($file=NULL, $section=NULL, $append=NULL)
+	{
+		if (!$append) {
+			return self::$config=NEnvironment::loadConfig($file!==NULL? $file : '%appDir%/config.neon', $section);
+			}
+		return self::$config=Configurator::mergeConfigs($append===TRUE? self::$config : $append, NEnvironment::loadConfig($file!==NULL? $file : '%appDir%/config.neon', $section));
 	}
 }

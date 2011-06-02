@@ -1,4 +1,10 @@
 <?php // vim: set ts=4 sw=4 ai:
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
 // no namespace
 
 use Nette\Environment as NEnvironment;
@@ -10,7 +16,7 @@ use Nette\Environment as NEnvironment;
  */
 function __($message)
 {
-	return NEnvironment::getService('Nette\Localization\ITranslator')->translate($message);
+	return NEnvironment::getService('translator')->translate($message);
 }
 
 /**
@@ -22,7 +28,7 @@ function __($message)
  */
 function _n($single, $plural, $number)
 {
-	return NEnvironment::getService('Nette\Localization\ITranslator')->translate($single, array($plural, $number));
+	return NEnvironment::getService('translator')->translate($single, array($plural, $number));
 }
 
 /**
@@ -33,7 +39,7 @@ function _n($single, $plural, $number)
  */
 function _x($message, array $args)
 {
-	return NEnvironment::getService('Nette\Localization\ITranslator')->translate($message, NULL, $args);
+	return NEnvironment::getService('translator')->translate($message, NULL, $args);
 }
 
 /**
@@ -45,5 +51,5 @@ function _x($message, array $args)
  */
 function _nx($single, $plural, $number, array $args)
 {
-	return NEnvironment::getService('Nette\Localization\ITranslator')->translate($single, array($plural, $number), $args);
+	return NEnvironment::getService('translator')->translate($single, array($plural, $number), $args);
 }

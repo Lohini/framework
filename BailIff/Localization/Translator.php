@@ -1,5 +1,11 @@
 <?php // vim: set ts=4 sw=4 ai:
-namespace BailIff\Utils\Translator;
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
+namespace BailIff\Localization;
 /*
  * Copyright (c) 2010 Patrik Votoček <patrik@votocek.cz>
  *
@@ -28,13 +34,14 @@ namespace BailIff\Utils\Translator;
 
 use Nette\Object,
 	Nette\Environment as NEnvironment,
-	Nette\StringUtils,
+	Nette\Utils\Strings,
 	Nette\Caching\Cache,
 	Nette\DirectoryNotFoundException,
 	Nette\InvalidStateException,
+	Nette\DI\IContainer,
 	BailIff\Environment,
-	BailIff\Utils\Translator\IEditable,
-	BailIff\Utils\Translator\PluralForms;
+	BailIff\Localization\IEditable,
+	BailIff\Localization\PluralForms;
 
 /**
  * Gettext translator.
@@ -42,11 +49,11 @@ use Nette\Object,
  * @author Lopo <lopo@losys.eu>
  * @license New BSD License
  */
-class Gettext
+class Translator
 extends Object
 implements IEditable
 {
-	const SESSION_NAMESPACE='BailIffTranslator-Gettext';
+	const SESSION_NAMESPACE='BailIffTranslator';
 	const CACHE_ENABLE=TRUE;
 	const CACHE_DISABLE=FALSE;
 	/** @var array */
@@ -167,10 +174,10 @@ implements IEditable
 		};
 
 		$input=$read(1);
-		if (StringUtils::lower(substr(dechex($input[1]), -8))=='950412de') {
+		if (Strings::lower(substr(dechex($input[1]), -8))=='950412de') {
 			$endian=FALSE;
 			}
-		elseif (StringUtils::lower(substr(dechex($input[1]), -8))=='de120495') {
+		elseif (Strings::lower(substr(dechex($input[1]), -8))=='de120495') {
 			$endian=TRUE;
 			}
 		else {
@@ -209,8 +216,8 @@ implements IEditable
 					$this->parseMetadata($translation, $identifier);
 					continue;
 					}
-				$original=explode(StringUtils::chr(0x00), $original);
-				$translation=explode(StringUtils::chr(0x00), $translation);
+				$original=explode(Strings::chr(0x00), $original);
+				$translation=explode(Strings::chr(0x00), $translation);
 				$this->dictionary[is_array($original)? $original[0] : $original]['original']=$original;
 				$this->dictionary[is_array($original)? $original[0] : $original]['translation']=$translation;
 				$this->dictionary[is_array($original)? $original[0] : $original]['file']=$identifier;
@@ -494,7 +501,7 @@ implements IEditable
 	 */
 	private function buildPOFile($file, $identifier)
 	{
-		$po="# Gettext keys exported by GettextTranslator and Translation Panel\n"
+		$po="# Gettext keys exported by Translator and Translation Panel\n"
 			."# Created: ".date('Y-m-d H:i:s')."\n".'msgid ""'."\n".'msgstr ""'."\n";
 		$po.='"'.implode('\n"'."\n".'"', $this->generateMetadata($identifier)).'\n"'."\n\n\n";
 		foreach ($this->dictionary as $message => $data) {
@@ -555,22 +562,22 @@ implements IEditable
 
 		$metadata=implode("\n", $this->generateMetadata($identifier));
 		$items=count($dictionary)+1;
-		$ids=StringUtils::chr(0x00);
-		$strings=$metadata.StringUtils::chr(0x00);
+		$ids=Strings::chr(0x00);
+		$strings=$metadata.Strings::chr(0x00);
 		$idsOffsets=array(0, 28+$items*16);
 		$stringsOffsets=array(array(0, strlen($metadata)));
 
 		foreach ($dictionary as $key => $value) {
 			$id=$key;
 			if (is_array($value['original']) && count($value['original'])>1) {
-				$id.=StringUtils::chr(0x00).end($value['original']);
+				$id.=Strings::chr(0x00).end($value['original']);
 				}
-			$string=implode(StringUtils::chr(0x00), $value['translation']);
+			$string=implode(Strings::chr(0x00), $value['translation']);
 			$idsOffsets[]=strlen($id);
 			$idsOffsets[]=strlen($ids)+28+$items*16;
 			$stringsOffsets[]=array(strlen($strings), strlen($string));
-			$ids.=$id.StringUtils::chr(0x00);
-			$strings.=$string.StringUtils::chr(0x00);
+			$ids.=$id.Strings::chr(0x00);
+			$strings.=$string.Strings::chr(0x00);
 			}
 
 		$valuesOffsets=array();
@@ -591,9 +598,9 @@ implements IEditable
 	/**
 	 * Get translator
 	 * @param array $options
-	 * @return Gettext
+	 * @return Translator
 	 */
-	public static function getTranslator($options)
+	public static function getTranslator(IContainer $container, $options)
 	{
 		return new static(isset($options['files'])? (array)$options['files'] : NULL, NEnvironment::getVariable('lang', 'en'));
 	}
@@ -608,11 +615,12 @@ implements IEditable
 
 	/**
 	 * Sets a new language
+	 * @return Translator (fluent)
 	 */
 	public function setLang($lang)
 	{
 		if ($this->lang===$lang) {
-			return;
+			return $this;
 			}
 
 		$this->lang=$lang;
@@ -621,5 +629,6 @@ implements IEditable
 
 		// Lazy load
 		// $this->loadDictonary();
+		return $this;
 	}
 }

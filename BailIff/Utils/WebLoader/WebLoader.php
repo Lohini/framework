@@ -1,18 +1,11 @@
-<?php // vim: set ts=4 sw=4 ai:
+<?php // vim: ts=4 sw=4 ai:
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
 namespace BailIff\WebLoader;
-
-use Nette\Application\UI\Control,
-	Nette\Caching\Cache,
-	Nette\Caching\IStorage,
-	Nette\Caching\Storages\FileStorage,
-	Nette\Environment as NEnvironment,
-	Nette\StringUtils,
-	Nette\Diagnostics\Debugger,
-	Nette\FileNotFoundException,
-	BailIff\Environment,
-	BailIff\WebLoader\Filters\PreFileFilter,
-	BailIff\WebLoader\WebLoaderCacheStorage;
-
 /**
  * WebLoader
  *
@@ -20,8 +13,19 @@ use Nette\Application\UI\Control,
  * @license MIT
  * @author Lopo <lopo@losys.eu>
  */
+/**
+ * BailIff port
+ * @author Lopo <lopo@losys.eu>
+ */
+
+use Nette\Caching\Cache,
+	Nette\Environment as NEnvironment,
+	Nette\Utils\Strings,
+	BailIff\Environment,
+	BailIff\WebLoader\Filters\PreFileFilter;
+
 abstract class WebLoader
-extends Control
+extends \Nette\Application\UI\Control
 {
 	/**#@+ cache content */
 	const CONTENT_TYPE='contentType';
@@ -96,12 +100,13 @@ extends Control
 	 * Set source path
 	 * @param string $sourcePath
 	 * @return WebLoader (fluent)
+	 * @throws FileNotFoundException
 	 */
 	public function setSourcePath($sourcePath)
 	{
 		$sourcePath=realpath($sourcePath);
 		if ($sourcePath===FALSE) {
-			throw new FileNotFoundException("Source path '$sourcePath' doesn't exist.");
+			throw new \Nette\FileNotFoundException("Source path '$sourcePath' doesn't exist.");
 			}
 		$this->sourcePath=$sourcePath;
 		return $this;
@@ -313,7 +318,7 @@ extends Control
 	 */
 	protected function generate($files, $content=NULL)
 	{
-		$key=StringUtils::webalize($this->getGeneratedFilename($files));
+		$key=Strings::webalize($this->getGeneratedFilename($files));
 		$cache=self::getCache();
 
 		if ($cache[$key]===NULL) {
@@ -354,10 +359,10 @@ extends Control
 	{
 		if (($content=file_get_contents("$this->sourcePath/$file"))===FALSE) {
 			if ($this->throwExceptions) {
-				if (NEnvironment::isProduction())
-					throw new FileNotFoundException("File '$this->sourcePath/$file' doesn't exist.");
+				if ($this->getPresenter(FALSE)->getContext()->params['productionMode'])
+					throw new \Nette\FileNotFoundException("File '$this->sourcePath/$file' doesn't exist.");
 				else {
-					Debugger::processException(new FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."));
+					\Nette\Diagnostics\Debugger::processException(new \Nette\FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."));
 					return '';
 					}
 				}
@@ -380,7 +385,7 @@ extends Control
 	protected static function getCache()
 	{
 		if (self::$cache===NULL) {
-			self::$cache=Environment::getCache('WebLoader');
+			self::$cache=new Cache($storage=self::getCacheStorage(), 'BailIff.WebLoader');
 			}
 		return self::$cache;
 	}
@@ -389,7 +394,7 @@ extends Control
 	 * Set cache storage
 	 * @param IStorage $storage
 	 */
-	protected static function setCacheStorage(IStorage $storage)
+	protected static function setCacheStorage(\Nette\Caching\IStorage $storage)
 	{
 		self::$cacheStorage=$storage;
 	}
@@ -401,6 +406,7 @@ extends Control
 	protected static function getCacheStorage()
 	{
 		if (self::$cacheStorage===NULL) {
+//			return new Caching\Storages\DevNullStorage;
 			$dir=NEnvironment::getVariable('tempDir').'/cache';
 			umask(0000);
 			@mkdir($dir, 0755); // @ - directory may exists
@@ -423,7 +429,7 @@ extends Control
 			for ($i=0; $i<count($matches[0]); $i++) {
 				$content=str_replace(
 						$matches[0][$i],
-						call_user_func(__NAMESPACE__.'\Filters\\'.$matches['filter'][$i].'Filter::getItem', $matches['key'][$i]),
+						call_user_func(__NAMESPACE__."\Filters\\{$matches['filter'][$i]}Filter::getItem", $matches['key'][$i]),
 						$content
 						);
 				}
@@ -440,7 +446,6 @@ extends Control
 	 */
 	public static function clean()
 	{
-		$cache=self::getCache();
-		$cache->clean(array(Cache::ALL => TRUE));
+		self::getCache()->clean(array(Cache::NAMESPACE_ONLY => TRUE, Cache::ALL => TRUE));
 	}
 }

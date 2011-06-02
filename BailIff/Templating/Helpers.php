@@ -1,21 +1,21 @@
-<?php // vim: set ts=4 sw=4 ai:
+<?php // vim: ts=4 sw=4 ai:
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
 namespace BailIff\Templating;
 
 /**
- * BailIff TemplateHelpers
+ * BailIff template telpers
  *
  * @author Lopo <lopo@losys.eu>
  */
-final class TemplateHelpers
+final class Helpers
 {
-	/**
-	 * Static class - cannot be instantiated.
-	 * @throws LogicException
-	 */
-	final public function __construct()
-	{
-		throw new \LogicException('Cannot instantiate static class '.get_class($this));
-	}
+	private static $helpers=array();
+
 
 	/**
 	 * Try to load the requested helper.
@@ -24,19 +24,14 @@ final class TemplateHelpers
 	 */
 	public static function loader($helper)
 	{
-		$callback=callback('BailIff\Templating\TemplateHelpers', $helper);
-		if ($callback->isCallable()) {
-			return $callback;
+		if (method_exists(__CLASS__, $helper)) {
+			return callback(__CLASS__, $helper);
+			}
+		if (isset(self::$helpers[$helper])) {
+			return self::$helpers[$helper];
 			}
 		// fallback
-		$callback=callback('Nette\Templating\TemplateHelpers', $helper);
-		if ($callback->isCallable()) {
-			return $callback;
-			}
-		$callback=callback('Nette\StringUtils', $helper);
-		if ($callback->isCallable()) {
-			return $callback;
-			}
+		return \Nette\Templating\DefaultHelpers::loader($helper);
 	}
 
 	/**
@@ -49,8 +44,7 @@ final class TemplateHelpers
 		if ($date==NULL) {
 			return NULL;
 			}
-		$dt=new DateTime($date);
-		return $dt->format('Y-m-d')."T00:00:00.000";
+		return \Nette\DateTime::from($date)->format('Y-m-d')."T00:00:00.000";
 	}
 
 	/**
@@ -63,8 +57,7 @@ final class TemplateHelpers
 		if ($date==NULL) {
 			return NULL;
 			}
-		$dt=new DateTime($date);
-		return $dt->format('Y-m-d\TH:i:s').".000";
+		return \Nette\DateTime::from($date)->format('Y-m-d\TH:i:s').".000";
 	}
 
 	/**
@@ -95,5 +88,32 @@ final class TemplateHelpers
 			$bytes=$bytes/$kilo;
 			}
 		return round($bytes, $precision)." $unit";
+	}
+
+	/**
+	 * Generates Gravatar img from email
+	 *
+	 * @param string $email
+	 * @param int $size
+	 * @param string $default
+	 * @param string $rating
+	 * @param array $atts 
+	 */
+	public static function gravatar($email, $size=32, $default='mm', $rating=NULL, $atts=array())
+	{
+		$url='http://www.gravatar.com/avatar/'
+			.md5(strtolower(trim($email)))
+			.'?d='.$default
+			.'&s='.$size
+			.($rating!==NULL? '&r='.$rating : '');
+		$img=\Nette\Utils\Html::el('img')
+			->src($url)
+			->alt('')
+			->width($size)
+			->height($size);
+		foreach ($atts as $k => $v) {
+			$img->$k=$v;
+			}
+		echo $img;
 	}
 }

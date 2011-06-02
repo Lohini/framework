@@ -1,8 +1,13 @@
 <?php // vim: ts=4 sw=4 ai:
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
 namespace BailIff\WebLoader\Filters;
 
-use Nette\Object,
-	Nette\Caching\Cache,
+use Nette\Caching\Cache,
 	BailIff\WebLoader\WebLoader,
 	BailIff\Environment;
 /**

@@ -1,15 +1,23 @@
 <?php // vim: set ts=4 sw=4 ai:
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
 namespace BailIff\Application;
 
-use Nette\Environment as NEnvironment,
-	Nette\StringUtils,
-	Nette\Utils\LimitedScope,
-	Nette\Reflection\ClassType,
-	Nette\Application\InvalidPresenterException;
+use Nette\Utils\Strings;
 
+/**
+ * @author Lopo <lopo@losys.sk>
+ */
 class PresenterFactory
-extends \Nette\Application\PresenterFactory
+extends \Nette\Object
+implements \Nette\Application\IPresenterFactory
 {
+	/** @var \Nette\DI\IContainer */
+	private $container;
 	/** @var array */
 	public static $presenters=array(
 		'app' => array(
@@ -21,41 +29,62 @@ extends \Nette\Application\PresenterFactory
 			'replace' => ''
 			),
 		);
+	/** @var cache */
+	private $cache=array();
 
 
-	public function __construct()
+	/**
+	 * @param \Nette\DI\IContainer $container
+	 */
+	public function __construct(/*$baseDir, */\Nette\DI\IContainer $container)
 	{
-		parent::__construct(APP_DIR, NEnvironment::getApplication()->getContext());
+		$this->container=$container;
+	}
+
+	/**
+	 * Creates new presenter instance
+	 * @param  string  presenter name
+	 * @return IPresenter
+	 */
+	public function createPresenter($name)
+	{
+		$class=$this->getPresenterClass($name);
+		$presenter=new $class;
+		$presenter->setContext($this->container);
+		return $presenter;
 	}
 
 	/**
 	 * @param string $name presenter name
 	 * @return string class name
-	 * @throws InvalidPresenterException
+	 * @throws \Nette\Application\InvalidPresenterException
 	 */
 	public function getPresenterClass(& $name)
 	{
-		if (!is_string($name) || !StringUtils::match($name, "#^[a-zA-Z\x7f-\xff][a-zA-Z0-9\x7f-\xff:]*$#")) {
-			throw new InvalidPresenterException("Presenter name must be alphanumeric string, '$name' is invalid.");
+		if (isset($this->cache[$name])) {
+			list($class, $name)=$this->cache[$name];
+			return $class;
+			}
+		if (!is_string($name) || !Strings::match($name, "#^[a-zA-Z\x7f-\xff][a-zA-Z0-9\x7f-\xff:]*$#")) {
+			throw new \Nette\Application\InvalidPresenterException("Presenter name must be alphanumeric string, '$name' is invalid.");
 			}
 
 		$class=$this->formatPresenterClasses($name);
-		$reflection=new ClassType($class);
+		$reflection=\Nette\Reflection\ClassType::from($class);
 		$class=$reflection->getName();
 		if (!$reflection->implementsInterface('Nette\Application\IPresenter')) {
-			throw new InvalidPresenterException("Cannot load presenter '$name', class '$class' is not Nette\\Application\\IPresenter implementor.");
+			throw new \Nette\Application\InvalidPresenterException("Cannot load presenter '$name', class '$class' is not Nette\\Application\\IPresenter implementor.");
 			}
 		if ($reflection->isAbstract()) {
-			throw new InvalidPresenterException("Cannot load presenter '$name', class '$class' is abstract.");
+			throw new \Nette\Application\InvalidPresenterException("Cannot load presenter '$name', class '$class' is abstract.");
 			}
 
 		// canonicalize presenter name
 		$realName=$this->unformatPresenterClass($class);
 		if ($name!==$realName) {
-			if ($this->caseSensitive) {
-				throw new InvalidPresenterException("Cannot load presenter '$name', case mismatch. Real name is '$realName'.");
-				}
+			throw new \Nette\Application\InvalidPresenterException("Cannot load presenter '$name', case mismatch. Real name is '$realName'.");
 			}
+		$this->cache[$name]=array($class, $realName);
 		return $class;
 	}
 
@@ -83,8 +112,8 @@ extends \Nette\Application\PresenterFactory
 	public function unformatPresenterClass($class)
 	{
 		$mapper=function($presenter) use ($class) {
-			if (StringUtils::startsWith($class, $presenter['prefix'])
-				&& StringUtils::match($class, '/'.$presenter['replace'].(StringUtils::endsWith($presenter['replace'], "\\")? "\\" : '').'/')
+			if (Strings::startsWith($class, $presenter['prefix'])
+				&& Strings::match($class, '/'.$presenter['replace'].(Strings::endsWith($presenter['replace'], "\\")? "\\" : '').'/')
 				) {
 				return $presenter;
 				}
@@ -111,9 +140,9 @@ extends \Nette\Application\PresenterFactory
 
 	/**
 	 * Format presenter class with prefixes
-	 * @param string
+	 * @param string $name
 	 * @return string
-	 * @throws InvalidPresenterException
+	 * @throws \Nette\Application\InvalidPresenterException
 	 */
 	private function formatPresenterClasses($name)
 	{
@@ -121,13 +150,10 @@ extends \Nette\Application\PresenterFactory
 		foreach (array_keys(static::$presenters) as $key) {
 			$class=$this->formatPresenterClass($name, $key);
 			if (class_exists($class)) {
-				break;
+				return $class;
 				}
 			}
-		if (!class_exists($class)) {
-			$class=$this->formatPresenterClass($name);
-			throw new InvalidPresenterException("Cannot load presenter '$name', class '$class' was not found.");
-			}
-		return $class;
+		$class=$this->formatPresenterClass($name);
+		throw new \Nette\Application\InvalidPresenterException("Cannot load presenter '$name', class '$class' was not found.");
 	}
 }

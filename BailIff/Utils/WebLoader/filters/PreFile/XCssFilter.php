@@ -1,9 +1,11 @@
 <?php // vim: ts=4 sw=4 ai:
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
 namespace BailIff\WebLoader\Filters;
-
-use Nette\NotSupportedException,
-	BailIff\WebLoader\Filters\PreFileFilter,
-	BailIff\WebLoader\WebLoader;
 
 /**
  * BailIff wrapping class for Pawlik's xCSS
@@ -15,20 +17,19 @@ extends PreFileFilter
 {
 	/**
 	 * Check if we have Pawlik's xCSS
-	 * @throws \NotSupportedException
+	 * @throws NotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!in_array('xCSS', get_declared_classes()) && !class_exists('xCSS')) {
-			throw new NotSupportedException("Don't have Pawlik's xCSS");
+			throw new \Nette\NotSupportedException("Don't have Pawlik's xCSS");
 			}
 	}
 
 	/**
-	 * (non-PHPdoc)
-	 * @see BailIff\WebLoader\Filters.PreFileFilter::__invoke()
+	 * @see PreFileFilter::__invoke()
 	 */
-	public static function __invoke($code, WebLoader $loader, $file=NULL)
+	public static function __invoke($code, \BailIff\WebLoader\WebLoader $loader, $file=NULL)
 	{
 		if ($file===NULL || strtolower(pathinfo($file, PATHINFO_EXTENSION))!='xcss') {
 			return $code;

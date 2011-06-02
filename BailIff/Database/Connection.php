@@ -1,7 +1,11 @@
-<?php // vim: set ts=4 sw=4 ai:
+<?php // vim: ts=4 sw=4 ai:
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
 namespace BailIff\Database;
-
-use BailIff\Environment;
 
 class Connection
 extends \DibiConnection
@@ -13,20 +17,29 @@ extends \DibiConnection
 	/**
 	 * Initialize database connections
 	 * @param string $name
-	 * @throws \RuntimeException
 	 * @return Connection
+	 * @throws \RuntimeException
 	 */
-	static public function initialize()
+	static public function initialize($options)
 	{
-		$gconf=Environment::getConfig('databases');
-		if (!isset($gconf->primary)) {
+		if (!isset($options->databases->primary)) {
 			throw new \RuntimeException("Primary database isn't set (databases.primary)");
 			}
-		self::$primary=$gconf->primary;
-		foreach (Environment::getConfig('database') as $dbk => $dbc) {
-			if (is_a($dbc, 'Nette\Config\Config')) {
+		self::$primary=$options->databases->primary;
+		foreach ($options->database as $dbk => $dbc) {
+			if (is_a($dbc, 'Nette\ArrayHash')) {
 				$c=\dibi::connect($dbc, $dbk);
-				if (($cp= isset($conf->profiler)? $conf->profiler : (isset($gconf->profiler)? $gconf->profiler : FALSE))!==FALSE && $cp!=0) {
+				if (
+					($cp=
+						isset($dbc->profiler)
+							? $dbc->profiler
+							: (isset($options->databases->profiler)
+								? $options->databases->profiler
+								: FALSE
+								)
+						)!==FALSE
+					&& $cp!=0
+					) {
 					$profiler= (is_numeric($cp) || is_bool($cp))
 							? new \DibiProfiler(array('explain' => TRUE))
 							: new $cp
@@ -40,7 +53,7 @@ extends \DibiConnection
 
 	/**
 	 * @param string $name
-	 * @return DibiConnection
+	 * @return \DibiConnection
 	 */
 	static public function getConnection($name=NULL)
 	{

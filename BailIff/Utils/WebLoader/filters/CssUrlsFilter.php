@@ -1,9 +1,14 @@
 <?php // vim: ts=4 sw=4 ai:
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
 namespace BailIff\WebLoader\Filters;
 
 use Nette\Environment as NEnvironment,
-    Nette\StringUtils,
-    Nette\Object,
+    Nette\Utils\Strings,
 	BailIff\WebLoader\WebLoader;
 
 /**
@@ -13,7 +18,7 @@ use Nette\Environment as NEnvironment,
  * @license MIT
  */
 class CssUrlsFilter
-extends Object
+extends \Nette\Object
 {
 	/**
 	 * Make relative url absolute
@@ -31,10 +36,10 @@ extends Object
 			}
 
 		$docroot=realpath(WWW_DIR);
-		$basePath=rtrim(NEnvironment::getVariable('baseUri'), '/');
+		$basePath=rtrim(NEnvironment::getService('httpRequest')->getUrl()->getBaseUrl(), '/');
 
 		// inside document root
-		if (StringUtils::startsWith($cssFile, $docroot)) {
+		if (Strings::startsWith($cssFile, $docroot)) {
 			$path=$basePath.substr(dirname($cssFile), strlen($docroot)).DIRECTORY_SEPARATOR.$url;
 			}
 		// outside document root

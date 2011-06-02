@@ -1,12 +1,17 @@
-<?php  // vim: set ts=4 sw=4 ai:
+<?php // vim: ts=4 sw=4 ai:
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
 namespace BailIff\WebLoader;
 
 use Nette\ComponentModel\IContainer,
 	Nette\Environment as NEnvironment,
 	Nette\Utils\Html,
 	Nette\Utils\Strings,
-	Nette\Diagnostics\Debugger,
-	Nette\FileNotFoundException;
+	Nette\Diagnostics\Debugger;
 
 /**
  * JsLoader
@@ -38,12 +43,11 @@ extends WebLoader
 		$this->setGeneratedFileNamePrefix('jsldr-');
 		$this->setGeneratedFileNameSuffix('.js');
 		$this->sourcePath=WWW_DIR.'/js';
-		$this->sourceUri=NEnvironment::getVariable('baseUri').'js/';
+		$this->sourceUri=NEnvironment::getService('httpRequest')->getUrl()->getBaseUrl().'js/';
 		$this->contentType='text/javascript';
 	}
 
 	/**
-	 * (non-PHPdoc)
 	 * @see BailIff\WebLoader.WebLoader::addFile()
 	 */
 	public function addFile($file, $processing=self::COMPACT)
@@ -55,11 +59,11 @@ extends WebLoader
 			}
 		if (!file_exists("$this->sourcePath/$file")) {
 			if ($this->throwExceptions) {
-				if (NEnvironment::isProduction()) {
-					throw new FileNotFoundException("File '$this->sourcePath/$file' doesn't exist.");
+				if ($this->getPresenter(FALSE)->getContext()->params['productionMode']) {
+					throw new \Nette\FileNotFoundException("File '$this->sourcePath/$file' doesn't exist.");
 					}
 				else {
-					Debugger::processException(new FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."));
+					Debugger::processException(new \Nette\FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."));
 					return;
 					}
 				}
@@ -73,7 +77,7 @@ extends WebLoader
 	 *
 	 * in case you want to send some javascript code, that is generated in presenters, and should not be cached, and it is easier to create this code in presenters
 	 * something like this
-	 * <script type="text/javascript">BASE_IMAGES={$baseUri}'design/images/';</script>
+	 * <script type="text/javascript">BASE_IMAGES={$basePath}'design/images/';</script>
 	 */
 	public function addCode($code)
 	{
@@ -81,7 +85,6 @@ extends WebLoader
 	}
 
 	/**
-	 * (non-PHPdoc)
 	 * @see BailIff\WebLoader.WebLoader::renderFiles()
 	 */
 	public function renderFiles()
@@ -115,11 +118,11 @@ extends WebLoader
 								}
 							else {
 								if ($this->throwExceptions) {
-									if (NEnvironment::isProduction()) {
-										throw new FileNotFoundException("Don't have JSMin class.");
+									if ($this->getPresenter(FALSE)->getContext()->params['productionMode']) {
+										throw new \Nette\FileNotFoundException("Don't have JSMin class.");
 										}
 									else {
-										Debugger::processException(new FileNotFoundException("Don't have JSMin class"));
+										Debugger::processException(new \Nette\FileNotFoundException("Don't have JSMin class"));
 										}
 									}
 								$content.=$this->loadFile($file[0]);
@@ -138,11 +141,11 @@ extends WebLoader
 								}
 							else {
 								if ($this->throwExceptions) {
-									if (NEnvironment::isProduction()) {
-										throw new FileNotFoundException("Don't have JavaScriptPacker class.");
+									if ($this->getPresenter(FALSE)->getContext()->params['productionMode']) {
+										throw new \Nette\FileNotFoundException("Don't have JavaScriptPacker class.");
 										}
 									else {
-										Debugger::processException(new FileNotFoundException("Don't have JavaScriptPacker class"));
+										Debugger::processException(new \Nette\FileNotFoundException("Don't have JavaScriptPacker class"));
 										}
 									}
 								$content.=$this->loadFile($file[0]);
@@ -165,7 +168,6 @@ extends WebLoader
 	}
 
 	/**
-	 * (non-PHPdoc)
 	 * @see BailIff\WebLoader.WebLoader::getElement()
 	 */
 	public function getElement($source)
@@ -232,10 +234,10 @@ extends WebLoader
 						}
 					else {
 						if ($this->throwExceptions) {
-							if (NEnvironment::isProduction())
-								throw new FileNotFoundException("Don't have JSMin class.");
+							if ($this->getPresenter(FALSE)->getContext()->params['productionMode'])
+								throw new \Nette\FileNotFoundException("Don't have JSMin class.");
 							else {
-								Debugger::processException(new FileNotFoundException("Don't have JSMin class"));
+								Debugger::processException(new \Nette\FileNotFoundException("Don't have JSMin class"));
 								}
 							}
 						echo $this->getElement($this->sourceUri.$file[0]);
@@ -255,10 +257,10 @@ extends WebLoader
 						}
 					else {
 						if ($this->throwExceptions) {
-							if (NEnvironment::isProduction())
-								throw new FileNotFoundException("Don't have JavaScriptPacker class.");
+							if ($this->getPresenter(FALSE)->getContext()->params['productionMode'])
+								throw new \Nette\FileNotFoundException("Don't have JavaScriptPacker class.");
 							else {
-								Debugger::processException(new FileNotFoundException("Don't have JavaScriptPacker class"));
+								Debugger::processException(new \Nette\FileNotFoundException("Don't have JavaScriptPacker class"));
 								}
 							}
 						echo $this->getElement($this->sourceUri.$file[0]);
