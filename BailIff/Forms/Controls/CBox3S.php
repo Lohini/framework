@@ -1,10 +1,13 @@
-<?php // vim: set ts=4 sw=4 ai:
+<?php // vim: ts=4 sw=4 ai:
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
 namespace BailIff\Forms\Controls;
 
-use Nette\Environment as NEnvironment,
-	Nette\Forms\Controls\BaseControl,
-	Nette\Utils\Html,
-	Nette\Templating\DefaultHelpers;
+use Nette\Utils\Html;
 
 /**
  * 3-state checkbox input control
@@ -12,20 +15,8 @@ use Nette\Environment as NEnvironment,
  * @author Lopo <lopo@losys.eu>
  */
 class CBox3S
-extends BaseControl
+extends \Nette\Forms\Controls\BaseControl
 {
-	/** @var Html container element template */
-	protected $container;
-	/** @var string */
-	public $img_path='/img/ico';
-	/** @var array */
-	public $images=array(
-		-1 => 'cross.png',
-		0 => 'empty.png',
-		1 => 'check.png'
-		);
-
-
 	/**
 	 * @param string $label
 	 */
@@ -33,7 +24,6 @@ extends BaseControl
 	{
 		parent::__construct($label);
 		$this->control->type='checkbox';
-		$this->container=Html::el();
 	}
 
 	/**
@@ -48,23 +38,14 @@ extends BaseControl
 	/**
 	 * Sets control's value
 	 * @param string $value
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 */
 	public function setValue($value)
 	{
 		if (!in_array($value, array(-1, 0, 1))) {
-			throw new InvalidArgumentException("Invalid argument passed, one of [-1, 0, 1] expected, '$value' given.");
+			throw new \InvalidArgumentException("Invalid argument passed, one of [-1, 0, 1] expected, '$value' given.");
 			}
 		parent::setValue($value);
-	}
-
-	/**
-	 * Returns container HTML element template
-	 * @return Html
-	 */
-	final public function getContainerPrototype()
-	{
-		return $this->container;
 	}
 
 	/**
@@ -73,7 +54,6 @@ extends BaseControl
 	 */
 	public function getControl()
 	{
-		$basePath=preg_replace('#https?://[^/]+#A', '', rtrim(NEnvironment::getVariable('baseUri', NULL), '/'));
 		$control=parent::getControl();
 		$data=array(
 			'value' => $this->getValue()!==NULL? (int)$this->getValue() : 0
@@ -82,12 +62,7 @@ extends BaseControl
 				->add($control)
 				->addClass('ui-icon')
 				->add(Html::el('script', array('type' => 'text/javascript'))
-					->add("head.js(
-						'$basePath/js/CBox3S.js',
-						function() {
-							CBox3S('{$control->id}', ".DefaultHelpers::escapeJs($data).');
-							}
-						);')
+					->add("head.js('".rtrim($this->form->getPresenter(FALSE)->getContext()->getService('httpRequest')->getUrl()->getBasePath(), '/')."/js/CBox3S.js', function() { CBox3S('{$control->id}', ".\Nette\Templating\DefaultHelpers::escapeJs($data).');});')
 					);
 	}
 

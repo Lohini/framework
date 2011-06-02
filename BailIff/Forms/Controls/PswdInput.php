@@ -1,10 +1,13 @@
-<?php // vim: set ts=4 sw=4 ai:
+<?php // vim: ts=4 sw=4 ai:
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
 namespace BailIff\Forms\Controls;
 
-use Nette\Environment as NEnvironment,
-	Nette\Forms\Controls\TextInput,
-	Nette\Utils\Html,
-	Nette\Templating\DefaultHelpers;
+use Nette\Utils\Html;
 
 /**
  * Improved password input control
@@ -15,7 +18,7 @@ use Nette\Environment as NEnvironment,
  * @author Lopo <lopo@losys.eu>
  */
 class PswdInput
-extends TextInput
+extends \Nette\Forms\Controls\TextInput
 {
 	/** @var Html */
 	protected $container;
@@ -109,7 +112,6 @@ extends TextInput
 	 */
 	public function getControl()
 	{
-		$basePath=preg_replace('#https?://[^/]+#A', '', rtrim(NEnvironment::getVariable('baseUri', NULL), '/'));
 		$control=parent::getControl();
 		$container=Html::el('span', array('style' => 'position: relative; float: left;'))
 					->add($control);
@@ -125,24 +127,26 @@ extends TextInput
 			}
 
 		$data=array();
-		if ($this->useClWarning && !$this->useMasked) {
-			$data['clwarning']=array(
-					'str' => $this->translate($this->strClWarning)
-					);
-			}
-		if ($this->useShowPswd && !$this->useMasked) {
-			$data['showpswd']=array(
-					'cb' => array(
-						'label' => $this->translate($this->cbLabel),
-						'desc' => $this->translate($this->cbDesc)
-						)
-					);
-			}
 		if ($this->useMasked) {
 			$data['masked']=array(
 					'symbol' => $this->symbol,
 					'reset' => $this->rstMasked
 					);
+			}
+		else {
+			if ($this->useClWarning) {
+				$data['clwarning']=array(
+						'str' => $this->translate($this->strClWarning)
+						);
+				}
+			if ($this->useShowPswd) {
+				$data['showpswd']=array(
+						'cb' => array(
+							'label' => $this->translate($this->cbLabel),
+							'desc' => $this->translate($this->cbDesc)
+							)
+						);
+				}
 			}
 		if (count($data)) {
 			$data['fid']=$this->getForm()->getElementPrototype()->id;
@@ -152,9 +156,9 @@ extends TextInput
 						array('type' => 'text/javascript')
 						)
 						->add("head.js(
-							'$basePath/js/PswdInput.js',
+							'".rtrim($this->form->getPresenter(FALSE)->getContext()->getService('httpRequest')->getUrl()->getBasePath(), '/')."/js/PswdInput.js',
 							function() {
-								PswdInput('{$control->id}', ".DefaultHelpers::escapeJs($data).');
+								PswdInput('{$control->id}', ".\Nette\Templating\DefaultHelpers::escapeJs($data).');
 								}
 							);')
 					);

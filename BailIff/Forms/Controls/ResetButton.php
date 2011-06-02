@@ -1,10 +1,14 @@
-<?php // vim: set ts=4 sw=4 ai:
+<?php // vim: ts=4 sw=4 ai:
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
 namespace BailIff\Forms\Controls;
 
-use Nette\Forms\Controls\Button;
-
 class ResetButton
-extends Button
+extends \Nette\Forms\Controls\Button
 {
 	/**
 	 * @param string $caption

@@ -1,9 +1,13 @@
-<?php // vim: set ts=4 sw=4 ai:
+<?php // vim: ts=4 sw=4 ai:
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
 namespace BailIff\Forms\Controls;
 
-use Nette\Forms\Controls\TextInput,
-	Nette\Utils\Html,
-	Nette\Environment as NEnvironment;
+use Nette\Utils\Html;
 
 /**
  * DatePicker input control
@@ -11,7 +15,7 @@ use Nette\Forms\Controls\TextInput,
  * @author Lopo <lopo@losys.eu>
  */
 class DatePicker
-extends TextInput
+extends \Nette\Forms\Controls\TextInput
 {
 	/**
 	 * @param string $label
@@ -52,10 +56,10 @@ extends TextInput
 	 */
 	public function getControl()
 	{
-		$basePath=preg_replace('#https?://[^/]+#A', '', rtrim(NEnvironment::getVariable('baseUri', NULL), '/'));
-		$t=$this->getTranslator();
-		if ($t===NULL) {
-			$t=NEnvironment::getApplication()->getContext()->getService('Nette\Localization\ITranslator');
+		$container=Html::el();
+		$basePath=rtrim($this->form->getPresenter(FALSE)->getContext()->getService('httpRequest')->getUrl()->getBasePath(), '/');
+		if (($t=$this->getTranslator())===NULL) {
+			$t=$this->form->getPresenter(FALSE)->getContext()->getService('translator');
 			}
 		$lng=$t->getLang();
 		if ($lng=='en') {
@@ -64,7 +68,7 @@ extends TextInput
 		else {
 			$regional="yepnope({
 							test: $.datepicker.regional['$lng'],
-							nope: '$basePath/js/ui/i18n/jquery-ui-i18n.js',
+							nope: '$basePath/js/ui/i18n/jquery.ui.datepicker-$lng.js',
 							complete: function() {
 								$('input#".$this->getHtmlId()."').datepicker($.datepicker.regional['$lng']);
 								}
@@ -73,21 +77,24 @@ extends TextInput
 		$control=parent::getControl();
 		$control->type='date';
 		$control->class='datepicker';
-		$control->value=$this->value;
-		$control->setName($control->getName(), false); // enable add()
-		$control->add(Html::el('script', array('type'=>'text/javascript'))->add("yepnope({
-			test: Modernizr.inputtypes && Modernizr.inputtypes.date,
-			nope: '$basePath/fbcks/datepicker.css',
-			callback: function() {
-				yepnope({
-					test: $.ui,
-					nope: ['$basePath/js/jquery-ui.js', '$basePath/css/jquery-ui.css'],
-					complete: function() {
-						$regional
+		$control->value= ($this->value!=NULL && $this->value!='')? $this->value : NULL;
+		$container->add($control);
+		$container->add(Html::el('script', array('type'=>'text/javascript'))
+				->add("head.ready(function() {
+					yepnope({
+					test: Modernizr.inputtypes && Modernizr.inputtypes.date,
+					nope: '$basePath/fbcks/datepicker.css',
+					callback: function() {
+						yepnope({
+							test: $.ui,
+							nope: ['$basePath/js/ui/jquery-ui.min.js', '$basePath/css/jquery-ui.css'],
+							complete: function() {
+								$regional
+								}
+							});
 						}
 					});
-				}
-			});"));
-		return $control;
+				});"));
+		return $container;
 	}
 }
