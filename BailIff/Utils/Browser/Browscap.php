@@ -1,11 +1,11 @@
 <?php // vim: ts=4 sw=4 ai:
-namespace BailIff\Browser;
-
-use Nette\Caching\Cache,
-	Nette\Caching\IStorage,
-	Nette\Caching\Storages\FileStorage,
-	Nette\Environment as NEnvironment;
-
+/**
+ * This file is part of BailIff
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
+ * @license GNU GPL v3
+ */
+namespace BailIff\Utils\Browser;
 /**
  * Browscap.ini parsing class with caching and update capabilities
  *
@@ -28,20 +28,25 @@ use Nette\Caching\Cache,
  * @package	   Browscap
  * @author	   Jonathan Stoppani <st.jonathan@gmail.com>
  * @copyright  Copyright (c) 2006-2008 Jonathan Stoppani
- * @copyright  2010 Lopo <lopo@losys.eu> (BailIff (Nette) port)
  * @version	   0.7
  * @license	   http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link	   http://garetjax.info/projects/browscap/
  */
+/**
+ * BailIff port
+ * @author Lopo <lopo@losys.eu>
+ * @copyright  2010 Lopo <lopo@losys.eu> (BailIff port)
+ */
+
+use Nette\Caching\Cache,
+	Nette\Environment as NEnvironment;
+
 class Browscap
 {
-	/**
-	 * Current version of the class.
-	 */
+	/** Current version of the class */
 	const VERSION='0.7';
-
 	/**
-	 * Different ways to access remote and local files.
+	 * Different ways to access remote and local files
 	 *
 	 * UPDATE_FOPEN:	 Uses the fopen url wrapper (use file_get_contents).
 	 * UPDATE_FSOCKOPEN: Uses the socket functions (fsockopen).
@@ -52,76 +57,49 @@ class Browscap
 	const UPDATE_FSOCKOPEN='socket';
 	const UPDATE_CURL='cURL';
 	const UPDATE_LOCAL='local';
-
 	/**
-	 * Options for regex patterns.
+	 * Options for regex patterns
 	 *
-	 * REGEX_DELIMITER:	 Delimiter of all the regex patterns in the whole class.
-	 * REGEX_MODIFIERS:	 Regex modifiers.
+	 * REGEX_DELIMITER: Delimiter of all the regex patterns in the whole class
+	 * REGEX_MODIFIERS: Regex modifiers
 	 */
 	const REGEX_DELIMITER='@';
 	const REGEX_MODIFIERS='i';
-
-	/**
-	 * The values to quote in the ini file
-	 */
+	/** The values to quote in the ini file */
 	const VALUES_TO_QUOTE='Browser|Parent';
-
 	/**
 	 * Definitions of the function used by the uasort() function to order the
 	 * userAgents array.
 	 *
-	 * ORDER_FUNC_ARGS:	 Arguments that the function will take.
-	 * ORDER_FUNC_LOGIC: Internal logic of the function.
+	 * ORDER_FUNC_ARGS:	Arguments that the function will take
+	 * ORDER_FUNC_LOGIC: Internal logic of the function
 	 */
 	const ORDER_FUNC_ARGS='$a, $b';
 	const ORDER_FUNC_LOGIC='$a=strlen($a);$b=strlen($b);return$a==$b?0:($a<$b?1:-1);';
-
-	/**
-	 * The headers to be sent for checking the version and requesting the file.
-	 */
+	/** The headers to be sent for checking the version and requesting the file */
 	const REQUEST_HEADERS="GET %s HTTP/1.0\r\nHost: %s\r\nUser-Agent: %s\r\nConnection: Close\r\n\r\n";
 
-	/**
-	 * Options for auto update capabilities
-	 */
-	/**
-	 * The location to use to check out if a new version of the browscap.ini file is available.
-	 * @var string
-	 */
-	public $remoteIniUrl='http://browsers.garykeith.com/stream.asp?BrowsCapINI';
+	/* Options for auto update capabilities */
 	/**
 	 * The location from which download the ini file.
 	 * The placeholder for the file should be represented by a %s.
 	 * @var string
 	 */
+	public $remoteIniUrl='http://browsers.garykeith.com/stream.asp?BrowsCapINI';
+	/** @var string The location to use to check out if a new version of the browscap.ini file is available */
 	public $remoteVerUrl='http://updates.browserproject.com/version-date.asp';
-	/**
-	 * The timeout for the requests.
-	 * @var int
-	 */
+	/** @var string */
+	public $remoteVerNumUrl='https://browsers.garykeith.com/versions/version-number.asp';
+	/** @var int The timeout for the requests */
 	public $timeout=5;
-	/**
-	 * The update interval in seconds.
-	 * @var int
-	 */
+	/** @var int The update interval in seconds */
 	public $updateInterval=432000; // 5 days (5*24*60*60)
-	/**
-	 * The next update interval in seconds in case of an error.
-	 * @var int
-	 */
-	public $errorInterval=7200;	  // 2 hours (2*60*60)
-	/*
-	 * Flag to disable the automatic interval based update.
-	 * @var bool
-	 */
+	/** @var int The next update interval in seconds in case of an error */
+	public $errorInterval=7200; // 2 hours (2*60*60)
+	/** @var bool Flag to disable the automatic interval based update */
 	public $doAutoUpdate=TRUE;
-	/**
-	 * The method to use to update the file, has to be a value of an UPDATE_* constant, NULL or false.
-	 * @var string|NULL|FALSE
-	 */
+	/** @var string|NULL|FALSE The method to use to update the file, has to be a value of an UPDATE_* constant, NULL or false */
 	public $updateMethod=NULL;
-
 	/**
 	 * The path of the local version of the browscap.ini file from which to
 	 * update (to be set only if used).
@@ -129,13 +107,8 @@ class Browscap
 	 * @var string
 	 */
 	public $localFile=NULL;
-
-	/**
-	 * The useragent to include in the requests made by the class during the update process.
-	 * @var string
-	 */
-	public $userAgent='PHP Browser Capabilities Project/%v %m';
-
+	/** @var string The useragent to include in the requests made by the class during the update process */
+	public $userAgent='BailIff Browscap/%v %m';
 	/**
 	 * Flag to enable only lowercase indexes in the result.
 	 * The cache has to be rebuilt in order to apply this option.
@@ -143,7 +116,6 @@ class Browscap
 	 * @var bool
 	 */
 	public $lowercase=FALSE;
-
 	/**
 	 * Flag to enable/disable silent error management.
 	 * In case of an error during the update process the class returns an empty
@@ -153,23 +125,11 @@ class Browscap
 	 * @var bool
 	 */
 	public $silent=FALSE;
-
-	/**
-	 * Where to store the downloaded ini file.
-	 * @var string
-	 */
+	/** @var string Where to store the downloaded ini file */
 	public $iniFilename=NULL;
-
-	/**
-	 * Flag to be set to TRUE after loading the cache
-	 * @var bool
-	 */
+	/** @var bool Flag to be set to TRUE after loading the cache */
 	private $_cacheLoaded=FALSE;
-
-	/**
-	 * Where to store the value of the included PHP cache file
-	 * @var array
-	 */
+	/** @var array Where to store the value of the included PHP cache file */
 	private $_userAgents=array();
 	private $_browsers=array();
 	private $_patterns=array();
@@ -180,6 +140,13 @@ class Browscap
 	private static $cacheStorage;
 	/** @var array */
 	private static $result=NULL;
+	/** @var string */
+	private static $input;
+	/** @var Browscap */
+	private static $instance=NULL;
+	/** @var int */
+	private $_version=0;
+
 
 	public function __construct()
 	{
@@ -191,7 +158,7 @@ class Browscap
 	 *
 	 * @param string $user_agent the user agent string
 	 * @param bool $return_array whether return an array or an object
-	 * @throws Browscap_Exception
+	 * @throws BrowscapException
 	 * @return Object|array containing the browsers details. Array if $return_array is set to TRUE.
 	 */
 	public function getBrowser($user_agent=NULL, $return_array=FALSE)
@@ -206,13 +173,13 @@ class Browscap
 				$interval=0;
 				}
 
-			$cache_file=$this->getCache()->offsetGet('cache_file');
+			$cache_file=$this->getCache()->offsetGet('parsed');
 			// Find out if the cache needs to be updated
 			if (is_null($cache_file) || !file_exists($this->iniFilename) || ($interval>$this->updateInterval)) {
 				try {
 					$this->updateCache();
 					}
-				catch (Browscap_Exception $e) {
+				catch (BrowscapException $e) {
 					if (file_exists($this->iniFilename)) {
 						// Adjust the filemtime to the $errorInterval
 						touch($this->iniFilename, time()-$this->updateInterval+$this->errorInterval);
@@ -286,9 +253,20 @@ class Browscap
 	 */
 	public function updateCache()
 	{
-		$this->_getRemoteIniFile($this->_getUpdateMethod()==self::UPDATE_LOCAL? $url=$this->localFile : $url=$this->remoteIniUrl);
+		$url= $this->_getUpdateMethod()==self::UPDATE_LOCAL? $this->localFile : $this->remoteIniUrl;
+		$rver= $this->_getRemoteVersionNumber();
+		$cache=$this->getCache();
+		if ($cache->offsetExists('parsed')) {
+			$c=$cache->offsetGet('parsed');
+			$cver=$c['version'];
+			if ($cver>=$rver) {
+				return TRUE;
+				}
+			}
+		$this->_getRemoteIniFile($url);
 
 		$browsers=parse_ini_file($this->iniFilename, TRUE, INI_SCANNER_RAW);
+		$this->_version=(int)$browsers['GJK_Browscap_Version']['Version'];
 		array_shift($browsers);
 
 		$this->_properties=array_keys($browsers['DefaultProperties']);
@@ -340,8 +318,9 @@ class Browscap
 			}
 		// Save and return
 		$this->getCache()->save(
-			'cache_file',
+			'parsed',
 			array(
+				'version' => $this->_version,
 				'properties' => $this->_properties,
 				'browsers' => $this->_browsers,
 				'userAgents' => $this->_userAgents,
@@ -370,10 +349,11 @@ class Browscap
 			return;
 			}
 		$cache=$this->getCache();
-		$this->_browsers=$cache['cache_file']['browsers'];
-		$this->_userAgents=$cache['cache_file']['userAgents'];
-		$this->_patterns=$cache['cache_file']['patterns'];
-		$this->_properties=$cache['cache_file']['properties'];
+		$this->_browsers=$cache['parsed']['browsers'];
+		$this->_userAgents=$cache['parsed']['userAgents'];
+		$this->_patterns=$cache['parsed']['patterns'];
+		$this->_properties=$cache['parsed']['properties'];
+		$this->_version=$cache['parsed']['version'];
 
 		$this->_cacheLoaded=TRUE;
 	}
@@ -381,7 +361,7 @@ class Browscap
 	/**
 	 * Updates the local copy of the ini file (by version checking) and adapts his syntax to the PHP ini parser
 	 * @param string $url  the url of the remote server
-	 * @throws Browscap_Exception
+	 * @throws BrowscapException
 	 * @return bool if the ini file was updated
 	 */
 	private function _getRemoteIniFile($url)
@@ -411,8 +391,8 @@ class Browscap
 			$content.=preg_replace($pattern, '$1="$2"', trim($subject))."\n";
 			}
 
-		if (!file_put_contents($this->iniFilename, $content)) {
-			throw new Browscap_Exception("Could not write .ini content to '$this->iniFilename'");
+		if (!@file_put_contents($this->iniFilename, $content)) {
+			throw new BrowscapException("Could not write .ini content to '$this->iniFilename'");
 			}
 		return TRUE;
 	}
@@ -420,22 +400,37 @@ class Browscap
 	/**
 	 * Gets the remote ini file update timestamp
 	 *
-	 * @throws Browscap_Exception
 	 * @return int the remote modification timestamp
+	 * @throws BrowscapException
 	 */
 	private function _getRemoteMTime()
 	{
 		$remote_tmstp=strtotime($this->_getRemoteData($this->remoteVerUrl));
 
 		if (!$remote_tmstp) {
-			throw new Browscap_Exception("Bad datetime format from {$this->remoteVerUrl}");
+			throw new BrowscapException("Bad datetime format from {$this->remoteVerUrl}");
 			}
 		return $remote_tmstp;
 	}
 
 	/**
+	 * Gets the remote ini file update version
+	 *
+	 * @return int the remote version
+	 * @throws BrowscapException
+	 */
+	private function _getRemoteVersionNumber()
+	{
+		if ($this->updateMethod==self::UPDATE_LOCAL) {
+			$ini=parse_ini_file($this->localFile, TRUE, INI_SCANNER_RAW);
+			return (int)$ini['GJK_Browscap_Version']['Version'];
+			}
+		return (int)$this->_getRemoteData($this->remoteVerNumUrl);
+	}
+
+	/**
 	 * Gets the local ini file update timestamp
-	 * @throws Browscap_Exception
+	 * @throws BrowscapException
 	 * @return int the local modification timestamp
 	 */
 	private function _getLocalMTime()
@@ -443,7 +438,7 @@ class Browscap
 		if (is_readable($this->localFile) && is_file($this->localFile)) {
 			return filemtime($this->localFile);
 			}
-		throw new Browscap_Exception('Local file is not readable');
+		throw new BrowscapException('Local file is not readable');
 	}
 
 	/**
@@ -479,18 +474,19 @@ class Browscap
 	 * Retrieve the data identified by the URL
 	 *
 	 * @param string $url the url of the data
-	 * @throws Browscap_Exception
+	 * @throws BrowscapException
 	 * @return string the retrieved data
 	 */
 	private function _getRemoteData($url)
 	{
+		ini_set('user_agent', $this->_getUserAgent());
 		switch ($this->_getUpdateMethod()) {
 			case self::UPDATE_LOCAL:
 				$file=file_get_contents($url);
 				if ($file!==FALSE) {
 					return $file;
 					}
-				throw new Browscap_Exception('Cannot open the local file');
+				throw new BrowscapException('Cannot open the local file');
 			case self::UPDATE_FOPEN:
 				$file=file_get_contents($url);
 				if ($file!==FALSE) {
@@ -532,19 +528,21 @@ class Browscap
 						}
 					} // else try with the next possibility
 			case self::UPDATE_CURL:
-				$ch=curl_init($url);
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-				curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);
-				curl_setopt($ch, CURLOPT_USERAGENT, $this->_getUserAgent());
-				$file=curl_exec($ch);
-				curl_close($ch);
+				if (is_callable('curl_init')) {
+					$ch=curl_init($url);
+					curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+					curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);
+					curl_setopt($ch, CURLOPT_USERAGENT, $this->_getUserAgent());
+					$file=curl_exec($ch);
+					curl_close($ch);
+					}
 
 				if ($file!==FALSE) {
 					return $file;
 					}
 				// else try with the next possibility
 			case FALSE:
-				throw new Browscap_Exception("Your server can't connect to external resources. Please update the file manually.");
+				throw new BrowscapException("Your server can't connect to external resources. Please update the file manually.");
 			}
 	}
 
@@ -556,6 +554,9 @@ class Browscap
 	 */
 	private function _getUserAgent()
 	{
+		if (isset($_SERVER['HTTP_USER_AGENT'])) {
+			return $_SERVER['HTTP_USER_AGENT'];
+			}
 		return \Nette\String::replace(
 				$this->userAgent,
 				array(
@@ -568,9 +569,14 @@ class Browscap
 	/**
 	 * @return Nette\Caching\Cache
 	 */
-	protected static function getCache()
+	protected function getCache()
 	{
-		return new Cache(self::getCacheStorage(), 'BailIff.Browscap');
+		return NEnvironment::getCache('BailIff.Browscap');
+		if (!self::$cacheStorage) {
+//			trigger_error('Missing cache storage.', E_USER_WARNING);
+			self::$cacheStorage=new \Nette\Caching\Storages\PhpFileStorage;// DevNullStorage;
+			}
+		return new Cache(self::$cacheStorage, 'BailIff.Browscap');
 	}
 
 	/**
@@ -578,7 +584,7 @@ class Browscap
 	 * @param  Nette\Caching\Cache
 	 * @return void
 	 */
-	protected static function setCacheStorage(IStorage $storage)
+	protected static function setCacheStorage(\Nette\Caching\IStorage $storage)
 	{
 		self::$cacheStorage=$storage;
 	}
@@ -589,23 +595,29 @@ class Browscap
 	protected static function getCacheStorage()
 	{
 		if (self::$cacheStorage===NULL) {
-			$dir=NEnvironment::getVariable('tempDir').'/cache';
-			umask(0000);
-			@mkdir($dir, 0755); // @ - directory may exists
-			self::$cacheStorage=new FileStorage($dir);
+			return new \Nette\Caching\Storages\FileStorage;// DevNullStorage;
 			}
 		return self::$cacheStorage;
 	}
 
 	public static function get_browser($user_agent=NULL, $return_array=FALSE)
 	{
-		if (self::$result==NULL) {
-			$inst=new self;
+		$inst=self::getInstance();
+		if (self::$result==NULL || self::$input!=$user_agent) {
 //			$inst->updateMethod=self::UPDATE_LOCAL;
-//			$inst->localFile=realpath(NEnvironment::getVariable('tempDir').'/temp/browscap.ini');
+//			$inst->localFile=realpath(NEnvironment::getVariable('tempDir').'/bcap.ini');
 			self::$result=$inst->getBrowser($user_agent, TRUE);
+			self::$input=$user_agent;
 			}
 		return $return_array? self::$result : (object)self::$result;
+	}
+
+	public static function getInstance()
+	{
+		if (self::$instance===NULL) {
+			self::$instance=new static;
+			}
+		return self::$instance;
 	}
 }
 
@@ -619,6 +631,6 @@ class Browscap
  * @license	   http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link	   http://garetjax.info/projects/browscap/
  */
-class Browscap_Exception
+class BrowscapException
 extends \Exception
 {}
