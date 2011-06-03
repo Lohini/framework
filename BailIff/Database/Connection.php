@@ -7,21 +7,27 @@
  */
 namespace BailIff\Database;
 
+use BailIff\Environment;
+
 class Connection
 extends \DibiConnection
 {
 	/** @var string */
 	protected static $primary;
+	/** @var bool */
+	protected static $initialized=FALSE;
 
 
 	/**
 	 * Initialize database connections
 	 * @param string $name
-	 * @return Connection
 	 * @throws \RuntimeException
 	 */
-	static public function initialize($options)
+	protected static function initialize($options)
 	{
+		if (self::$initialized) {
+			return;
+			}
 		if (!isset($options->databases->primary)) {
 			throw new \RuntimeException("Primary database isn't set (databases.primary)");
 			}
@@ -49,14 +55,18 @@ extends \DibiConnection
 					}
 				}
 			}
+		self::$initialized=TRUE;
 	}
 
 	/**
 	 * @param string $name
 	 * @return \DibiConnection
 	 */
-	static public function getConnection($name=NULL)
+	public static function getConnection($name=NULL)
 	{
+		if (!self::$initialized) {
+			self::initialize(Environment::getConfig());
+			}
 		return \dibi::getConnection($name!==NULL? $name : self::$primary);
 	}
 }
