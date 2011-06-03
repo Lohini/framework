@@ -54,8 +54,6 @@ extends \Nette\Application\UI\Control
 	protected $files=array();
 	/** @var Cache */
 	private static $cache=NULL;
-	/** @var int */
-	public static $cacheExpire=NULL;
 	/** @var IStorage */
 	private static $cacheStorage;
 	/** @var string */
@@ -336,7 +334,6 @@ extends \Nette\Application\UI\Control
 						),
 					array(
 						Cache::FILES => array_map(function($args) use ($sPath) { return "$sPath/$args"; }, $files),
-						Cache::EXPIRE => self::$cacheExpire,
 						Cache::CONSTS => array(
 							'Nette\Framework::REVISION',
 							'BailIff\Core::REVISION',
@@ -422,18 +419,15 @@ extends \Nette\Application\UI\Control
 	 */
 	public static function getItem($key)
 	{
-		$cache=self::getCache();
-		$item=$cache->offsetGet($key);
+		$item=self::getCache()->offsetGet($key);
 		$content=$item[self::CONTENT];
-		if (preg_match_all('/{\[of#(?P<filter>.*?)#(?P<key>.*?)#cf\]}/m', $content, $matches)) { // XXX remake to use preg_replace_callback ?
-			for ($i=0; $i<count($matches[0]); $i++) {
-				$content=str_replace(
-						$matches[0][$i],
-						call_user_func(__NAMESPACE__."\Filters\\{$matches['filter'][$i]}Filter::getItem", $matches['key'][$i]),
-						$content
-						);
-				}
-			}
+
+		preg_replace_callback(
+			'/{\[of#(?P<filter>.*?)#(?P<key>.*?)#cf\]}/m',
+			function($matches) use(& $content) {
+				$content=str_replace($matches[0], call_user_func("\\BailIff\\WebLoader\\Filters\\{$matches['filter']}Filter::getItem", $matches['key']), $content);
+				},
+			$content);
 		return array(
 			self::CONTENT_TYPE => $item[self::CONTENT_TYPE],
 			self::ETAG => md5($content),

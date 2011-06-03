@@ -21,27 +21,7 @@ class Configurator
 extends \Nette\Configurator
 {
 	/** @var array */
-	public $onCreateContainer=array();
-	/** @var array */
-	public $defaultServices=array(
-		'application' => array(__CLASS__, 'createApplication'),
-		'presenterFactory' => array(__CLASS__, 'createPresenterFactory'),
-		'httpContext' => array(__CLASS__, 'createHttpContext'),
-		'httpRequest' => array(__CLASS__, 'createHttpRequest'),
-		'httpResponse' => 'Nette\Http\Response',
-		'user' => array(__CLASS__, 'createHttpUser'),
-		'cacheStorage' => array(__CLASS__, 'createCacheStorage'),
-		'cacheJournal' => array(__CLASS__, 'createCacheJournal'),
-		'mailer' => array(__CLASS__, 'createMailer'),
-		'session' => array(__CLASS__, 'createHttpSession'),
-		'robotLoader' => array(__CLASS__, 'createRobotLoader'),
-		'templateCacheStorage' => array(__CLASS__, 'createTemplateCacheStorage'),
-		'callbackPanel' => array(__CLASS__, 'createCallbackPanel'),
-		'translatorPanel' => array(__CLASS__, 'createTranslatorPanel'),
-		'translator' => array(__CLASS__, 'createTranslator'),
-		'webLoader' => array(__CLASS__, 'createWebLoader'),
-		'webLoaderCacheStorage' => array(__CLASS__, 'createWebLoaderCacheStorage'),
-	);
+//	public $onCreateContainer=array();
 
 
 	/**
@@ -178,18 +158,6 @@ extends \Nette\Configurator
 	public static function createServiceTranslatorPanel(IContainer $container)
 	{
 		return new \BailIff\Localization\Panel($container);
-	}
-
-	/**
-	 * @param \Nette\DI\IContainer $container
-	 * @return \Nette\Caching\IStorage
-	 */
-	public static function createServiceWebLoaderCacheStorage(IContainer $container)
-	{
-		$dir=$container->expand('%tempDir%/cache');
-		umask('0000');
-		@mkdir($dir, 0777); // @ - directory may exists
-		return new \Nette\Caching\Storages\PhpFileStorage($dir);
 	}
 
 	/**
