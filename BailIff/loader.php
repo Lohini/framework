@@ -1,9 +1,9 @@
-<?php // vim: set ts=4 sw=4 ai:
+<?php // vim: ts=4 sw=4 ai:
 /**
  * This file is part of BailIff
  *
  * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
- * @license GNU GPL v3
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
 
 @header('X-Powered-By: BailIff');
@@ -25,10 +25,10 @@ if (!defined('NETTE')) {
 		}
 	// load Nette Framework
 	require_once LIBS_DIR.'/Nette/loader.php';
-	// check required version of Nette Framework
-	if (!version_compare(\Nette\Framework::VERSION, '2.0-beta', '>=')) {
-		die('This BailIff requires Nette version 2.0-beta or latter, '.\Nette\Framework::VERSION.' used.');
-		}
+	}
+// check required version of Nette Framework
+if (!version_compare(\Nette\Framework::VERSION, '2.0-beta', '>=')) {
+	die('This BailIff requires Nette version 2.0-beta or latter, '.\Nette\Framework::VERSION.' used.');
 	}
 // load BailIff
 require_once BAILIFF_DIR.'/Loaders/BailIffLoader.php';
