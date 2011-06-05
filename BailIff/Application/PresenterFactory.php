@@ -3,7 +3,7 @@
  * This file is part of BailIff
  *
  * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
- * @license GNU GPL v3
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
 namespace BailIff\Application;
 
@@ -21,12 +21,12 @@ implements \Nette\Application\IPresenterFactory
 	/** @var array */
 	public static $presenters=array(
 		'app' => array(
-			'prefix' => '',
+			'prefix' => "App\\",
 			'replace' => "Module\\"
 			),
 		'fw' => array(
 			'prefix' => "BailIff\\Presenters\\",
-			'replace' => ''
+			'replace' => "\\"
 			),
 		);
 	/** @var cache */
@@ -112,9 +112,7 @@ implements \Nette\Application\IPresenterFactory
 	public function unformatPresenterClass($class)
 	{
 		$mapper=function($presenter) use ($class) {
-			if (Strings::startsWith($class, $presenter['prefix'])
-				&& Strings::match($class, '/'.$presenter['replace'].(Strings::endsWith($presenter['replace'], "\\")? "\\" : '').'/')
-				) {
+			if (Strings::startsWith($class, $presenter['prefix'])) {
 				return $presenter;
 				}
 			};
