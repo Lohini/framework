@@ -126,17 +126,6 @@ implements \Nette\Application\IPresenterFactory
 	}
 
 	/**
-	 * Formats presenter class file name.
-	 * @param string $presenter
-	 * @return string
-	 */
-	public function formatPresenterFile($presenter)
-	{
-		$path='/'.str_replace(':', 'Module/', $presenter);
-		return $this->baseDir.substr_replace($path, '/presenters', strrpos($path, '/'), 0).'Presenter.php';
-	}
-
-	/**
 	 * Format presenter class with prefixes
 	 * @param string $name
 	 * @return string
