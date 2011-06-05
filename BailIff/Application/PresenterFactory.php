@@ -66,23 +66,23 @@ implements \Nette\Application\IPresenterFactory
 			return $class;
 			}
 		if (!is_string($name) || !Strings::match($name, "#^[a-zA-Z\x7f-\xff][a-zA-Z0-9\x7f-\xff:]*$#")) {
-			throw new \Nette\Application\InvalidPresenterException("Presenter name must be alphanumeric string, '$name' is invalid.");
+			throw InvalidPresenterException::invalidName($name);
 			}
 
 		$class=$this->formatPresenterClasses($name);
 		$reflection=\Nette\Reflection\ClassType::from($class);
 		$class=$reflection->getName();
 		if (!$reflection->implementsInterface('Nette\Application\IPresenter')) {
-			throw new \Nette\Application\InvalidPresenterException("Cannot load presenter '$name', class '$class' is not Nette\\Application\\IPresenter implementor.");
+			throw InvalidPresenterException::notImplementor($name, $class);
 			}
 		if ($reflection->isAbstract()) {
-			throw new \Nette\Application\InvalidPresenterException("Cannot load presenter '$name', class '$class' is abstract.");
+			throw InvalidPresenterException::isAbstract($name, $class);
 			}
 
 		// canonicalize presenter name
 		$realName=$this->unformatPresenterClass($class);
 		if ($name!==$realName) {
-			throw new \Nette\Application\InvalidPresenterException("Cannot load presenter '$name', case mismatch. Real name is '$realName'.");
+			throw InvalidPresenterException::caseMismatch($name, $realName);
 			}
 		$this->cache[$name]=array($class, $realName);
 		return $class;
@@ -152,6 +152,6 @@ implements \Nette\Application\IPresenterFactory
 				}
 			}
 		$class=$this->formatPresenterClass($name);
-		throw new \Nette\Application\InvalidPresenterException("Cannot load presenter '$name', class '$class' was not found.");
+		throw InvalidPresenterException::notFound($name, $class);
 	}
 }
