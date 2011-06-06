@@ -3,12 +3,11 @@
  * This file is part of BailIff
  *
  * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
- * @license GNU GPL v3
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
 namespace BailIff\WebLoader;
 
 use Nette\Utils\Html,
-	Nette\Environment as NEnvironment,
 	Nette\Diagnostics\Debugger,
 	BailIff\WebLoader\Filters\CssUrlsFilter;
 
@@ -35,7 +34,6 @@ extends WebLoader
 		$this->setGeneratedFileNamePrefix('cssldr-');
 		$this->setGeneratedFileNameSuffix('.css');
 		$this->sourcePath=WWW_DIR.'/css';
-		$this->sourceUri=NEnvironment::getService('httpRequest')->getUrl()->getBaseUrl().'css/';
 		$this->contentType='text/css';
 		$this->preFileFilters[]=new \BailIff\WebLoader\Filters\LessFilter;
 		$this->preFileFilters[]=new \BailIff\WebLoader\Filters\CCssFilter;
@@ -104,7 +102,7 @@ extends WebLoader
 	public function renderFiles()
 	{
 		if (count($this->files)==1 && substr($this->files[0][0], -4)=='.css') { // single raw, don't parse|cache
-			echo $this->getElement($this->sourceUri.$this->files[0][0], $this->files[0][1]);
+			echo $this->getElement($this->getPresenter(FALSE)->getContext()->getService('httpRequest')->getUrl()->getBaseUrl().'css/'.$this->files[0][0], $this->files[0][1]);
 			return;
 			}
 		$filesByMedia=array();
@@ -146,7 +144,7 @@ extends WebLoader
 			$file= is_array($arg)? key($arg) : $arg;
 			$media= is_array($arg)? $arg[$file] : 'all';
 			if (strtolower(substr($file, -4))=='.css') {
-				echo $this->getElement($this->sourceUri.$file, $media);
+				echo $this->getElement($this->getPresenter(FALSE)->getContext()->getService('httpRequest')->getUrl()->getBaseUrl().'css/'.$file, $media);
 				return;
 				}
 			}
@@ -182,7 +180,7 @@ extends WebLoader
 
 		foreach ($this->files as $f) {
 			if (strtolower(substr($f[0], -4))=='.css') {
-				echo $this->getElement($this->sourceUri.$f[0], $f[1]);
+				echo $this->getElement($this->getPresenter(FALSE)->getContext()->getService('httpRequest')->getUrl()->getBaseUrl().'css/'.$f[0], $f[1]);
 				}
 			else {
 				echo $this->getElement($this->getPresenter()->link(':WebLoader:', $this->generate(array($f[0]))), $f[1]);
@@ -206,7 +204,7 @@ extends WebLoader
 			}
 
 		foreach ($this->files as $f) {
-			echo $this->getElement($this->sourceUri.$f[0], $f[1]);
+			echo $this->getElement($this->getPresenter(FALSE)->getContext()->getService('httpRequest')->getUrl()->getBaseUrl().'css/'.$f[0], $f[1]);
 			}
 		if ($hasArgs) {
 			$this->files=$backup;

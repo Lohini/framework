@@ -3,12 +3,11 @@
  * This file is part of BailIff
  *
  * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
- * @license GNU GPL v3
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
 namespace BailIff\WebLoader;
 
 use Nette\ComponentModel\IContainer,
-	Nette\Environment as NEnvironment,
 	Nette\Utils\Html,
 	Nette\Utils\Strings,
 	Nette\Diagnostics\Debugger;
@@ -43,7 +42,6 @@ extends WebLoader
 		$this->setGeneratedFileNamePrefix('jsldr-');
 		$this->setGeneratedFileNameSuffix('.js');
 		$this->sourcePath=WWW_DIR.'/js';
-		$this->sourceUri=NEnvironment::getService('httpRequest')->getUrl()->getBaseUrl().'js/';
 		$this->contentType='text/javascript';
 	}
 
@@ -93,6 +91,7 @@ extends WebLoader
 		$content='';
 		if (($cnt=count($this->files))>0) {
 			if ($cnt==1 && $this->files[0][1]==self::COMPACT) {
+				$this->sourceUri=$this->getPresenter(FALSE)->getContext()->getService('httpRequest')->getUrl()->getBaseUrl().'js/';
 				echo $this->useHeadJs
 					? $this->getHeadJsElement($this->sourceUri.$this->files[0][0])
 					: $this->getElement($this->sourceUri.$this->files[0][0]);
@@ -214,6 +213,7 @@ extends WebLoader
 			$this->addFiles(func_get_args());
 			}
 		$dc=get_declared_classes();
+		$this->sourceUri=$this->getPresenter(FALSE)->getContext()->getService('httpRequest')->getUrl()->getBaseUrl().'js/';
 		// u javascriptu zalezi na poradi
 		foreach ($this->files as $file) {
 			switch ($file[1]) {
@@ -290,6 +290,7 @@ extends WebLoader
 			$this->clear();
 			$this->addFiles(func_get_args());
 			}
+		$this->sourceUri=$this->getPresenter(FALSE)->getContext()->getService('httpRequest')->getUrl()->getBaseUrl().'js/';
 		// u javascriptu zalezi na poradi
 		foreach ($this->files as $file) {
 			switch ($file[1]) {
@@ -327,6 +328,26 @@ extends WebLoader
 		foreach ($this->codes as $code) {
 			echo $this->getCodeElement($code);
 			}
+		if ($hasArgs) {
+			$this->files=$backup;
+			}
+	}
+
+	/**
+	 * Generates and render links - disables use of Head.js
+	 *
+	 * usefull for @layout
+	 * @example {control js:noHead 'file.js', 'file2.js'}
+	 */
+	public function renderNoHead()
+	{
+		if ($hasArgs=(func_num_args()>0)) {
+			$backup=$this->files;
+			$this->clear();
+			$this->addFiles(func_get_args());
+			}
+		$this->useHeadJs=FALSE;
+		$this->renderFiles();
 		if ($hasArgs) {
 			$this->files=$backup;
 			}
