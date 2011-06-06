@@ -10,7 +10,7 @@ namespace BailIffTesting\DI;
 class ContainerTest
 extends \PHPUnit_Framework_TestCase
 {
-	/** @var \BailIff\Application\PresenterFactory */
+	/** @var \BailIff\DI\Container */
 	private $container;
 
 	public function setUp()
@@ -18,28 +18,11 @@ extends \PHPUnit_Framework_TestCase
 		$this->container=new \BailIff\DI\Container;
 	}
 
-	public function providerParams()
-	{
-		return array(
-			array('foo', NULL, 'FoO'),
-			array('foo', 'FOO', 'FOO')
-			);
-	}
-
-	/**
-	 * @dataProvider providerParams
-	 */
-	/*
-	public function testGetParam($key, $default, $val)
-	{
-		$this->assertEquals($val, $this->container->getParam($key), "->getParam('$key')");
-	}
-*/
 	/**
 	 * @expectedException \Nette\OutOfRangeException
 	 */
 	public function testGetParamMissing()
 	{
-		$this->container->getParam('oof');
+		$this->container->getParam(\Nette\Utils\Strings::random());
 	}
 }

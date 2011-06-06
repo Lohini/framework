@@ -43,6 +43,17 @@ extends \PHPUnit_Framework_TestCase
 			);
 	}
 
+	 /**
+	 * @dataProvider providerPresenterClassPrefix
+	 */
+	public function testCreatePresenter($presenter, $class, $prefix=NULL)
+	{
+		if ($prefix!==NULL) {
+			return;
+			}
+		$this->assertInstanceOf($class, $this->factory->createPresenter($presenter), "->createPresenter('$presenter')");
+	}
+
 	/**
 	 * @dataProvider providerPresenterClassPrefix
 	 */
@@ -67,9 +78,24 @@ extends \PHPUnit_Framework_TestCase
 	/**
 	 * @dataProvider providerPresenterClassPrefix
 	 */
-	public function testGetPresenterClass($presenter, $class)
+	public function testGetPresenterClass($presenter, $class, $prefix=NULL)
 	{
-//		$this->assertEquals($class, $this->factory->getPresenterClass($presenter), "->getPresenterClass('$presenter')");
+		if ($prefix!==NULL) {
+			return;
+			}
+		$this->assertEquals($class, $this->factory->getPresenterClass($presenter), "->getPresenterClass('$presenter')");
+	}
+
+	/**
+	 * @dataProvider providerPresenterClassPrefix
+	 */
+	public function testGetPresenterClassCaching($presenter, $class, $prefix=NULL)
+	{
+		if ($prefix!==NULL) {
+			return;
+			}
+		$this->factory->getPresenterClass($presenter);
+		$this->assertEquals($class, $this->factory->getPresenterClass($presenter), "->getPresenterClass('$presenter')");
 	}
 
 	/**
@@ -140,17 +166,6 @@ extends \PHPUnit_Framework_TestCase
 	{
 		$name='Foo:Baz';
 		$this->factory->getPresenterClass($name);
-	}
-
-	 /**
-	 * @dataProvider providerPresenterClassPrefix
-	 */
-	public function testCreatePresenter($presenter, $class, $prefix='prefix')
-	{
-		if ($prefix) {
-			return;
-			}
-		$this->assertInstanceOf($class, $this->factory->createPresenter($presenter), "->createPresenter('$presenter')");
 	}
 
 	/**
