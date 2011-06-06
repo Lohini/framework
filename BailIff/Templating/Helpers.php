@@ -3,18 +3,21 @@
  * This file is part of BailIff
  *
  * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
- * @license GNU GPL v3
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
 namespace BailIff\Templating;
 
 /**
- * BailIff template telpers
+ * BailIff template run-time telpers
  *
  * @author Lopo <lopo@losys.eu>
  */
 final class Helpers
 {
-	private static $helpers=array();
+	/** @var array */
+	private static $helpers=array(
+		'gravatar' => 'BailIff\Components\Gravatar::helper'
+		);
 
 
 	/**
@@ -88,32 +91,5 @@ final class Helpers
 			$bytes=$bytes/$kilo;
 			}
 		return round($bytes, $precision)." $unit";
-	}
-
-	/**
-	 * Generates Gravatar img from email
-	 *
-	 * @param string $email
-	 * @param int $size
-	 * @param string $default
-	 * @param string $rating
-	 * @param array $atts 
-	 */
-	public static function gravatar($email, $size=32, $default='mm', $rating=NULL, $atts=array())
-	{
-		$url='http://www.gravatar.com/avatar/'
-			.md5(strtolower(trim($email)))
-			.'?d='.$default
-			.'&s='.$size
-			.($rating!==NULL? '&r='.$rating : '');
-		$img=\Nette\Utils\Html::el('img')
-			->src($url)
-			->alt('')
-			->width($size)
-			->height($size);
-		foreach ($atts as $k => $v) {
-			$img->$k=$v;
-			}
-		echo $img;
 	}
 }
