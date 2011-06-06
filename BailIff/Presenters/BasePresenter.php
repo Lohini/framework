@@ -3,12 +3,9 @@
  * This file is part of BailIff
  *
  * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
- * @license GNU GPL v3
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
 namespace BailIff\Presenters;
-
-use Nette\Environment as NEnvironment,
-	Nette\Forms\Form;
 
 /**
  * Base presenter class
@@ -26,43 +23,29 @@ extends \BailIff\Application\UI\Presenter
 
 
 	/**
-	 * @see Nette\Application\UI.Presenter::startup()
-	 */
-	protected function startup()
-	{
-		parent::startup();
-		Form::extensionMethod('addPswd', function (Form $form, $name, $label) { return $form[$name]=new \BailIff\Forms\Controls\PswdInput($label); });
-		Form::extensionMethod('addCBox3S', function (Form $form, $name, $label) { return $form[$name]=new \BailIff\Forms\Controls\CBox3S($label); });
-		Form::extensionMethod('addDatePicker', function (Form $form, $name, $label) { return $form[$name]=new \BailIff\Forms\Controls\DatePicker($label); });
-		Form::extensionMethod('addReset', function (Form $form, $name, $label) { return $form[$name]=new \BailIff\Forms\Controls\ResetButton($label); });
-	}
-
-	/**
-	 * @see Nette\Application\UI.Presenter::beforeRender()
+	 * @see \Nette\Application\UI\Presenter::beforeRender()
 	 */
 	protected function beforeRender()
 	{
 		$user=$this->getUser();
 		$this->template->identity= $user->isLoggedIn()? $user->getIdentity() : NULL;
-		$this->template->titleSeparator=NEnvironment::getVariable('titleSeparator', ' | ');
+		$this->template->titleSeparator= $this->getContext()->getParam('titleSeparator', ' | ');
 		$this->template->lang=$this->lang;
 	}
 
 	/**
 	 * @param string $class
-	 * @see Nette\Application\UI\Control::createTemplate()
+	 * @see \Nette\Application\UI\Control::createTemplate()
 	 */
 	protected function createTemplate($class=NULL)
 	{
 		$template=$this->getContext()->templateFactory->createTemplate($this, $class);
-//		$template=parent::createTemplate($class);
-//		$template->registerHelperLoader('BailIff\Templating\Helpers::loader');
 		$template->setTranslator($this->context->translator->setLang($this->lang));
 		return $template;
 	}
 
 	/**
-	 * @see Nette\Application\UI.Presenter::formatLayoutTemplateFiles()
+	 * @see \Nette\Application\UI\Presenter::formatLayoutTemplateFiles()
 	 */
 	public function formatLayoutTemplateFiles()
 	{
@@ -94,7 +77,7 @@ extends \BailIff\Application\UI\Presenter
 	}
 
 	/**
-	 * @see Nette\Application\UI.Presenter::formatTemplateFiles()
+	 * @see \Nette\Application\UI\Presenter::formatTemplateFiles()
 	 */
 	public function formatTemplateFiles()
 	{
