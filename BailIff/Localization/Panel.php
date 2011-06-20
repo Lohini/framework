@@ -1,181 +1,166 @@
-<?php // vim: set ts=4 sw=4 ai:
+<?php // vim: ts=4 sw=4 ai:
 /**
  * This file is part of BailIff
  *
  * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
- * @license GNU GPL v3
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
 namespace BailIff\Localization;
+/**
+ * This file is part of the Nella Framework.
+ *
+ * Copyright (c) 2006, 2011 Patrik Votoček (http://patrik.votocek.cz)
+ *
+ * This source file is subject to the GNU Lesser General Public License. For more information please see http://nella-project.org
+ * @author	Patrik Votoček
+ */
 
-use Nette\Diagnostics\IBarPanel,
-	Nette\Environment as NEnvironment,
-	Nette\Diagnostics\Debugger,
-	BailIff\Environment;
-
+/**
+ * Translator panel
+ */
 class Panel
-implements IBarPanel
+extends \BailIff\FreezableObject
+implements \Nette\Diagnostics\IBarPanel
 {
+	const VERSION='2.0';
 	const XHR_HEADER='X-Translation-Client';
-	const SESSION_NAMESPACE='BailIffTranslator-Panel';
-	const LANGUAGE_KEY='X-BailIffTranslator-Lang';
-	const FILE_KEY='X-BailIffTranslator-File';
-	/* Layout constants */
-	const LAYOUT_HORIZONTAL=1;
-	const LAYOUT_VERTICAL=2;
 
-	/** @var int TranslationPanel layout */
-	protected $layout=self::LAYOUT_VERTICAL;
-	/** @var int Height of the editor */
-	protected $height=410;
+	/** @var \BailIff\Localization\ITranslator */
+	private $translator;
+	/** @var \BailIff\Localization\Extractor */
+	private $extractor;
 
 
 	/**
-	 * Constructor
-	 * @param int $layout
-	 * @param int $height
-	 * @throws InvalidArgumentException
+	 * @param \Nette\DI\IContainer
+	 * @param \BailIff\Localization\ITranslator
 	 */
-	public function __construct($layout=NULL, $height=NULL)
+	public function __construct(\Nette\DI\IContainer $container, ITranslator $translator=NULL)
 	{
-		if ($height!==NULL) {
-			if (!is_numeric($height)) {
-				throw new \InvalidArgumentException('Panel height has to be a numeric value.');
-				}
-			$this->height=$height;
+		if (!$translator) {
+			$translator=$container->translator;
 			}
-		if ($layout!==NULL) {
-			$this->layout=$layout;
-			if ($height===NULL) {
-				$this->height=500;
-				}
-			}
-		$this->processRequest();
+
+		$this->translator=$translator;
+		$this->extractor=new Extractor($translator);
+
+		$this->processRequests($container);
+
+		\Nette\Diagnostics\Debugger::$bar->addPanel($this);
 	}
 
 	/**
-	 * Returns panel ID.
-	 * @return string
+	 * @return \BailIff\Localization\Extractor
 	 */
-	public function getId()
+	public function getExtractor()
 	{
-		return 'translation-panel';
+		return $this->extractor;
 	}
 
 	/**
-	 * Returns the code for the panel tab.
+	 * @param bool|array
+	 * @return array
+	 */
+	protected function getDictionaries($data=FALSE)
+	{
+		$convert=function($s) {
+			$s=strtolower($s);
+			if ($s=='null') {
+				return NULL;
+				}
+			elseif ($s=='false') {
+				return FALSE;
+				}
+			else {
+				return TRUE;
+				}
+			};
+
+		$dictionaries=array();
+		foreach ($this->translator->dictionaries as $name => $dictionary) {
+			if (!$dictionary->frozen) {
+				$dictionary->init($this->translator->lang);
+				}
+			if ($data && isset($data[$dictionary->dir])) {
+				$dictionary->pluralForm=$data[$dictionary->dir]['pluralForm'];
+				foreach ($data[$dictionary->dir]['translations'] as $message => $translation) {
+					$dictionary->addTranslation(
+						$message,
+						$translation['translation'],
+						isset($translation['status'])? $convert($translation['status']) : NULL
+						);
+					}
+				$dictionary->save();
+				}
+
+			$current=$dictionaries[$dictionary->dir]=array(
+				'name' => $name,
+				'pluralForm' => $dictionary->pluralForm,
+				'translations' => $dictionary->iterator->getArrayCopy(),
+				);
+			}
+		return $dictionaries;
+	}
+
+	/**
+	 * @param \Nette\DI\IContainer
+	 */
+	protected function processRequests(\Nette\DI\IContainer $container)
+	{
+		$this->updating();
+
+		$httpRequest=$container->httpRequest;
+		$httpResponse=$container->httpResponse;
+
+		if ($httpRequest->getHeader(self::XHR_HEADER, FALSE)) {
+			$data=FALSE;
+			$this->translator->setLang($httpRequest->getPost('lang'));
+			switch($httpRequest->getPost('action')) {
+				case 'get':
+					break;
+				case 'extract':
+					$this->extractor->run();
+					break;
+				case 'save':
+					$data=$httpRequest->getPost('data', '');
+					break;
+				}
+
+			$dictionaries=$this->getDictionaries($data);
+
+			$response=new \Nette\Application\Responses\JsonResponse(array(
+				'status' => 'OK',
+				'lang' => $this->translator->dictionaries,
+				'data' => $dictionaries,
+			));
+
+			$response->send($httpRequest, $httpResponse);
+			exit(255);
+		}
+
+		$this->freeze();
+	}
+
+	/**
 	 * @return string
 	 */
 	public function getTab()
 	{
-		ob_start();
-		require __DIR__.'/tab.latte';
-		return ob_get_clean();
+		return '<span title="Translation panel">
+		<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAnhJREFUeNqUkktoU0EUhv+5M7kxQVOk1U27UbBEqPQFATcuFDcudCWCG0EQXdlVxV1R12qzkyIUJNZVfFQr4kKkIIKPUEGMJWJLbamt5t08bm7ujGfuoyqi4CHn3tw5c77zn5nD0pf2PzBl/eh8aOD29ejVWe7Uz0oph6QC6AeDXHBmmYKNc8YugsEzCjL6z9JjCTU02Iv+TxM4uEsh0cMx3B1GfAcQEUDTAV4uSYzeW0ZnlLOKJQcJ3kuAM4LjkFBKQck2pNPCzWMdeLQAzFeB12VQAvC9AZzebaBpK9RaUsW7BKIhA6MHtuP41FcIT47WKzG3Dkxkge5twE5yxYFVAiwQ0HYkZk71IBJiaFNjjDLbJMUFML/XggUQ3HVBi9z3cssrkrE4tQPk8sCFvp95rukDKdBGIzikAEyPkuWBPlYAk95hyipbXmwToD/y/kY3YHjOyUs2vf1qQVyr3VTA3EWGIi0KaioUop7p0NaKLfe6qo4GMXcfgnZ9tSIQa1C5x1kLolFGrtJw8cqfhejWqJ4FvxDBSE5pE6B7VDGEmY2NhcVpO/f8yWpq5FXQWnx86U272YRpCpj65E1SZzmYzlWhqqt3hSJBYe5gspjA4SufRygnH0+uVBmkC6jMzZyP9R+5RlrEjfQS9NzIjW9P6+8eptbvX54lAINDQmoshmdjexZPdr2HrSoQyoaGrEyeu7UCvPAvJbAC+dre5Je68MbagM1MbBgcU/l9ONH5ARHUEFYNxJPLZQaVwV/MvXam74sgbWhIB1L5AdzJ96HFtkD9VvhPEzo5m8m4EMX0mIagCCukDUfPq/o3QEeHf/l+i/+0HwIMAH5w+NCLkY8+AAAAAElFTkSuQmCC">
+		translations
+		</span>';
 	}
 
 	/**
-	 * Returns the code for the panel itself.
 	 * @return string
 	 */
 	public function getPanel()
 	{
-		$translator=NEnvironment::getService('translator');
-		$files=array_keys($translator->getFiles());
-		$strings=$translator->getStrings();
-
-		$requests=Environment::getApplication()->requests;
-		$presenterName=$requests[count($requests)-1]->presenterName;
-		$module=strtolower(str_replace(':', '.', ltrim(substr($presenterName, 0, -(strlen(strrchr($presenterName, ':')))), ':')));
-		$activeFile= (in_array($module, $files))? $module : $files[0];
-
-		if (NEnvironment::getSession()->isStarted()) {
-			$session=NEnvironment::getSession(self::SESSION_NAMESPACE);
-			$untranslatedStack= isset($session['stack'])? $session['stack'] : array();
-			foreach ($strings as $string => $data) {
-				if (!$data) {
-					$untranslatedStack[$string]=FALSE;
-					}
-				}
-			$session['stack']=$untranslatedStack;
-
-			foreach ($untranslatedStack as $string => $value) {
-				if (!isset($strings[$string])) {
-					$strings[$string]=FALSE;
-					}
-				}
-			}
-
+		$lang=$this->translator->lang;
+		$dictionaries=$this->getDictionaries();
 		ob_start();
-		require __DIR__.'/panel.latte';
+		require_once __DIR__.'/panel.latte';
 		return ob_get_clean();
-	}
-
-	/**
-	 * Handles an incoming request and saves the data if necessary.
-	 */
-	private function processRequest()
-	{
-		// Try starting the session
-		try {
-			$session=NEnvironment::getSession(self::SESSION_NAMESPACE);
-			}
-		catch (\InvalidStateException $e) {
-			$session=FALSE;
-			}
-		$request=NEnvironment::getHttpRequest();
-		if ($request->isPost() && $request->isAjax() && $request->getHeader(self::XHR_HEADER)) {
-			$data=json_decode(file_get_contents('php://input'));
-			$translator=NEnvironment::getService('translator');
-			if ($data) {
-				if ($session) {
-					$stack= isset($session['stack'])? $session['stack'] : array();
-					}
-
-				$translator->lang=$data->{self::LANGUAGE_KEY};
-				$file=$data->{self::FILE_KEY};
-				unset($data->{self::LANGUAGE_KEY}, $data->{self::FILE_KEY});
-				foreach ($data as $string => $value) {
-					$translator->setTranslation($string, $value, $file);
-					if ($session && isset($stack[$string])) {
-						unset($stack[$string]);
-						}
-					}
-				$translator->save($file);
-
-				if ($session) {
-					$session['stack']=$stack;
-					}
-				}
-			exit;
-		}
-	}
-
-	/**
-	 * Returns an odrdinal number suffix.
-	 * @param string $count
-	 * @return string
-	 */
-	protected function ordinalSuffix($count)
-	{
-		switch (substr($count, -1)) {
-			case '1':
-				return 'st';
-			case '2':
-				return 'nd';
-			case '3':
-				return 'rd';
-			default:
-				return 'th';
-			}
-	}
-
-	/**
-	 * Registers this panel
-	 * @param IEditable $translator
-	 * @param int $layout
-	 * @param int $height
-	 */
-	public static function register(IEditable $translator=NULL, $layout=NULL, $height=NULL)
-	{
-		Debugger::addPanel(new static($layout, $height));
 	}
 }

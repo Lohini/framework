@@ -12,7 +12,7 @@ namespace BailIff\Localization;
  * Copyright (c) 2006, 2011 Patrik Votoček (http://patrik.votocek.cz)
  *
  * This source file is subject to the GNU Lesser General Public License. For more information please see http://nella-project.org
- * @author	Patrik Votocek
+ * @author	Patrik Votoček
  */
 /**
  * BailIff port
@@ -20,13 +20,19 @@ namespace BailIff\Localization;
  */
 
 /**
- * Translator adapter
+ * Localization storage interface
  */
-interface ITranslator
-extends \Nette\Localization\ITranslator
+interface IStorage
 {
 	/**
-	 * @return array
+	 * @param \BailIff\Localization\Dictionary
+	 * @param string
 	 */
-	public function getDictionaries();
+	public function save(Dictionary $dictionary, $lang);
+	
+	/**
+	 * @param string
+	 * @return \BailIff\Localization\Dictionary
+	 */
+	public function load($lang, Dictionary $dictionary);
 }
