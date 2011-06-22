@@ -6,13 +6,15 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
 namespace BailIff\Components\DataGrid\DataSources\Doctrine\Utils;
-/**
- * BailIff port
- * @author Lopo <lopo@losys.eu>
- */
 
 use Doctrine\ORM\Query\AST;
 
+/**
+ * Distinct AST walker
+ * used for getting distinct values of 1 column
+ *
+ * @author Lopo <lopo@losys.eu>
+ */
 class DistinctASTWalker
 extends \Doctrine\ORM\Query\TreeWalkerAdapter
 {
