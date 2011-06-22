@@ -161,35 +161,14 @@ extends \Nette\Configurator
 	}
 
 	/**
-	 * @param \Nette\DI\IContainer $container
-	 * @return \BailIff\Plugins\IManager
-	 */
-	public static function createServicePluginManager(IContainer $container)
-	{
-		return new \BailIff\Plugins\Manager($container);
-	}
-
-	/**
-	 * @param DI\Container $container
-	 * @return Kdyby\Doctrine\Container
-	 */
-	public static function createServiceDoctrine(Container $container)
-	{
-		return new \BailIff\Database\Doctrine\Container($container);
-	}
-
-	/**
 	 * Merges 2nd config into 1st
 	 *
 	 * @param array $c1
 	 * @param array $c2
 	 * @return array
 	 */
-	public static function mergeConfigs(array $c1=NULL, array $c2)
+	public static function mergeConfigs(array $c1, array $c2)
 	{
-		if ($c1==NULL) {
-			return $c2;
-			}
 		foreach ($c2 as $k => $v) {
 			if (array_key_exists($k, $c1) && $v!==NULL && (!is_scalar($v) || is_array($v))) {
 				$c1[$k]=self::mergeConfigs($c1[$k], $c2[$k]);
@@ -203,15 +182,16 @@ extends \Nette\Configurator
 
 	/**
 	 * Loads configuration from file(s) and process it.
-	 * $throws \Nette\InvalidStateException
+	 * @return \Nette\DI\Container
+	 * @throws \Nette\InvalidStateException
 	 */
 	public function loadConfig($file, $section=NULL)
 	{
 		$this->onBeforeLoadConfig($container=$this->getContainer());
 		$files= $file===NULL? array($this->defaultConfigFile) : $file;
-		for ($i=0; $i<count($files); $i++) {
-			$files[$i]=$container->expand($files[$i]);
-			}
+		array_walk($files, function(&$file) use ($container) {
+			$file=$container->expand($file);
+			});
 		if ($section===NULL) {
 			if (PHP_SAPI==='cli') {
 				$section=NEnvironment::CONSOLE;
@@ -227,7 +207,8 @@ extends \Nette\Configurator
 		if ($cached) {
 			require $cached['file'];
 			fclose($cached['handle']);
-			return;
+			$this->onAfterLoadConfig($container);
+			return $this->getContainer();
 			}
 
 		$config=array();
@@ -281,8 +262,8 @@ extends \Nette\Configurator
 			}
 
 		// expand variables
-		array_walk_recursive($config, function(&$val) {
-			$val=NEnvironment::expand($val);
+		array_walk_recursive($config, function(&$val) use ($container) {
+			$val=$container->expand($val);
 			});
 
 		// PHP settings
@@ -310,14 +291,14 @@ extends \Nette\Configurator
 
 		// other
 		foreach ($config as $key => $value) {
-			$code.=$this->generateCode('$container->params[?] = '.(is_array($value)? 'Nette\ArrayHash::from(?)' : '?'), $key, $value);
+			$code.=$this->generateCode('$container->params[?]= '.(is_array($value)? 'Nette\ArrayHash::from(?)' : '?'), $key, $value);
 			}
 
 		// pre-loading
 		$code.=self::preloadEnvironment($container);
 
 		// auto-start services
-		$code .= 'foreach ($container->getServiceNamesByTag("run") as $name => $foo) { $container->getService($name); }' . "\n";
+		$code.='foreach ($container->getServiceNamesByTag("run") as $name => $foo) { $container->getService($name); }'."\n";
 
 		$cache->save($files, $code, array(
 			Cache::FILES => $files,
@@ -325,6 +306,7 @@ extends \Nette\Configurator
 
 		\Nette\Utils\LimitedScope::evaluate($code, array('container' => $container));
 		$this->onAfterLoadConfig($container);
+		return $this->getContainer();
 	}
 
 	/**
@@ -348,6 +330,6 @@ extends \Nette\Configurator
 			$a=strpos($statement, '?', $a+strlen($args[$i]));
 			$i++;
 			}
-		return $statement.";\n\n";
+		return "$statement;\n\n";
 	}
 }
