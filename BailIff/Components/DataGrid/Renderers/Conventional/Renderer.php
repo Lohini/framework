@@ -51,17 +51,18 @@ implements \BailIff\Components\DataGrid\Renderers\IRenderer
 		'row.filter' => array(
 			'container' => 'tr class=filters',
 			'cell' => array(
-				'container' => 'td class="ui-widget-header"', // .action
+				'container' => 'td', // .action
+				'.class' => 'ui-widget-header'
 				),
 			'control' => array(
 				'.input' => 'text',
 				'.select' => 'select',
-				'.submit' => 'button class="ui-button"',
+				'.submit' => 'button ui-button',
 				),
 			),
 		'row.content' => array(
 			'container' => 'tr', // .even, .selected
-			'.even' => 'even',
+			'.even' => 'even ui-state-highlight',
 			'cell' => array(
 				'container' => 'td', // .checker, .action
 				'.class' => 'ui-widget-content'
@@ -357,7 +358,7 @@ implements \BailIff\Components\DataGrid\Renderers\IRenderer
 // page change submit
 		$control=$form['pageSubmit']->control;
 		$control->title=$control->value;
-//		$control->addClass('ui-button');
+		$control->addClass('ui-button');
 		$container->add($control);
 
 		unset($first, $prev, $next, $last, $button, $paginator, $link, $a, $form);
@@ -505,12 +506,14 @@ implements \BailIff\Components\DataGrid\Renderers\IRenderer
 		$submitControl=$form['filterSubmit']->control;
 		$submitControl->addClass($this->getValue('row.filter control .submit'));
 		$submitControl->title=$submitControl->value;
+		$submitControl->style='padding: .1em .1em;';
 
 		foreach ($this->dataGrid->getColumns() as $column) {
 			$cell=$this->getWrapper('row.filter cell container');
 
 // TODO: set on filters too?
 			$cell->attrs=$column->getCellPrototype()->attrs;
+			$cell->addClass($this->getValue('row.filter cell .class'));
 
 			if ($column instanceof ActionColumn) {
 				$value=(string)$submitControl;

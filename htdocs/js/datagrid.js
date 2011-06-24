@@ -8,7 +8,7 @@ $('table.datagrid a.datagrid-ajax')
 		return false;
 		});
 
-//form buttons
+// form buttons
 $('form.datagrid :submit')
 	.live('click', function(e) {
 		$(this).ajaxSubmit(e);
@@ -22,7 +22,6 @@ $('form.datagrid')
 		return false;
 		});
 
-
 /**
  * Datagrid JS support
  */
@@ -31,10 +30,10 @@ function datagridCheckboxClicked()
 {
 	var tr=$(this).parent().parent();
 	if ($(this).is(':checked')) {
-		tr.addClass('selected');
+		tr.addClass('selected ui-state-active');
 		}
 	else {
-		tr.removeClass('selected');
+		tr.removeClass('selected ui-state-active');
 		}
 }
 
@@ -44,11 +43,13 @@ $('table.datagrid td.checker input:checkbox')
 	.live('click', datagridCheckboxClicked);
 
 // zaškrtávání celým řádkem
-var previous = null; // index from
+var previous=null; // index from
 $('table.datagrid tr td:not(.checker)')
-	.live('click', function (e) {
+	.live('click', function(e) {
 		// jen kliknutí levým tlačítkem
-		if (e.button!=0) return true;
+		if (e.button!=0) {
+			return true;
+			}
 
 		var row=$(this).parent('tr');
 
@@ -69,12 +70,12 @@ $('table.datagrid tr td:not(.checker)')
 
 		// zvýraznění řádku(ů)
 		if ($(this).parent().hasClass('selected')) {
-			row.removeClass('selected');
+			row.removeClass('selected ui-state-active');
 			row.find('td.checker input:checkbox').removeAttr('checked');
-
-		} else {
+			}
+		else {
 			if (row.find('td.checker input:checkbox').is(':checkbox')) {
-				row.addClass('selected');
+				row.addClass('selected ui-state-active');
 				row.find('td.checker input:checkbox').attr('checked', 'checked');
 				}
 			}
@@ -94,9 +95,9 @@ $('table.datagrid tr.header th.checker')
 						var selected=table.find('tr.selected');
 						var unselected=table.find('tr').filter(':not(.selected)');
 
-						selected.removeClass('selected');
+						selected.removeClass('selected ui-state-active');
 						selected.find('td.checker input:checkbox').removeAttr('checked');
-						unselected.addClass('selected');
+						unselected.addClass('selected ui-state-active');
 						unselected.find('td.checker input:checkbox').attr('checked', 'checked');
 						})
 				);
@@ -146,7 +147,7 @@ $('form.datagrid table.datagrid tr.footer input[name=page]')
 			}
 		});
 
-//ajaxová změna počtu řádků na stránku datagridů pomocí změny hodnoty selectboxu
+// ajaxová změna počtu řádků na stránku datagridů pomocí změny hodnoty selectboxu
 $('form.datagrid table.datagrid tr.footer input[name=itemsSubmit]')
 	.livequery(function() {
 		$(this).hide();
