@@ -1,0 +1,6 @@
+<div n:snippet class="ui-widget">
+{widget $control nodes}
+</div>
+<script type="text/javascript" n:if="$control->useAjax">
+	head.js({$basePath}+'/js/jquery.ajaxform.js', {$basePath}+'/js/nette.ajax.js');
+</script>
