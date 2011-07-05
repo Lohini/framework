@@ -5,7 +5,7 @@
  * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
-namespace BailIff\Components\DataGrid\DataSources\Doctrine;
+namespace BailIff\Database\DataSources\Doctrine;
 /**
  * @author Michael Moravec
  * @author Štěpán Svoboda
@@ -15,20 +15,18 @@ namespace BailIff\Components\DataGrid\DataSources\Doctrine;
  * @author Lopo <lopo@losys.eu>
  */
 
-use BailIff\Components\DataGrid\DataSources;
+use BailIff\Database\DataSources;
 
 /**
  * Query Builder based data source
  */
 class QueryBuilder
-extends \BailIff\Components\DataGrid\DataSources\Mapped
+extends \BailIff\Database\DataSources\Mapped
 {
 	const MAP_PROPERTIES=1;
 	const MAP_OBJECTS=2;
 
-	/**
-	 * @var \Doctrine\ORM\QueryBuilder Query builder instance
-	 */
+	/** @var \Doctrine\ORM\QueryBuilder Query builder instance */
 	private $qb;
 	/**
 	 * The mapping type
@@ -39,14 +37,8 @@ extends \BailIff\Components\DataGrid\DataSources\Mapped
 	 * @var integer
 	 */
 	private $mappingType;
-	/**
-	 * @var array Fetched data
-	 */
+	/** @var array Fetched data */
 	private $data;
-	/**
-	 * @var int Total data count
-	 */
-	private $count;
 
 
 	/**
@@ -56,6 +48,11 @@ extends \BailIff\Components\DataGrid\DataSources\Mapped
 	public function __construct(\Doctrine\ORM\QueryBuilder $qb)
 	{
 		$this->qb=$qb;
+	}
+
+	public function __clone()
+	{
+		$this->qb=clone $this->qb;
 	}
 
 	/**
@@ -83,10 +80,10 @@ extends \BailIff\Components\DataGrid\DataSources\Mapped
 			foreach ($operation as $t) {
 				$this->validateFilterOperation($t);
 				if ($t===self::IS_NULL || $t===self::IS_NOT_NULL) {
-					$conds[]=$this->mapping[$column].' $t';
+					$conds[]=$this->mapping[$column]." $t";
 					}
 				else {
-					$conds[]="{$this->mapping[$column]} $t ?$nextParamId";
+					$conds[]=$this->mapping[$column]." $t ?$nextParamId";
 					$this->qb->setParameter(
 							$nextParamId++,
 							$t===self::LIKE || $t===self::NOT_LIKE ? DataSources\Utils\WildcardHelper::formatLikeStatementWildcards($value) : $value
@@ -106,10 +103,10 @@ extends \BailIff\Components\DataGrid\DataSources\Mapped
 		else {
 			$this->validateFilterOperation($operation);
 			if ($operation===self::IS_NULL || $operation===self::IS_NOT_NULL) {
-				$this->qb->andWhere($this->mapping[$column].' '.$operation);
+				$this->qb->andWhere($this->mapping[$column]." $operation");
 				}
 			else {
-				$this->qb->andWhere("{$this->mapping[$column]} $operation ?$nextParamId");
+				$this->qb->andWhere($this->mapping[$column]." $operation ?$nextParamId");
 				$this->qb->setParameter(
 						$nextParamId,
 						$operation===self::LIKE || $operation===self::NOT_LIKE ? DataSources\Utils\WildcardHelper::formatLikeStatementWildcards($value) : $value

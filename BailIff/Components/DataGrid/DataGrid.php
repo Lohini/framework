@@ -22,7 +22,7 @@ namespace BailIff\Components\DataGrid;
  */
 
 use BailIff\Components\DataGrid\Columns,
-	BailIff\Components\DataGrid\DataSources\IDataSource;
+	BailIff\Database\DataSources\IDataSource;
 
 /**
  * A data bound list control that displays the items from data source in a table.
@@ -60,7 +60,7 @@ implements \ArrayAccess
 	public $timeout=0;
 	/** @var \BailIff\Components\DataGrid\Renderers\IRenderer */
 	protected $renderer;
-	/** @var \BailIff\Components\DataGrid\DataSources\IDataSource */
+	/** @var \BailIff\Database\DataSources\IDataSource */
 	protected $dataSource;
 	/** @var \Nette\Utils\Paginator */
 	protected $paginator;
@@ -89,7 +89,7 @@ implements \ArrayAccess
 
 	/**
 	 * Getter / property method.
-	 * @return \BailIff\Components\DataGrid\DataSources\IDataSource
+	 * @return \BailIff\Database\DataSources\IDataSource
 	 */
 	public function getDataSource()
 	{
@@ -99,8 +99,8 @@ implements \ArrayAccess
 	/**
 	 * Setter / property method.
 	 * Binds data source to data grid.
-	 * @param \BailIff\Components\DataGrid\DataSources\IDataSource $dataSource
-	 * @return \BailIff\Components\DataGrid\DataGrid
+	 * @param \BailIff\Database\DataSources\IDataSource $dataSource
+	 * @return \BailIff\Components\DataGrid\DataGrid (fluent)
 	 */
 	public function setDataSource(IDataSource $dataSource)
 	{
@@ -169,7 +169,7 @@ implements \ArrayAccess
 	public function getRows()
 	{
 		if (!$this->dataSource instanceof IDataSource) {
-			throw new \Nette\InvalidStateException('Data source is not instance of DataGrid\DataSources\IDataSource. '.gettype($this->dataSource).' given.');
+			throw new \Nette\InvalidStateException('Data source is not instance of \BailIff\Database\DataSources\IDataSource. '.gettype($this->dataSource).' given.');
 			}
 		return $this->dataSource->getIterator();
 	}

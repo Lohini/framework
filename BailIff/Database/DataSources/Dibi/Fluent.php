@@ -5,7 +5,7 @@
  * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
-namespace BailIff\Components\DataGrid\DataSources\Dibi;
+namespace BailIff\Database\DataSources\Dibi;
 /**
  * @author Pavel Kučera
  * @author Michael Moravec
@@ -16,59 +16,32 @@ namespace BailIff\Components\DataGrid\DataSources\Dibi;
  * BailIff port
  * @author Lopo <lopo@losys.eu>
  */
-use BailIff\Components\DataGrid\DataSources\IDataSource,
-	BailIff\Components\DataGrid\DataSources\Utils\WildcardHelper;
+
+use BailIff\Database\DataSources\IDataSource,
+	BailIff\Database\DataSources\Utils\WildcardHelper;
 
 /**
- * Dibi data source based data source
+ * Dibi fluent based data source
  */
-class DataSource
-extends \BailIff\Components\DataGrid\DataSources\DataSource
+class Fluent
+extends \BailIff\Database\DataSources\Mapped
 {
-	/** @var \DibiDataSource Dibi data source instance */
-	private $ds;
+	/** @var \DibiFluent Dibi fluent instance */
+	private $df;
 	/** @var array Fetched data */
 	private $data;
+	/** @var int Total data count */
+	private $count;
 
 
 	/**
-	 * Stores given dibi data source instance
-	 * @param \DibiDataSource
-	 * @return \BailIff\Components\DataGrid\DataSources\IDataSource
+	 * Stores given dibi data fluent instance
+	 * @param \DibiFluent
+	 * @return \BailIff\Database\DataSources\IDataSource
 	 */
-	public function __construct(\DibiDataSource $ds)
+	public function __construct(\DibiFluent $df)
 	{
-		$this->ds=$ds;
-	}
-
-	/**
-	 * Gets list of columns available in datasource
-	 * @return array
-	 */
-	public function getColumns()
-	{
-		$ds=clone $this->ds;
-		return array_keys((array)$ds->select('*')->applyLimit(1)->fetch());
-	}
-
-	/**
-	 * Does datasource have column of given name?
-	 * @return bool
-	 */
-	public function hasColumn($name)
-	{
-		throw new \NotSupportedException;
-	}
-
-	/**
-	 * Returns distinct values for a selectbox filter
-	 * @param string $column name
-	 * @return array
-	 */
-	public function getFilterItems($column)
-	{
-		$ds=clone $this->ds;
-		return $ds->applyLimit(NULL)->toFluent()->removeClause('select')->select()->distinct($column)->fetchPairs($column, $column);
+		$this->df=$df;
 	}
 
 	/**
@@ -77,11 +50,15 @@ extends \BailIff\Components\DataGrid\DataSources\DataSource
 	 * @param string $operation filter
 	 * @param string|array $value operation mode
 	 * @param string $chainType (if third argument is array)
-	 * @return \BailIff\Components\DataGrid\DataSources\IDataSource
+	 * @return \BailIff\Database\DataSources\IDataSource
 	 * @throws \InvalidArgumentException
 	 */
 	public function filter($column, $operation=IDataSource::EQUAL, $value=NULL, $chainType=NULL)
 	{
+		if (!$this->hasColumn($column)) {
+			throw new \InvalidArgumentException('Trying to filter data source by unknown column.');
+			}
+
 		if (is_array($operation)) {
 			if ($chainType!==self::CHAIN_AND && $chainType!==self::CHAIN_OR) {
 				throw new \InvalidArgumentException('Invalid chain operation type.');
@@ -90,51 +67,61 @@ extends \BailIff\Components\DataGrid\DataSources\DataSource
 			foreach ($operation as $t) {
 				$this->validateFilterOperation($t);
 				if ($t===self::IS_NULL || $t===self::IS_NOT_NULL) {
-					$conds[]=array('%n', $column, $t);
+					$conds[]=array('%n', $this->mapping[$column], $t);
 					}
 				else {
-					$modifier= is_double($value)? \dibi::FLOAT : \dibi::TEXT;
+					$modifier= is_double($value)? dibi::FLOAT : dibi::TEXT;
 					if ($operation===self::LIKE || $operation===self::NOT_LIKE) {
 						$value=WildcardHelper::formatLikeStatementWildcards($value);
 						}
-					$conds[]=array('%n', $column, $t, '%'.$modifier, $value);
+
+					$conds[]=array('%n', $this->mapping[$column], $t, '%'.$modifier, $value);
 					}
 				}
 
 			if ($chainType===self::CHAIN_AND) {
 				foreach ($conds as $cond) {
-					$this->ds->where($cond);
+					$this->df->where($cond);
 					}
 				}
 			elseif ($chainType===self::CHAIN_OR) {
-				$this->ds->where('%or', $conds);
+				$this->df->where('%or', $conds);
 				}
 			}
 		else {
 			$this->validateFilterOperation($operation);
 
 			if ($operation===self::IS_NULL || $operation===self::IS_NOT_NULL) {
-				$this->ds->where('%n', $column, $operation);
+				$this->qb->where('%n', $this->mapping[$column], $operation);
 				}
 			else {
-				$modifier= is_double($value)? \dibi::FLOAT : \dibi::TEXT;
+				$modifier= is_double($value)? dibi::FLOAT : dibi::TEXT;
 				if ($operation===self::LIKE || $operation===self::NOT_LIKE) {
 					$value=WildcardHelper::formatLikeStatementWildcards($value);
 					}
-				$this->ds->where('%n', $column, $operation, '%' . $modifier, $value);
+
+				$this->df->where('%n', $this->mapping[$column], $operation, '%'.$modifier, $value);
 				}
 			}
+
+		return $this;
 	}
 
 	/**
 	 * Adds ordering to specified column
 	 * @param string $column name
 	 * @param string $order one of ordering types
-	 * @return \BailIff\Components\DataGrid\DataSources\IDataSource
+	 * @throws \InvalidArgumentException
+	 * @return \BailIff\Database\DataSources\IDataSource
 	 */
 	public function sort($column, $order=IDataSource::ASCENDING)
 	{
-		$this->ds->orderBy($column, $order===self::ASCENDING? 'ASC' : 'DESC');
+		if (!$this->hasColumn($column)) {
+			throw new \InvalidArgumentException('Trying to sort data source by unknown column.');
+			}
+
+		$this->df->orderBy($this->mapping[$column], $order===self::ASCENDING? 'ASC' : 'DESC');
+
 		return $this;
 	}
 
@@ -142,20 +129,25 @@ extends \BailIff\Components\DataGrid\DataSources\DataSource
 	 * Reduces the result starting from $start to have $count rows
 	 * @param int $count the number of results to obtain
 	 * @param int $start the offset
-	 * @return \BailIff\Components\DataGrid\DataSources\IDataSource
+	 * @return \BailIff\Database\DataSources\IDataSource
 	 * @throws \OutOfRangeException
 	 */
 	public function reduce($count, $start=0)
 	{
-		if ($count!=NULL && $count<=0) { //intentionally !=
+		if ($count==NULL || $count>0) { //intentionally ==
+			$this->df->limit($count==NULL? NULL : $count);
+			}
+		else {
 			throw new \OutOfRangeException;
 			}
 
-		if ($start!=NULL && ($start<0 || $start>count($this))) {
+		if ($start==NULL || ($start>0 && $start<count($this))) {
+			$this->df->offset($start == NULL ? 0 : $start);
+			}
+		else {
 			throw new \OutOfRangeException;
 			}
 
-		$this->ds->applyLimit($count==NULL? NULL : $count, $start==NULL? NULL : $start);
 		return $this;
 	}
 
@@ -174,23 +166,37 @@ extends \BailIff\Components\DataGrid\DataSources\DataSource
 	 */
 	public function fetch()
 	{
-		return $this->data=$this->ds->fetchAll();
+		return $this->data=$this->df->fetchAll();
 	}
 
 	/**
 	 * Counts items in data source
 	 * @return int
+	 * @todo: if there is a group by clause in the query, count it correctly
 	 */
 	public function count()
 	{
-		return (int)$this->ds->count();
+		$query=clone $this->df;
+
+		$query->removeClause('select')
+				->removeClause('limit')
+				->removeClause('offset')
+				->removeClause('order by')
+				->select('count(*)');
+
+		return $this->count=(int)$query->fetchSingle();
+	}
+
+	public function getFilterItems($column)
+	{
+		throw new \NotImplementedException;
 	}
 
 	/**
-	 * Clones dibi datasource instance
+	 * Clones dibi fluent instance
 	 */
 	public function __clone()
 	{
-		$this->ds=clone $this->ds;
+		$this->df=clone $this->df;
 	}
 }

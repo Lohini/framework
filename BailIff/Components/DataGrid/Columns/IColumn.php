@@ -47,7 +47,7 @@ interface IColumn
 	 * @param mixed $value
 	 * @return string
 	 */
-	function formatContent($value);
+	function formatContent($value, $data=NULL);
 	/**
 	 * Filters data source
 	 * @param mixed $value

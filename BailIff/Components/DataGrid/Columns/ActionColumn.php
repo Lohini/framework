@@ -10,7 +10,6 @@ namespace BailIff\Components\DataGrid\Columns;
  * @author     Roman Sklenář
  * @copyright  Copyright (c) 2009 Roman Sklenář (http://romansklenar.cz)
  * @license    New BSD License
- * @example    http://addons.nette.org/datagrid
  */
 /**
  * BailIff port
@@ -18,6 +17,7 @@ namespace BailIff\Components\DataGrid\Columns;
  */
 
 use BailIff\Components\DataGrid\Action;
+
 /**
  * Representation of data grid action column.
  * If you want to write your own implementation you must inherit this class.

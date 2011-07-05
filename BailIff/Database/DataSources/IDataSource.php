@@ -5,7 +5,7 @@
  * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
-namespace BailIff\Components\DataGrid\DataSources;
+namespace BailIff\Database\DataSources;
 /**
  * @author Michael Moravec
  * @author Štěpán Svoboda
@@ -16,7 +16,7 @@ namespace BailIff\Components\DataGrid\DataSources;
  */
 
 /**
- * An interface which provides main data logic for DataGrid
+ * An interface which provides main data logic
  */
 interface IDataSource
 extends \Countable, \IteratorAggregate

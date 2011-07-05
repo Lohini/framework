@@ -10,8 +10,6 @@ namespace BailIff\Components\DataGrid\Renderers;
  * @author     Roman Sklenář
  * @copyright  Copyright (c) 2009 Roman Sklenář (http://romansklenar.cz)
  * @license    New BSD License
- * @example    http://addons.nette.org/datagrid
- * @package    Nette\Extras\DataGrid
  */
 /**
  * BailIff port
@@ -26,7 +24,7 @@ use Nette\Utils\Html,
  */
 class Conventional
 extends \Nette\Object
-implements \BailIff\Components\DataGrid\Renderers\IRenderer
+implements IRenderer
 {
 	/** @var array of HTML tags */
 	public $wrappers=array(
@@ -125,12 +123,12 @@ implements \BailIff\Components\DataGrid\Renderers\IRenderer
 	 */
 	public function render(\BailIff\Components\DataGrid\DataGrid $dataGrid, $mode=NULL)
 	{
-		if ($this->dataGrid!==$dataGrid) {
-			$this->dataGrid=$dataGrid;
+		if (!$dataGrid->dataSource instanceof \BailIff\Database\DataSources\IDataSource) {
+			throw new \Nette\InvalidStateException('Data source is not instance of IDataSource. '.gettype($this->dataSource).' given.');
 			}
 
-		if (!$dataGrid->dataSource instanceof \BailIff\Components\DataGrid\DataSources\IDataSource) {
-			throw new \Nette\InvalidStateException('Data source is not instance of IDataSource. '.gettype($this->dataSource).' given.');
+		if ($this->dataGrid!==$dataGrid) {
+			$this->dataGrid=$dataGrid;
 			}
 
 		if ($mode!==NULL) {
@@ -166,9 +164,7 @@ implements \BailIff\Components\DataGrid\Renderers\IRenderer
 		$basePath=rtrim($form->getPresenter(FALSE)->getContext()->getService('httpRequest')->getUrl()->getBasePath(), '/');
 		$tc=$form->getComponent('_token_', FALSE);
 		$token= $tc ? (string)$tc->getControl() : '';
-		return $token.$form->getElementPrototype()->endTag()."\n"
-				.Html::el('script', array('type' => 'text/javascript'))
-					->add("head.js('$basePath/js/netteForms.js', '$basePath/js/jquery.ajaxform.js', '$basePath/js/nette.ajax.js', '$basePath/js/netteQ.js', '$basePath/js/datagrid.js');")."\n";
+		return $token.$form->getElementPrototype()->endTag();
 	}
 
 	/**

@@ -15,7 +15,12 @@ namespace BailIff\Components\DataGrid\Columns;
 class BoolColumn
 extends CheckboxColumn
 {
-	public function FormatContent($value, $data=NULL)
+	/**
+	 * @param bool $value
+	 * @param type $data (not used)
+	 * @return string 
+	 */
+	public function formatContent($value, $data=NULL)
 	{
 		$checkbox=\Nette\Utils\Html::el('span')->class('ui-icon');
 		$checkbox->addClass($value? 'ui-icon-check' : 'ui-icon-close');

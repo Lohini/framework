@@ -5,7 +5,7 @@
  * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
-namespace BailIff\Components\DataGrid\DataSources;
+namespace BailIff\Database\DataSources;
 /**
  * @author Michael Moravec
  * @author Štěpán Svoboda
@@ -20,7 +20,7 @@ namespace BailIff\Components\DataGrid\DataSources;
  */
 abstract class DataSource
 extends \Nette\Object
-implements \BailIff\Components\DataGrid\DataSources\IDataSource
+implements \BailIff\Database\DataSources\IDataSource
 {
 	/**
 	 * Validates filter operation

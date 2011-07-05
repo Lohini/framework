@@ -10,7 +10,6 @@ namespace BailIff\Components\DataGrid;
  * @author     Roman Sklenář
  * @copyright  Copyright (c) 2009 Roman Sklenář (http://romansklenar.cz)
  * @license    New BSD License
- * @example    http://addons.nette.org/datagrid
  */
 /**
  * BailIff port

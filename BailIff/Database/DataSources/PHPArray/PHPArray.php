@@ -5,14 +5,20 @@
  * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
-namespace BailIff\Components\DataGrid\DataSources\Dibi;
-
+namespace BailIff\Database\DataSources\PHPArray;
 /**
- * An dibi data source for DataGrid
+ * @author Michael Moravec
+ */
+/**
+ * BailIff port
  * @author Lopo <lopo@losys.eu>
  */
-class Dibi
-extends \BailIff\Components\DataGrid\DataSources\DataSource
+
+/**
+ * An array data source
+ */
+class PHPArray
+extends \BailIff\Database\DataSources\DataSource
 {
 	/** @var array */
 	private $items;
@@ -25,31 +31,28 @@ extends \BailIff\Components\DataGrid\DataSources\DataSource
 	/** @var array */
 	private $reducing;
 
-	/**
-	 * @param \DibiDataSource $dds 
-	 */
-	public function __construct(\DibiDataSource $dds)
-	{
-		$this->source=$dds;
-	}
 
 	/**
-	 * @param string $column
-	 * @param string $operation
-	 * @param mixed $value
-	 * @param string $chainType
-	 * @return \BailIff\Components\DataGrid\DataSources\IDataSource
+	 * @param array $items
+	 * @throws \InvalidArgumentException
 	 */
+	public function __construct(array $items)
+	{
+		if (empty($items)) {
+			throw new \InvalidArgumentException('Empty array given');
+			}
+		$this->items=$this->source=$items;
+	}
+
 	public function filter($column, $operation=self::EQUAL, $value=NULL, $chainType=NULL)
 	{
-		$s=clone $this->source;
-		return $s->where("$column $operation $value");
+		throw new \NotImplementedException;
 	}
 
 	/**
 	 * @param string $column
 	 * @param string $order
-	 * @return \BailIff\Components\DataGrid\DataSources\IDataSource
+	 * @return int
 	 * @throws \InvalidArgumentException
 	 */
 	public function sort($column, $order=self::ASCENDING)
@@ -57,8 +60,11 @@ extends \BailIff\Components\DataGrid\DataSources\DataSource
 		if (!$this->hasColumn($column)) {
 			throw new \InvalidArgumentException;
 			}
-		$s=clone $this->source;
-		return $s->orderBy($column, $order);
+		usort($this->items, function ($a, $b) use ($column, $order) {
+				return $order===\BailIff\Database\DataSources\IDataSource::DESCENDING
+						? -strcmp($a[$column], $b[$column])
+						: strcmp($a[$column], $b[$column]);
+				});
 	}
 
 	/**
@@ -67,18 +73,15 @@ extends \BailIff\Components\DataGrid\DataSources\DataSource
 	 */
 	public function reduce($count, $start=0)
 	{
-		$s=clone $this->source;
-		$s->applyLimit($count, $start);
+		$this->items=array_slice($this->items, $start, $count);
 	}
 
 	/**
-	 * @return array
+	 * @return array 
 	 */
 	public function getColumns()
 	{
-		$s=clone $this->source;
-		$row=$s->select('*')->applyLimit(1)->fetch();
-		return array_keys((array)$row);
+		return array_keys(reset($this->source));
 	}
 
 	/**
@@ -87,7 +90,7 @@ extends \BailIff\Components\DataGrid\DataSources\DataSource
 	 */
 	public function hasColumn($name)
 	{
-		return in_array($name, $this->getColumns());
+		return array_key_exists($name, reset($this->source));
 	}
 
 	public function getFilterItems($column)
@@ -96,12 +99,11 @@ extends \BailIff\Components\DataGrid\DataSources\DataSource
 	}
 
 	/**
-	 * @return \Traversable
+	 * @return \ArrayIterator
 	 */
 	public function getIterator()
 	{
-		$s=clone $this->source;
-		return $s->getIterator();
+		return new \ArrayIterator($this->items);
 	}
 
 	/**
@@ -109,7 +111,6 @@ extends \BailIff\Components\DataGrid\DataSources\DataSource
 	 */
 	public function count()
 	{
-		$s=clone $this->source;
-		return (int)$s->count();
+		return count($this->items);
 	}
 }

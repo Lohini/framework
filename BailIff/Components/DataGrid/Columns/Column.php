@@ -10,7 +10,6 @@ namespace BailIff\Components\DataGrid\Columns;
  * @author     Roman Sklenář
  * @copyright  Copyright (c) 2009 Roman Sklenář (http://romansklenar.cz)
  * @license    New BSD License
- * @example    http://addons.nette.org/datagrid
  */
 /**
  * BailIff port
@@ -187,7 +186,7 @@ implements IColumn
 	 * @return \BailIff\Components\Columns\Column provides a fluent interface
 	 * @throws \InvalidArgumentException
 	 */
-	public function addDefaultSorting($order=\BailIff\Components\DataGrid\DataSources\IDataSource::ASCENDING)
+	public function addDefaultSorting($order=\BailIff\Database\DataSources\IDataSource::ASCENDING)
 	{
 		$orders=array('ASC', 'DESC', 'asc', 'desc', 'A', 'D', 'a', 'd');
 		if (!in_array($order, $orders)) {

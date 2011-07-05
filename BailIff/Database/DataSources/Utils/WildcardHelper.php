@@ -5,7 +5,7 @@
  * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
-namespace BailIff\Components\DataGrid\DataSources\Utils;
+namespace BailIff\Database\DataSources\Utils;
 
 class WildcardHelper
 {
