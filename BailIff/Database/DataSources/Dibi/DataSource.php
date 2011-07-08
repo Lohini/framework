@@ -58,7 +58,7 @@ extends \BailIff\Database\DataSources\DataSource
 	 */
 	public function hasColumn($name)
 	{
-		throw new \NotSupportedException;
+		return in_array($name, $this->getColumns());
 	}
 
 	/**
@@ -98,7 +98,7 @@ extends \BailIff\Database\DataSources\DataSource
 					if ($operation===self::LIKE || $operation===self::NOT_LIKE) {
 						$value=WildcardHelper::formatLikeStatementWildcards($value);
 						}
-					$conds[]=array('%n', $column, $t, '%'.$modifier, $value);
+					$conds[]=array('%n', $column, $t, "%$modifier", $value);
 					}
 				}
 
@@ -122,7 +122,7 @@ extends \BailIff\Database\DataSources\DataSource
 				if ($operation===self::LIKE || $operation===self::NOT_LIKE) {
 					$value=WildcardHelper::formatLikeStatementWildcards($value);
 					}
-				$this->ds->where('%n', $column, $operation, '%' . $modifier, $value);
+				$this->ds->where('%n', $column, $operation, "%$modifier", $value);
 				}
 			}
 	}
@@ -135,6 +135,9 @@ extends \BailIff\Database\DataSources\DataSource
 	 */
 	public function sort($column, $order=IDataSource::ASCENDING)
 	{
+		if (!$this->hasColumn($column)) {
+			throw new \InvalidArgumentException("Column '$column' not exist.");
+			}
 		$this->ds->orderBy($column, $order===self::ASCENDING? 'ASC' : 'DESC');
 		return $this;
 	}
@@ -151,7 +154,6 @@ extends \BailIff\Database\DataSources\DataSource
 		if ($count!=NULL && $count<=0) { //intentionally !=
 			throw new \OutOfRangeException;
 			}
-
 		if ($start!=NULL && ($start<0 || $start>count($this))) {
 			throw new \OutOfRangeException;
 			}
@@ -166,6 +168,7 @@ extends \BailIff\Database\DataSources\DataSource
 	 */
 	public function getIterator()
 	{
+//		return $this->ds->getIterator();
 		return new \ArrayIterator($this->fetch());
 	}
 
