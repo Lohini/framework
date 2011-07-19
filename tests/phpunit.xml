@@ -12,19 +12,19 @@
 	bootstrap="bootstrap.php" colors="true"
 	>
 	<testsuites>
-		<testsuite name="BailIff Testing Suite">
+		<testsuite name="Lohini Testing Suite">
 			<directory suffix="Test.php">./</directory>
 		</testsuite>
 	</testsuites>
 
 	<filter>
 		<whitelist>
-			<directory suffix=".php">./../BailIff</directory>
+			<directory suffix=".php">./../Lohini</directory>
 		</whitelist>
 	</filter>
 
 	<logging>
-		<log type="coverage-html" target="../build/coverage" title="BailIff"
+		<log type="coverage-html" target="../build/coverage" title="Lohini"
 			charset="UTF-8" yui="true" highlight="true"
 			lowUpperBound="35" highLowerBound="70" />
 		<log type="coverage-clover" target="../build/logs/clover.xml" />

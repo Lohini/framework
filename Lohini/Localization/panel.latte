@@ -1,0 +1,291 @@
+<?php // vim: ts=4 sw=4 ai:
+/**
+ * This file is part of Lohini
+ *
+ * @copyright (c) 2010, 2011 Lopo <lopo@lohini.net>
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
+ */
+/**
+ * This file is part of the Nella Framework.
+ *
+ * Copyright (c) 2006, 2011 Patrik Votoček (http://patrik.votocek.cz)
+ *
+ * This source file is subject to the GNU Lesser General Public License. For more information please see http://nella-project.org
+ */
+/**
+ * Lohini port
+ * @author Lopo <lopo@lohini.net>
+ */
+?>
+<h1>Translations for '<?php echo htmlspecialchars($lang) ?>'</h1>
+
+<div class="nette-inner" id="lohini-translator-panel-content">
+	<p id="lohini-translator-panel-notloaded">Data not loaded</p>
+	<div id="lohini-translator-panel-content-inner">
+		<div id="lohini-translator-panel-content-dictionary">
+			<select id="lohini-translator-panel-content-dictionaries-list"></select>
+			<input type="text" class="text" id="lohini-translator-panel-content-dictionaries-pluralform">
+		</div>
+		<div id="lohini-translator-panel-content-sidebar">
+			<!--<input type="text" class="text" id="lohini-translator-panel-content-dictionaries-filter">
+			<div id="lohini-translator-panel-content-dictionaries-filter-reset"></div>-->
+			<div id="lohini-translator-panel-content-dictionary-translations">
+				<p id="lohini-translator-panel-forms-translations-empty">Empty</p>
+			</div>
+		</div>
+		<div id="lohini-translator-panel-content-editor">
+			<p id="lohini-translator-panel-content-forms-notset">Data not loaded (maybe missing jQuery)</p>
+		</div>
+		<br style="clear: both;">
+		<div id="lohini-translator-panel-content-actions">
+			<input type="button" class="button" value="Reload" id="lohini-translator-panel-content-actions-reload">
+			<input type="button" class="button" value="Extract" id="lohini-translator-panel-content-actions-extract">
+			<input type="button" class="button" value="Save" id="lohini-translator-panel-content-actions-save">
+		</div>
+	</div>
+</div>
+
+<style>
+	#lohini-translator-panel-content {
+		width: 460px;
+		}
+	#lohini-translator-panel-content-inner {
+		display: none;
+		}
+	#lohini-translator-panel-content-dictionaries-list {
+		width: 150px;
+		border: 1px solid #ccc;
+		}
+	#lohini-translator-panel-content-sidebar{
+		margin: 0;
+		padding: 0;
+		width: 150px;
+		float: left;
+		border: 1px solid #eee;
+		max-height: 400px;
+		overflow: auto;
+		}
+	#lohini-translator-panel-content-dictionary-translations span {
+		display: block;
+		border: 1px solid #ccc;
+		padding: 2px;
+		margin: 1px;
+		}
+	#lohini-translator-panel-content-dictionary-translations span.saved {
+		background-color: #efe;
+		}
+	#lohini-translator-panel-content-dictionary-translations span.unsaved {
+		background-color: #ffe;
+		}
+	#lohini-translator-panel-content-dictionary-translations span.untranslated {
+		background-color: #fee;
+		}
+	#lohini-translator-panel-content-dictionaries-pluralform {
+		width: 300px;
+		border: 1px solid #ccc;
+		}
+	#lohini-translator-panel-content-editor {
+		margin: 5px;
+		padding: 5px;
+		width: 280px;
+		float: right;
+		overflow: auto;
+		}
+	#lohini-translator-panel-content-editor textarea {
+		width: 100%;
+		display: block;
+		margin-bottom: 5px;
+		border: 1px solid #ccc;
+		}
+	#lohini-translator-panel-content-actions {
+		text-align: right;
+		}
+	#lohini-translator-panel-content-actions input {
+		background-color: #eee;
+		padding: 2px;
+		}
+</style>
+
+<script>
+var Lohini= Lohini || {};
+
+Lohini.translator={};
+
+Lohini.translator.forms=function(pluralForm) {
+	var pos=pluralForm.indexOf('=')+1;
+	return pluralForm.substr(pos, pluralForm.indexOf(';')-pos);
+	};
+
+Lohini.translator.data=eval(<?php echo \Nette\Utils\Json::encode($dictionaries) ?>);
+Lohini.translator.lang="<?php echo $lang ?>";
+
+Lohini.translator.renderDictionaryList=function(dictionaries) {
+	var $list=$('#lohini-translator-panel-content-dictionaries-list');
+	$list.html($('<option>').attr('value', 0).text('Select dictionary'));
+	for (var i in dictionaries) {
+		var $dictionary=$('<option>').attr('value', i).text(dictionaries[i]['name']);
+		$dictionary.click(function() {
+			var $this=$(this);
+			Lohini.translator.loadDictionary($this.attr('value'));
+			});
+		$list.append($dictionary);
+		}
+	};
+
+Lohini.translator.renderPluralForm=function(pluralForm) {
+	var $input=$('#lohini-translator-panel-content-dictionaries-pluralform');
+	$input.val(pluralForm).attr('disabled', false);
+	};
+
+Lohini.translator.renderTranslationsList=function(translations) {
+	var $list=$('#lohini-translator-panel-content-dictionary-translations');
+	$list.html(null);
+	for (var i in translations) {
+		var $translation=$('<span>').text(i);
+		if (translations[i]['status']==true) {
+			$translation.addClass('saved');
+			}
+		else if (translations[i]['status']==false) {
+			$translation.addClass('unsaved');
+			}
+		else {
+			$translation.addClass('untranslated');
+			}
+
+		$translation.click(function() {
+			var dictionary=Lohini.translator.getActiveDictionary();
+			if (!Lohini.translator.data[dictionary]['pluralForm']) {
+				Lohini.translator.data[dictionary]['pluralForm']=$('#lohini-translator-panel-content-dictionaries-pluralform').val();
+				if (!Lohini.translator.data[dictionary]['pluralForm'] || !Lohini.translator.data[dictionary]['pluralForm'].indexOf('nplurals')) {
+					alert('Please first set valid plural forms');
+					$('#lohini-translator-panel-content-dictionaries-pluralform')[0].focus();
+					return false;
+					}
+				}
+			var forms=Lohini.translator.forms(Lohini.translator.data[dictionary]['pluralForm']);
+			Lohini.translator.renderEditor($(this).text(), forms, translations[$(this).text()]['translation']);
+			});
+
+		$list.append($translation);
+		}
+	};
+
+Lohini.translator.renderEditor=function(message, forms, translations) {
+	var $editor=$('#lohini-translator-panel-content-editor');
+	$editor.html(null);
+	for (var i=0; i<forms; i++) {
+		var text='';
+		if (translations[i]) {
+			text=translations[i];
+			}
+		$editor.append($('<textarea>').text(text).attr('data-lohini-translator-message', message).attr('data-lohini-translator-form', i).change(function() {
+			var activeDictionary=Lohini.translator.getActiveDictionary();
+			if (activeDictionary) {
+				var $this=$(this);
+				Lohini.translator.data[activeDictionary]['translations'][$this.attr('data-lohini-translator-message')]['translation'][$this.attr('data-lohini-translator-form')]=$this.val();
+				Lohini.translator.data[activeDictionary]['translations'][$this.attr('data-lohini-translator-message')]['status']=false;
+				Lohini.translator.renderTranslationsList(Lohini.translator.data[activeDictionary]['translations']);
+				}
+			}));
+		}
+	};
+
+Lohini.translator.loadDictionary=function(dictionary) {
+	if (!Lohini.translator.data[dictionary]['pluralForm']) {
+		Lohini.translator.data[dictionary]['pluralForm']=$('#lohini-translator-panel-content-dictionaries-pluralform').val();
+		}
+	var data=Lohini.translator.data[dictionary];
+	Lohini.translator.renderPluralForm(data['pluralForm']);
+	Lohini.translator.renderTranslationsList(data['translations'])
+	};
+
+Lohini.translator.getActiveDictionary=function() {
+	return $('#lohini-translator-panel-content-dictionaries-list').val();
+	};
+
+Lohini.translator.renderProcessing=function() {
+	$('#lohini-translator-panel-content-editor').html(
+		$('<p id="lohini-translator-panel-content-forms-notset">Please select dictionary</p>')
+		);
+
+	$('#lohini-translator-panel-content-dictionary-translations').html(
+		$('<p id="lohini-translator-panel-forms-translations-empty">Empty</p>')
+		);
+	$('#lohini-translator-panel-content-dictionaries-list').val(0);
+	};
+
+if (!!window.jQuery) {
+$(document).ready(function() {
+	$('#lohini-translator-panel-content-forms-notset').html('Data not loaded');
+	//Lohini.translator.renderPluralForm();
+	$('#lohini-translator-panel-content-dictionaries-list').change(function() {
+		var $this=$(this);
+		if ($this.val()!=0) {
+			Lohini.translator.loadDictionary($this.val());
+			}
+		});
+
+	$('#lohini-translator-panel-content-dictionaries-pluralform').change(function() {
+		var activeDictionary=Lohini.translator.getActiveDictionary();
+		if (activeDictionary) {
+			Lohini.translator.data[activeDictionary]['pluralForm']=$(this).val();
+			}
+		});
+
+	Lohini.translator.renderDictionaryList(Lohini.translator.data);
+	$('#lohini-translator-panel-content-inner').show();
+	$('#lohini-translator-panel-content-editor').html(
+		$('<p id="lohini-translator-panel-content-forms-notset">Please select dictionary</p>')
+		);
+	$('#lohini-translator-panel-notloaded').hide();
+
+	$('#lohini-translator-panel-content-actions-reload').click(function() {
+		Lohini.translator.renderProcessing();
+		jQuery.ajax({
+			type: 'POST',
+			url: window.location.href,
+			data: { action: 'get', lang: Lohini.translator.lang},
+			beforeSend: function(jqXHR) {
+				jqXHR.setRequestHeader('<?php echo self::XHR_HEADER ?>', 'true');
+				},
+			success: function(data) {
+				Lohini.translator.data=data.data;
+				}
+			});
+		return false;
+		});
+
+	$('#lohini-translator-panel-content-actions-extract').click(function() {
+		Lohini.translator.renderProcessing();
+		jQuery.ajax({
+			type: 'POST',
+			url: window.location.href,
+			data: { action: 'extract', lang: Lohini.translator.lang},
+			beforeSend: function(jqXHR) {
+				jqXHR.setRequestHeader('<?php echo self::XHR_HEADER ?>', 'true');
+				},
+			success: function(data) {
+				Lohini.translator.data=data.data;
+				}
+			});
+		return false;
+		});
+
+	$('#lohini-translator-panel-content-actions-save').click(function() {
+		Lohini.translator.renderProcessing();
+		jQuery.ajax({
+			type: 'POST',
+			url: window.location.href,
+			data: { action: 'save', lang: Lohini.translator.lang, data: Lohini.translator.data},
+			beforeSend: function(jqXHR) {
+				jqXHR.setRequestHeader('<?php echo self::XHR_HEADER ?>', 'true');
+				},
+			success: function(data) {
+				Lohini.translator.data=data.data;
+				}
+			});
+		return false;
+		});
+	});
+}
+</script>

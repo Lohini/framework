@@ -1,4 +1,4 @@
-Welcome to BailIff project
+Welcome to Lohini project
 ==========================
 The aim of this project is integration of interesting technologies and options
 to Nette Framework.
@@ -6,10 +6,12 @@ to Nette Framework.
 Requirements
 ------------
 - PHP 5.3 or later
-- Nette Framework - Lopo's cache-ns-delete branch (https://github.com/Lopo/nette/tree/cache-ns-delete)
-- dibi (https://github.com/dg/dibi)
-- Modernizr (http://www.modernizr.com/) - custom build (full with yepnope)
-- Tero Piirainen's Head JS (http://headjs.com/)
+- Nette Framework - http://nette.org
+- Doctrine 2 (Common, DBAL, ORM, ODM) - http://www.doctrine-project.org
+- dibi - https://github.com/dg/dibi
+- Tero Piirainen's Head JS - http://headjs.com
+- yepnope.js - http://yepnopejs.com
+- Modernizr - http://www.modernizr.com
 
 Optional
 --------
@@ -19,4 +21,4 @@ Optional
 - Pawlik's xCSS (http://xcss.antpaw.org/) for XCss PreFile filter in WebLoader
 
 -----
-repository: https://github.com/Lopo/BailIff
+repository: https://github.com/Lopo/Lohini

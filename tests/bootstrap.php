@@ -9,7 +9,7 @@ define('LIBS_DIR', ROOT_DIR);
 define('TEMP_DIR', TESTS_DIR.'/_temp');
 
 // Take care of autoloading
-require_once LIBS_DIR.'/BailIff/loader.php';
+require_once LIBS_DIR.'/Lohini/loader.php';
 
 // Setup Nette debuger
 Debugger::enable(Debugger::DEVELOPMENT);

@@ -1,19 +1,23 @@
 /*
  * @author Filip Procházka
  * @license GPL
- * @author Lopo <lopo@losys.eu> (BailIff port)
+ * @author Lopo <lopo@lohini.net> (Lohini port)
  */
 $(function() {
 	// vhodně nastylovaný div vložím po načtení stránky
 	$('<div id="ajax-spinner"><div class="image"></div></div>')
-		.appendTo('body').ajaxStop(function() {
+		.hide()
+		.appendTo('body')
+		.ajaxStop(function() {
 			// a při události ajaxStop spinner schovám a nastavím mu původní
 			// pozici
 			$(this).hide().css({
-				position : 'fixed'
+				position: 'fixed'
 				});
-			})
-		.hide();
+			})/*
+		.ajaxStart(function() {
+			$(this).show();
+			})*/;
 
 	// zajaxovatění odkazů
 	$('a.ajax')
