@@ -7,6 +7,8 @@
  */
 namespace BailIff\Presenters;
 
+use \Nette\Diagnostics\Debugger;
+
 /**
  * Error presenter
  */
@@ -28,7 +30,7 @@ extends BasePresenter
 			}
 		else {
 			$this->setView('500'); // load template 500.latte
-			\Nette\Diagnostics\Debugger::log($exception, Debugger::ERROR); // and log exception
+			Debugger::log($exception, Debugger::ERROR); // and log exception
 			}
 	}
 }
