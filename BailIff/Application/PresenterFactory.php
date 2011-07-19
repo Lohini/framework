@@ -1,4 +1,4 @@
-<?php // vim: set ts=4 sw=4 ai:
+<?php // vim: ts=4 sw=4 ai:
 /**
  * This file is part of BailIff
  *
@@ -23,6 +23,10 @@ implements \Nette\Application\IPresenterFactory
 		'app' => array(
 			'prefix' => "App\\",
 			'replace' => "Module\\"
+			),
+		'plugin' => array(
+			'prefix' => "BailIffPlugins\\",
+			'replace' => "Plugin\\"
 			),
 		'fw' => array(
 			'prefix' => "BailIff\\Presenters\\",

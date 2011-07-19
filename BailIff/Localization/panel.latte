@@ -38,7 +38,7 @@
 		</div>
 		<br style="clear: both;">
 		<div id="bailiff-translator-panel-content-actions">
-			<input type="button" class="button" value="Reload" id="bailiff-translator-panel-content-actions-relaod">
+			<input type="button" class="button" value="Reload" id="bailiff-translator-panel-content-actions-reload">
 			<input type="button" class="button" value="Extract" id="bailiff-translator-panel-content-actions-extract">
 			<input type="button" class="button" value="Save" id="bailiff-translator-panel-content-actions-save">
 		</div>
@@ -239,7 +239,7 @@ $(document).ready(function() {
 		);
 	$('#bailiff-translator-panel-notloaded').hide();
 
-	$('#bailiff-translator-panel-content-actions-relaod').click(function() {
+	$('#bailiff-translator-panel-content-actions-reload').click(function() {
 		BailIff.translator.renderProcessing();
 		jQuery.ajax({
 			type: 'POST',

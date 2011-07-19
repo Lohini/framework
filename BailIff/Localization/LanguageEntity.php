@@ -30,13 +30,8 @@ namespace BailIff\Localization;
  * @property string $short
  */
 class LanguageEntity
-extends \Nella\Doctrine\Entity
+extends \BailIff\Database\Doctrine\ORM\Entities\NamedEntity
 {
-	/**
-	 * @column
-	 * @var string
-	 */
-	private $name;
 	/**
 	 * @column
 	 * @var string
@@ -48,24 +43,6 @@ extends \Nella\Doctrine\Entity
 	 */
 	private $short;
 
-	/**
-	 * @return string
-	 */
-	public function getName()
-	{
-		return $this->name;
-	}
-
-	/**
-	 * @param string
-	 * @return LanguageEntity
-	 */
-	public function setName($name)
-	{
-		$name = trim($name);
-		$this->name = $name === "" ? NULL : $name;
-		return $this;
-	}
 
 	/**
 	 * @return string

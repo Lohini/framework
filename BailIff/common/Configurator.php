@@ -8,16 +8,32 @@
 namespace BailIff;
 
 use Nette\DI\IContainer,
-	Nette\DI\Container,
+	BailIff\DI\Container,
 	Nette\Application\UI\Presenter,
 	Nette\Application\Routers\Route,
 	Nette\Environment as NEnvironment,
-	Nette\Caching\Cache;
+	Nette\Caching\Cache,
+	Nette\Application\Routers\RouteList;
 
 /**
  * BailIff Configurator
  * 
  * @author Lopo <lopo@losys.eu>
+ * 
+ * @property-read \BailIff\Application\Application $application
+ * @property-read \Nette\Application\Routers\RouteList $router
+ * @property-read \BailIff\Application\PresenterFactory $presenterFactory
+ * @property-read \BailIff\Templating\TemplateFactory $templateFactory
+ * @property-read \Nette\Latte\Engine $latteEngine
+ * @property-read \BailIff\Localization\Translator $translator
+ * @property-read \BailIff\Localization\Panel $translatorPanel
+ * @property-read \BailIff\Database\Doctrine\ORM\Container $sqldb
+ * @property-read \BailIff\Database\Doctrine\ODM\Container $couchdb
+ * @property-read \BailIff\Database\Doctrine\Cache $doctrineCache
+ * @property-read \BailIff\Database\Doctrine\Workspace $workspace
+ * @property-read \BailIff\Diagnostics\Panels\Callback $callbackPanel
+ * @property-read \BailIff\Security\Authenticator $authenticator
+ * @property-read \BailIff\Security\User $user
  */
 class Configurator
 extends \Nette\Configurator
@@ -31,10 +47,10 @@ extends \Nette\Configurator
 	/**
 	 * Gets initial instance of context
 	 */
-	public function __construct($containerClass='\BailIff\DI\Container')
+	public function __construct($containerClass='BailIff\DI\Container')
 	{
 		parent::__construct($containerClass);
-		self::$instance=$this;
+//		self::$instance=$this;
 		$container=$this->getContainer();
 		// Back compatibility
 		NEnvironment::setConfigurator($this);
@@ -43,7 +59,9 @@ extends \Nette\Configurator
 
 		defined('VAR_DIR') && $this->container->params['varDir']=realpath(VAR_DIR);
 		defined('ROOT_DIR') && $this->container->params['rootDir']=realpath(ROOT_DIR);
-		defined('BAILIFF_DIR') && $this->container->params['bailiffDir']=realpath(BAILIFF_DIR);
+		$this->container->params['bailiffDir']=realpath(BAILIFF_DIR);
+		$this->container->params['baseUrl']= $baseUrl= rtrim($container->httpRequest->getUrl()->getBaseUrl(), '/');
+		$this->container->params['basePath']=preg_replace('#https?://[^/]+#A', '', $baseUrl);
 
 		$this->onAfterLoadConfig[]=function(Container $container) {
 			// Load panels
@@ -58,7 +76,7 @@ extends \Nette\Configurator
 	 * @param array $options
 	 * @return \Nette\Application\Application
 	 */
-	public static function createServiceApplication(Container $container, array $options=NULL)
+	public static function createServiceApplication(\Nette\DI\Container $container, array $options=NULL)
 	{
 		$context=new Container;
 		$context->addService('httpRequest', $container->httpRequest);
@@ -77,8 +95,11 @@ extends \Nette\Configurator
 		$application=new $class($context);
 		$application->catchExceptions=$container->getParam('productionMode', TRUE);
 
-		$container->params['baseUrl']= $baseUrl= rtrim($container->httpRequest->getUrl()->getBaseUrl(), '/');
-		$container->params['basePath']=preg_replace('#https?://[^/]+#A', '', $baseUrl);
+		if ($container->session->exists()) {
+			$application->onStartup[]=function() use ($container) {
+						$container->session->start(); // opens already started session
+						};
+			}
 
 		return $application;
 	}
@@ -86,14 +107,14 @@ extends \Nette\Configurator
 	/**
 	 * @return \Nette\Application\IPresenterFactory
 	 */
-	public static function createServicePresenterFactory(Container $container)
+	public static function createServicePresenterFactory(\Nette\DI\Container $container)
 	{
-		return new \BailIff\Application\PresenterFactory(/*$container->params['appDir'], */$container);
+		return new \BailIff\Application\PresenterFactory($container);
 	}
 
 	/**
 	 * @param \Nette\DI\Container $container
-	 * @return Kdyby\Templates\ITemplateFactory
+	 * @return \BailIff\Templating\ITemplateFactory
 	 */
 	public static function createServiceTemplateFactory(Container $container)
 	{
@@ -118,13 +139,28 @@ extends \Nette\Configurator
 	 * @param \Nette\DI\Container $container
 	 * @return \Nette\Application\Routers\RouteList
 	 */
-	public static function createServiceRouter(Container $container)
+	public static function createServiceRouter(\Nette\DI\Container $container)
 	{
-		$router=new \Nette\Application\Routers\RouteList;
+		$router=new RouteList;
+
+		RouteList::extensionMethod('getRootLink', function() use ($router, $container) {
+				return $router->constructUrl(
+						$router->match(new \Nette\Http\Request(new \Nette\Http\UrlScript('/index.php'))),
+						$container->httpRequest->getUrl()
+						);
+				});
 
 		$router[]=new Route('WebLoader/<id>', array(
 					'presenter' => 'WebLoader',
 					'action' => 'default'
+					));
+
+		$router[]= $backend= new RouteList('Backend');
+		$backend[]=new Route('admin/[<lang [a-z]{2}>/]<presenter>[/<action>[/<id>]]', array(
+					'lang' => NEnvironment::getVariable('lang', 'en'),
+					'presenter' => 'Default',
+					'action' => 'default',
+					'id' => NULL
 					));
 
 		return $router;
@@ -161,6 +197,48 @@ extends \Nette\Configurator
 	}
 
 	/**
+	 * @param \Nette\DI\Container $container
+	 * @return \BailIff\Database\Doctrine\Cache
+	 */
+	public static function createServiceDoctrineCache(Container $container)
+	{
+		return new \BailIff\Database\Doctrine\Cache($container->cacheStorage);
+	}
+
+	/**
+	 * @param \Nette\DI\Container $container
+	 * @return \BailIff\Database\Doctrine\ORM\Container
+	 */
+	public static function createServiceSqldb(Container $container)
+	{
+		return new \BailIff\Database\Doctrine\ORM\Container($container, $container->params['databases']['sqldb']);
+	}
+
+	/**
+	 * @param \Nette\DI\Container $container
+	 * @return \BailIff\Database\Doctrine\ODM\Container
+	 */
+	public static function createServiceCouchdb(Container $container)
+	{
+		return new \BailIff\Database\Doctrine\ODM\Container($container, $container->getParam('couchdb', array()));
+	}
+
+	/**
+	 * @param \Nette\DI\Container $container
+	 * @return \BailIff\Database\Doctrine\Workspace
+	 */
+	public static function createServiceWorkspace(Container $container)
+	{
+		$containers=array(
+			'sqldb' => $container->sqldb,
+			'couchdb' => $container->couchdb
+			);
+
+		$containers+=$container->getServiceNamesByTag('database');
+		return new \BailIff\Database\Doctrine\Workspace($containers);
+	}
+
+	/**
 	 * Merges 2nd config into 1st
 	 *
 	 * @param array $c1
@@ -188,7 +266,7 @@ extends \Nette\Configurator
 	public function loadConfig($file, $section=NULL)
 	{
 		$this->onBeforeLoadConfig($container=$this->getContainer());
-		$files= $file===NULL? array($this->defaultConfigFile) : $file;
+		$files= $file= $file===NULL? array($this->defaultConfigFile) : $file;
 		array_walk($files, function(&$file) use ($container) {
 			$file=$container->expand($file);
 			});
@@ -202,7 +280,7 @@ extends \Nette\Configurator
 			}
 
 		$cache=new Cache($container->templateCacheStorage, 'BailIff.Configurator');
-		$cacheKey=array($files, $section);
+		$cacheKey=array((array)$container->params, $files, $section);
 		$cached=$cache->load($cacheKey);
 		if ($cached) {
 			require $cached['file'];
@@ -217,7 +295,7 @@ extends \Nette\Configurator
 			}
 
 		$code="<?php\n// source file(s) [".implode(', ', $files)."]\n\n";
-
+/*
 		// add expanded variables
 		while (!empty($config['variables'])) {
 			$old=$config['variables'];
@@ -233,27 +311,20 @@ extends \Nette\Configurator
 				}
 			}
 		unset($config['variables']);
-
+*/
 		// process services
 		if (isset($config['services'])) {
 			foreach ($config['services'] as $key => & $def) {
-				if (is_scalar($def)) {
-					$def=array('class' => $def);
-					}
-
-				if (method_exists(get_called_class(), "createService$key")) {
-					$container->removeService($key);
-					if (!isset($def['factory']) && !isset($def['class'])) {
+				if (is_array($def)) {
+					if (method_exists(get_called_class(), "createService$key") && !isset($def['factory']) && !isset($def['class'])) {
 						$def['factory']=array(get_called_class(), "createService$key");
 						}
-					}
-
-				if (isset($def['option'])) {
-					$def['arguments'][]=$def['option'];
-					}
-
-				if (!empty($def['run'])) {
-					$def['tags']=array('run');
+					if (isset($def['option'])) {
+						$def['arguments'][]=$def['option'];
+						}
+					if (!empty($def['run'])) {
+						$def['tags']=array('run');
+						}
 					}
 				}
 			$builder=new \Nette\DI\ContainerBuilder;
@@ -261,10 +332,26 @@ extends \Nette\Configurator
 			unset($config['services']);
 			}
 
-		// expand variables
-		array_walk_recursive($config, function(&$val) use ($container) {
-			$val=$container->expand($val);
-			});
+		// consolidate variables
+		if (!isset($config['variables'])) {
+			$config['variables']=array();
+			}
+		foreach ($config as $key => $value) {
+			if (!in_array($key, array('variables', 'services', 'php', 'const', 'mode'))) {
+				$config['variables'][$key]=$value;
+				}
+			}
+
+		// pre-expand variables at compile-time
+		$variables=$config['variables'];
+		array_walk_recursive($config, function(&$val) use ($variables) {
+					$val=Configurator::preExpand($val, $variables);
+					});
+
+		// add variables
+		foreach ($config['variables'] as $key => $value) {
+			$code.=$this->generateCode('$container->params[?] = ?', $key, $value);
+			}
 
 		// PHP settings
 		if (isset($config['php'])) {
@@ -289,18 +376,13 @@ extends \Nette\Configurator
 			unset($config['const']);
 			}
 
-		// other
-		foreach ($config as $key => $value) {
-			$code.=$this->generateCode('$container->params[?]= '.(is_array($value)? 'Nette\ArrayHash::from(?)' : '?'), $key, $value);
-			}
-
 		// pre-loading
 		$code.=self::preloadEnvironment($container);
 
 		// auto-start services
 		$code.='foreach ($container->getServiceNamesByTag("run") as $name => $foo) { $container->getService($name); }'."\n";
 
-		$cache->save($files, $code, array(
+		$cache->save($cacheKey, $code, array(
 			Cache::FILES => $files,
 			));
 
@@ -319,6 +401,8 @@ extends \Nette\Configurator
 		unset($args[0]);
 		foreach ($args as &$arg) {
 			$arg=var_export($arg, TRUE);
+			$arg=preg_replace("#(?<!\\\)'%([\w-]+)%'#", '\$container->params[\'$1\']', $arg);
+			$arg=preg_replace("#(?<!\\\)'(?:[^'\\\]|\\\.)*%(?:[^'\\\]|\\\.)*'#", '\$container->expand($0)', $arg);
 			}
 		if (strpos($statement, '?')===FALSE) {
 			return $statement.='('.implode(', ', $args).");\n\n";
@@ -331,5 +415,30 @@ extends \Nette\Configurator
 			$i++;
 			}
 		return "$statement;\n\n";
+	}
+
+	/**
+	 * @param \Nette\DI\Container $container
+	 * @return Kdyby\Http\User
+	 */
+	public static function createServiceUser(\Nette\DI\Container $container)
+	{
+		$context=new Container;
+		// copies services from $container and preserves lazy loading
+		$context->lazyCopy('authenticator', $container);
+		$context->lazyCopy('authorizator', $container);
+		$context->lazyCopy('sqldb', $container);
+		$context->addService('session', $container->session);
+
+		return new \BailIff\Security\User($context);
+	}
+
+	/**
+         * @param \BailIff\DI\Container $container
+         * @return \BailIff\Security\Authenticator
+         */
+	public static function createServiceAuthenticator(Container $container)
+	{
+		return new \BailIff\Security\Authenticator($container->sqldb);
 	}
 }

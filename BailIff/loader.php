@@ -6,12 +6,10 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
 
-@header('X-Powered-By: BailIff');
-
 // define basic constants
 define('BAILIFF', TRUE);
 define('BAILIFF_DIR', __DIR__);
-define('BAILIFF_VERSION_ID', 4); //0.0.4
+define('BAILIFF_VERSION_ID', 100); //0.1.0
 define('BAILIFF_PACKAGE', '5.3');
 
 // check required PHP version
@@ -30,11 +28,13 @@ if (!defined('NETTE')) {
 if (!version_compare(\Nette\Framework::VERSION, '2.0-beta', '>=')) {
 	die('This BailIff requires Nette version 2.0-beta or latter, '.\Nette\Framework::VERSION.' used.');
 	}
+
+@header('X-Powered-By: BailIff');
+
 // load BailIff
 require_once BAILIFF_DIR.'/Loaders/BailIffLoader.php';
 \BailIff\Loaders\BailIffLoader::getInstance()->register();
 
 // Set debug options
 \Nette\Diagnostics\Debugger::$strictMode=TRUE;
-$configurator=new \BailIff\Configurator;
-\Nette\Environment::setConfigurator($configurator);
+

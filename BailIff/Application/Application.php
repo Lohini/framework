@@ -1,4 +1,4 @@
-<?php // vim: set ts=4 sw=4 ai:
+<?php // vim: ts=4 sw=4 ai:
 /**
  * This file is part of BailIff
  *

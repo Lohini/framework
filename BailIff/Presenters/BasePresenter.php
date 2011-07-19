@@ -20,6 +20,8 @@ extends \BailIff\Application\UI\Presenter
 	const FLASH_INFO='info';
 	const FLASH_WARNING='warning';
 	/**#@-*/
+	/** @var string */
+	protected $loginLink=':Core:Auth:login';
 
 
 	/**
@@ -31,6 +33,15 @@ extends \BailIff\Application\UI\Presenter
 		$this->template->identity= $user->isLoggedIn()? $user->getIdentity() : NULL;
 		$this->template->titleSeparator= $this->getContext()->getParam('titleSeparator', ' | ');
 		$this->template->lang=$this->lang;
+	}
+
+	/**
+	 * @see \Nette\Application\UI\Presenter::afterRender()
+	 */
+	protected function afterRender()
+	{
+		$this->invalidateControl('flashMessage');
+		parent::afterRender();
 	}
 
 	/**
@@ -57,7 +68,7 @@ extends \BailIff\Application\UI\Presenter
 				}
 			else {
 				$i=$user->getIdentity();
-				$skin= isset($i->skin)? $i->skin : 'default';
+				$skin= (isset($i->skin) && $i->skin)? $i->skin : 'default';
 				}
 			$skinDir=realpath(APP_DIR."/skins/$skin");
 			}
@@ -88,7 +99,7 @@ extends \BailIff\Application\UI\Presenter
 				}
 			else {
 				$i=$user->getIdentity();
-				$skin= isset($i->skin)? $i->skin : 'default';
+				$skin= (isset($i->skin) && $i->skin)? $i->skin : 'default';
 				}
 			$skinDir=realpath(APP_DIR."/skins/$skin");
 			}

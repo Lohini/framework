@@ -3,12 +3,17 @@
  * This file is part of BailIff
  *
  * @copyright (c) 2010, 2011 Lopo <lopo@losys.eu>
- * @license GNU GPL v3
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
 namespace BailIff\Database;
 
 use BailIff\Environment;
 
+/**
+ * BailIff Connection
+ *
+ * @author Lopo <lopo@losys.eu>
+ */
 class Connection
 extends \DibiConnection
 {
@@ -28,19 +33,25 @@ extends \DibiConnection
 		if (self::$initialized) {
 			return;
 			}
-		if (!isset($options->databases->primary)) {
+		if (!isset($options->databases->common->primary)) {
 			throw new \RuntimeException("Primary database isn't set (databases.primary)");
 			}
-		self::$primary=$options->databases->primary;
-		foreach ($options->database as $dbk => $dbc) {
-			if (is_a($dbc, 'Nette\ArrayHash')) {
+		self::$primary=$options->databases->common->primary;
+		foreach ($options->databases as $dbk => $dbc) {
+			if ($dbk=='common') {
+				continue;
+				}
+			if (is_a($dbc, '\Nette\ArrayHash')) {
+				if (\Nette\Utils\Strings::startsWith($dbc->driver, 'pdo_')) {
+					continue;
+					}
 				$c=\dibi::connect($dbc, $dbk);
 				if (
 					($cp=
 						isset($dbc->profiler)
 							? $dbc->profiler
-							: (isset($options->databases->profiler)
-								? $options->databases->profiler
+							: (isset($options->databases->common->profiler)
+								? $options->databases->common->profiler
 								: FALSE
 								)
 						)!==FALSE
@@ -65,7 +76,7 @@ extends \DibiConnection
 	public static function getConnection($name=NULL)
 	{
 		if (!self::$initialized) {
-			self::initialize(Environment::getConfig());
+			self::initialize(\Nette\Environment::getConfig());
 			}
 		return \dibi::getConnection($name!==NULL? $name : self::$primary);
 	}

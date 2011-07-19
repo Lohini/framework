@@ -1,4 +1,4 @@
-<?php // vim: set ts=4 sw=4 ai:
+<?php // vim: ts=4 sw=4 ai:
 /**
  * This file is part of BailIff
  *
@@ -6,9 +6,21 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
 namespace BailIff\Application;
+/**
+ * This file is part of the Kdyby (http://www.kdyby.org)
+ *
+ * Copyright (c) 2008, 2011 Filip Procházka (filip.prochazka@kdyby.org)
+ *
+ * @license http://www.kdyby.org/license
+ * @author Filip Procházka
+ */
+/**
+ * BailIff port
+ * @author Lopo <lopo@losys.eu>
+ */
 
 /**
- * @author Lopo <lopo@losys.eu>
+ * 
  */
 class InvalidPresenterException
 extends \Nette\Application\InvalidPresenterException
