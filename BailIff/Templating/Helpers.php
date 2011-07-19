@@ -14,6 +14,9 @@ namespace BailIff\Templating;
  */
 final class Helpers
 {
+	public static $datetimeFormat='j.n.Y H:i:s';
+
+
 	/** @var array */
 	private static $helpers=array(
 		'gravatar' => 'BailIff\Components\Gravatar::helper'
@@ -91,5 +94,21 @@ final class Helpers
 			$bytes=$bytes/$kilo;
 			}
 		return round($bytes, $precision)." $unit";
+	}
+
+	/**
+	 * @param string|int|DateTime $time
+	 * @param string $format
+	 * @return string
+	 */
+	public static function datetime($time, $format=NULL)
+	{
+		if ($time==NULL) { // intentionally ==
+			return NULL;
+			}
+		if (!isset($format)) {
+			$format=self::$datetimeFormat;
+			}
+		return date($format, \Nette\DateTime::from($time)->format('U'));
 	}
 }
