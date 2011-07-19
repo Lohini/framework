@@ -55,14 +55,11 @@ extends \Nette\Forms\Controls\BaseControl
 	public function getControl()
 	{
 		$control=parent::getControl();
-		$data=array(
-			'value' => $this->getValue()!==NULL? (int)$this->getValue() : 0
-			);
 		return Html::el('span')
 				->add($control)
 				->addClass('ui-icon')
 				->add(Html::el('script', array('type' => 'text/javascript'))
-					->add("head.ready(function() {head.js('".rtrim($this->form->getPresenter(FALSE)->getContext()->getService('httpRequest')->getUrl()->getBasePath(), '/')."/js/CBox3S.js', function() { CBox3S('{$control->id}', ".\Nette\Templating\DefaultHelpers::escapeJs($data).');});});')
+					->add("head.ready(function() {head.js('".rtrim($this->form->getPresenter(FALSE)->getContext()->getService('httpRequest')->getUrl()->getBasePath(), '/')."/js/CBox3S.js', function() { CBox3S('{$control->id}', ".($this->getValue()!==NULL? (int)$this->getValue() : 0).');});});')
 					);
 	}
 
