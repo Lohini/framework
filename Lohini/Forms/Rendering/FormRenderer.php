@@ -33,11 +33,19 @@ extends \Nette\Forms\Rendering\DefaultFormRenderer
 	 */
 	public function renderEnd()
 	{
-		$basePath=rtrim($this->form->getPresenter(FALSE)->getContext()->getService('httpRequest')->getUrl()->getBasePath(), '/');
+		$basePath=rtrim($this->form->getPresenter(FALSE)->getContext()->httpRequest->getUrl()->getBasePath(), '/');
 		$class=$this->form->getElementPrototype()->getClass();
+		$hA='';
+		foreach ($this->form->getControls() as $control) {
+			if ($control instanceof \Nette\Forms\Controls\TextArea) {
+				$fid=$this->form->getElementPrototype()->id;
+				$hA=", function() { $('#$fid textarea').ctrlEnter('button', function() { $('#$fid').submit();});}";
+				break;
+				}
+			}
 		$ajax= (isset($class['ajax']) && $class['ajax'])? ", '$basePath/js/jquery.ajaxform.js', '$basePath/js/nette.ajax.js'" : '';
 		return parent::renderEnd()
 			.\Nette\Utils\Html::el('script', array('type' => 'text/javascript'))
-				->add("head.ready(function() {head.js('$basePath/js/netteForms.js'$ajax);});");
+				->add("head.ready(function() {head.js('$basePath/js/netteForms.js', '$basePath/js/lohiniForms.js'$ajax$hA);});");
 	}
 }
