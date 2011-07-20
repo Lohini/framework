@@ -19,8 +19,6 @@ namespace Lohini\Database\Doctrine\ODM\Mapping\Driver;
  * @author Lopo <lopo@lohini.net>
  */
 
-namespace Kdyby\Doctrine\ODM\Mapping\Driver;
-
 use Doctrine\ODM\CouchDB\Mapping\MappingException;
 
 class AnnotationDriver
