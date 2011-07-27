@@ -31,6 +31,7 @@ class ScriptFunction
 	const MATCH='/^(((-\w)|(\w))[-\w]*)\(/';
 	const MATCH_FUNC='/^((?:(?:-\w)|(?:\w))[-\w]*)\((.*)\)/';
 	const SPLIT_ARGS='/\s*((?:[\'"].*?["\'])|(?:.+?(?:\(.*\).*?)?))\s*(?:,|$)/';
+	/**@#- */
 	const NAME=1;
 	const ARGS=2;
 
@@ -58,14 +59,14 @@ class ScriptFunction
 	public function perform()
 	{
 		$name=str_replace('-', '_', $this->name);
-		foreach (Sass\ScriptParser::$context->node->parser->function_paths as $path) {	
+		foreach (Sass\ScriptParser::$context->node->parser->function_paths as $path) { // TODO: remake to use RobotLoader
 			$_path=explode(DIRECTORY_SEPARATOR, $path);
 			$_class=ucfirst($_path[sizeof($_path)-2]);
 			foreach (array_slice(scandir($path), 2) as $file) {
 				$filename=$path.DIRECTORY_SEPARATOR.$file;
 				if (is_file($filename)) {
 					require_once($filename);
-					$class=__NAMESPACE__.'\Extentions\\'.$_class.'Functions'. ucfirst(substr($file, 0, -4));
+					$class=__NAMESPACE__.'\Extentions\\'.$_class.'Functions'.ucfirst(substr($file, 0, -4));
 					if (method_exists($class, $name)) {
 						return call_user_func_array(array($class, $name), $this->args);
 						}

@@ -54,7 +54,7 @@ extends \Lohini\WebLoader\Filters\Sass\ExpandedRenderer
 	 */
 	public function renderDirective($node, $properties)
 	{
-		$directive=$this->getIndent($node).$node->directive.$this->between().$this->renderProperties($properties);
+		$directive=$this->getIndent($node).$node->directive.$this->between().$this->renderProperties($node, $properties);
 		return preg_replace('/(.*})\n$/', '\1', $directive).$this->end();
 	}
 

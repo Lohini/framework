@@ -93,7 +93,7 @@ extends \Lohini\WebLoader\Filters\Sass\CompressedRenderer
 	 */
 	public function renderProperty($node)
 	{
-		return "{$node->name}: {$node->value};";
+		return "$node->name: $node->value;";
 	}
 
 	/**

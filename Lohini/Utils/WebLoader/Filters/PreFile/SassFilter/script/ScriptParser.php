@@ -51,7 +51,20 @@ class ScriptParser
 	public function interpolate($string, $context)
 	{
 		for ($i=0, $n=preg_match_all(self::MATCH_INTERPOLATION, $string, $matches); $i<$n; $i++) {
-			$matches[1][$i]=$this->evaluate($matches[1][$i], $context)->toString();
+			$var=$this->evaluate($matches[1][$i], $context)->toString();
+			if (preg_match('/^unquote\((["\'])(.*)\1\)$/', $var, $match)) {
+				$val=$match[2];
+				}
+			else if ($var=='""') {
+				$val='';
+				}
+			else if (preg_match('/^(["\'])(.*)\1$/', $var, $match)) {
+				$val=$match[2];
+				}
+			else {
+				$val=$var;
+				}
+			$matches[1][$i]=$val;
 			}
 		return str_replace($matches[0], $matches[1], $string);
 	}
@@ -164,7 +177,7 @@ class ScriptParser
 				else {
 					// while there is an operator, o2, at the top of the stack
 					while ($c=count($operatorStack)) {
-						$operation = $operatorStack[$c-1];
+						$operation=$operatorStack[$c-1];
 						// if o2 is left parenthesis, or
 						// the o1 has left associativty and greater precedence than o2, or
 						// the o1 has right associativity and lower or equal precedence than o2

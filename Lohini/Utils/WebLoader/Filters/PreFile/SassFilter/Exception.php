@@ -31,6 +31,6 @@ extends \Exception
 	 */
 	public function __construct($message, $object=NULL)
 	{
-		parent::__construct($message.(is_object($object)? ": {$object->filename}::{$object->line}\nSource: {$object->source}" : ''));
+		parent::__construct($message.(is_object($object)? ": $object->filename::$object->line\nSource: $object->source" : ''));
 	}
 }

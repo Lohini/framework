@@ -156,6 +156,14 @@ extends Literal
 	}
 
 	/**
+	 * @return Number
+	 */
+	public function op_unary_concat()
+	{
+		return $this;
+	}
+
+	/**
 	 * Multiplies this value by the value of other
 	 * @param mixed $other Number|Colour: value to multiply by
 	 * @return mixed Number if other is a Number or Colour if it is a Colour
@@ -334,9 +342,9 @@ extends Literal
 	public function coerce($numeratorUnits, $denominatorUnits)
 	{
 		return new Sass\Number(
-			($this->isUnitless()?
-				$this->value :
-				$this->value*$this->coercionFactor($this->numeratorUnits, $numeratorUnits)/$this->coercionFactor($this->denominatorUnits, $denominatorUnits)
+			($this->isUnitless()
+				? $this->value
+				: $this->value*$this->coercionFactor($this->numeratorUnits, $numeratorUnits)/$this->coercionFactor($this->denominatorUnits, $denominatorUnits)
 				)
 			.join(' * ', $numeratorUnits)
 			.(!empty($denominatorUnits)? ' / '.join(' * ', $denominatorUnits) : '')
@@ -362,7 +370,7 @@ extends Literal
 		
 		$coercionFactor=1;
 		foreach ($fromUnits as $i => $from) {
-			if (array_key_exists($from) && array_key_exists($from)) {
+			if (array_key_exists($from) && array_key_exists($from)) { // XXX: ???
 				$coercionFactor*= self::$unitConversion[$toUnits[$i]]/self::$unitConversion[$from];
 				}
 			else {
@@ -422,6 +430,15 @@ extends Literal
 	}
 
 	/**
+	 * Returns a value indicating if this number has units.
+	 * @return bool TRUE if this number has, FALSE if not
+	 */
+	public function hasUnits()
+	{
+		return !$this->isUnitless();
+	}
+
+	/**
 	 * Returns a value indicating if this number has units that can be represented
 	 * in CSS.
 	 * @return boolean true if this number has units that can be represented in
@@ -429,10 +446,8 @@ extends Literal
 	 */
 	public function hasLegalUnits()
 	{
-		return (
-			empty($this->numeratorUnits)
-			|| count($this->numeratorUnits)===1)
-			&& empty($this->denominatorUnits);
+		return (empty($this->numeratorUnits) || count($this->numeratorUnits)===1)
+				&& empty($this->denominatorUnits);
 	}
 
 	/**
@@ -529,7 +544,7 @@ extends Literal
 	public function toString()
 	{
 		if  (!$this->hasLegalUnits()) {
-			throw new Sass\NumberException("Invalid CSS units ({$this->units})", Sass\ScriptParser::$context->node);
+			throw new Sass\NumberException("Invalid CSS units ($this->units)", Sass\ScriptParser::$context->node);
 			}
 		return ($this->units=='px'? floor($this->value) : round($this->value, self::PRECISION)).$this->units;
 	}

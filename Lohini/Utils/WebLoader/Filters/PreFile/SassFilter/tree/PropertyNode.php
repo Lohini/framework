@@ -86,7 +86,7 @@ extends Node
 		$this->name=$matches[self::NAME];
 		$this->value=$matches[self::VALUE];
 		if ($matches[self::SCRIPT]===self::IS_SCRIPT) {
-			$this->addWarning('Setting CSS properties with "=" is deprecated; use "{name}: {value};"', array('{name}'=>$this->name, '{value}'=>$this->value));
+			$this->addWarning("Setting CSS properties with '=' is deprecated; use '$this->name: $this->value;'");
 			}
 	}
 
@@ -100,9 +100,9 @@ extends Node
 	public function parse($context)
 	{
 		$return=array();
-		if ($this->value) {
+		if ($this->value!=='') {
 			$node=clone $this;
-			$node->name= ($this->inNamespace()? "{$this->namespace}-" : '').$this->interpolate($this->name, $context);
+			$node->name= ($this->inNamespace()? "$this->namespace-" : '').$this->interpolate($this->name, $context);
 			$node->value=$this->evaluate($this->interpolate($this->value, $context), $context, Sass\ScriptParser::CSS_PROPERTY)->toString();
 			if (array_key_exists($node->name, $this->vendor_properties)) {
 				foreach ($this->vendor_properties[$node->name] as $vendorProperty) {
@@ -187,24 +187,29 @@ extends Node
 	 * @return boolean true if the token represents this type of node, false if not
 	 * @throws PropertyNodeException
 	 */
-	public static function isa($token/*, $syntax*/)
+	public static function isa($token)
 	{
-		$matches=self::match($token, /*$syntax*/func_get_arg(1));
+		if (!is_array($token)) {
+			$syntax='old';
+			}
+		else {
+			$syntax=$token['syntax'];
+			$token=$token['token'];
+			}
+		$matches=self::match($token, $syntax);
 
 		if (!empty($matches)) {	
 			if (isset($matches[self::VALUE]) && self::isPseudoSelector($matches[self::VALUE])) {
 				return FALSE;
 				}
 		  	if ($token->level===0) {
-		  		throw new Sass\PropertyNodeException('Properties can not be assigned at root level', $this);
+		  		throw new Sass\PropertyNodeException('Properties can not be assigned at root level', NULL);
 		  		}
 		  	else {
 		  		return TRUE;
 		  		}
 			}
-		else {
-			return FALSE;
-			}
+		return FALSE;
 	}
 
 	/**
@@ -246,6 +251,6 @@ extends Node
 	{
 		preg_match(self::MATCH_PSUEDO_SELECTOR, $string, $matches);
 		return (isset($matches[0]) && in_array($matches[0], self::$psuedoSelectors))
-			|| preg_match(self::MATCH_INTERPOLATION, $string);
+				|| preg_match(self::MATCH_INTERPOLATION, $string);
 	}
 }

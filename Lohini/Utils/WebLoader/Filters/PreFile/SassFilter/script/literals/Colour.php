@@ -469,17 +469,17 @@ extends Literal
 			if (!$other->isUnitless()) {
 				throw new Sass\ColourException('Number must be a unitless number', Sass\ScriptParser::$context->node);
 				}
-			$this->red=$this->getRed()%$other->value;
-			$this->green=$this->getGreen()%$other->value;
-			$this->blue=$this->getBlue()%$other->value;
+			$this->red=fmod($this->getRed(), $other->value);
+			$this->green=fmod($this->getGreen(), $other->value);
+			$this->blue=fmod($this->getBlue(), $other->value);
 			}
 		elseif (!$other instanceof Sass\Colour) {
 			throw new Sass\ColourException('Argument must be a Sass\Colour or Sass\Number', Sass\ScriptParser::$context->node);
 			}
 		else {
-			$this->red=$this->getRed()%$other->getRed();
-			$this->green=$this->getGreen()%$other->getGreen();
-			$this->blue=$this->getBlue()%$other->getBlue();
+			$this->red=fmod($this->getRed(), $other->getRed());
+			$this->green=fmod($this->getGreen(), $other->getGreen());
+			$this->blue=fmod($this->getBlue(), $other->getBlue());
 			}
 		return $this;
 	}
@@ -698,8 +698,7 @@ extends Literal
 		if (is_null($this->blue)) {
 			$this->hsl2rgb();
 			}
-		$component=round(abs($this->blue));
-		return ($component>255? $component%255 : $component);
+		return max(0, min(255, round($this->blue)));
 	}
 
 	/**
@@ -711,8 +710,7 @@ extends Literal
 		if (is_null($this->green)) {
 			$this->hsl2rgb();
 			}
-		$component=round(abs($this->green));
-		return ($component>255? $component%255 : $component);
+		return max(0, min(255, round($this->green)));
 	}
 
 	/**
@@ -724,8 +722,7 @@ extends Literal
 		if (is_null($this->red)) {
 			$this->hsl2rgb();
 			}
-		$component=round(abs($this->red));
-		return ($component>255? $component%255 : $component);
+		return max(0, min(255, round($this->red)));
 	}
 
 	/**
@@ -819,7 +816,7 @@ extends Literal
 	 */
 	private function hsl2rgb()
 	{
-		$h=($this->hue%360)/360;
+		$h=$this->hue/360;
 		$s=$this->saturation/100;
 		$l=$this->lightness/100;
 
@@ -881,16 +878,16 @@ extends Literal
 				$h=0;
 				break;
 			case $rgb[0]:
-				$h=(($rgb[1]-$rgb[2])/$c)%6;
+				$h=60*($rgb[1]-$rgb[2])/$c;
 				break;
 			case $rgb[1]:
-				$h=(($rgb[2]-$rgb[0])/$c)+2;
+				$h=(60*($rgb[2]-$rgb[0])/$c)+120;
 				break;
 			case $rgb[2]:
-				$h=(($rgb[0]-$rgb[1])/$c)+4;
+				$h=(60*($rgb[0]-$rgb[1])/$c)+240;
 				break;
 			}
-		$this->hue=$h*60;
+		$this->hue=fmod($h, 360);
 	}
 	
 	/**
@@ -936,6 +933,6 @@ extends Literal
 		if (empty(self::$regex)) {
 			self::$regex=str_replace('{CSS_COLOURS}', join('|', array_reverse(array_keys(self::$svgColours))), self::MATCH);
 			}
-		return (preg_match(self::$regex, strtolower($subject), $matches)? $matches[0] : FALSE);
+		return (preg_match(self::$regex, \Nette\Utils\Strings::lower($subject), $matches)? $matches[0] : FALSE);
 	}
 }

@@ -56,6 +56,7 @@ class File
 			}
 		$sassParser=new Sass\Parser(array_merge($parser->options, array('line' => 1)));
 		$tree=$sassParser->parse($filename);
+		self::setCachedFile($tree, Strings::webalize(md5($filename)));
 		return $tree;
 	 }
 
@@ -90,7 +91,11 @@ class File
 				return $_filename;
 				}
 
-			foreach (array_merge(array(dirname($parser->filename)), $parser->load_paths) as $loadPath) {
+			$paths=$parser->load_paths;
+			if (!empty($parser->filename)) {
+				$paths[]=dirname($parser->filename);
+				}
+			foreach ($paths as $loadPath) {
 				$path=self::findFile($_filename, realpath($loadPath));
 				if ($path!==FALSE) {
 					return $path;
@@ -143,7 +148,7 @@ class File
 	 */
 	public static function getCachedFile($filename)
 	{
-		return self::getCache()->offsetGet(/*'sass-'.Strings::webalize(md5(*/$filename/*))*/);
+		return self::getCache()->offsetGet($filename);
 	}
 
 	/**
@@ -155,9 +160,8 @@ class File
 	public static function setCachedFile($sassc, $filename)
 	{
 		$cache=self::getCache();
-//		$key='sass-'.Strings::webalize(md5($filename));
 		$cache->save(
-			$filename, //$key,
+			$filename,
 			$sassc,
 			array(
 				Cache::FILES => $filename, // XXX: "$this->sourcePath/$filename",
@@ -168,7 +172,6 @@ class File
 				)
 			);
 		$cache->release();
-//		return $key;
 	}
 
 	/**

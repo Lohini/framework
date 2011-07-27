@@ -59,11 +59,11 @@ extends Node
 	 * @return array the parsed node
 	 * @throws MixinNodeException
 	 */
-	public function parse($context)
+	public function parse($pcontext)
 	{
-		$mixin=$context->getMixin($this->name);
+		$mixin=$pcontext->getMixin($this->name);
 
-		$context=new Sass\Context($context);
+		$context=new Sass\Context($pcontext);
 		$argc=count($this->args);
 		$count=0;
 		foreach ($mixin->args as $name => $value) {
@@ -84,7 +84,7 @@ extends Node
 			$children=array_merge($children, $child->parse($context));
 			} // foreach
 
-		$context->merge();
+//		$context->merge();
 		return $children;
 	}
 

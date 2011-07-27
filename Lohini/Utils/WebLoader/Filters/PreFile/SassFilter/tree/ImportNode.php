@@ -60,7 +60,7 @@ extends Node
 		$imported=array();
 		foreach ($this->files as $file) {
 			if (preg_match(self::MATCH_CSS, $file)) {
-				return "@import {$file}";
+				return "@import $file";
 				}
 			else {
 				$file=trim($file, '\'"');

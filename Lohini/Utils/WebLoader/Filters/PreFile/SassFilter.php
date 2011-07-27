@@ -7,7 +7,8 @@
  */
 namespace Lohini\WebLoader\Filters;
 
-use Lohini\WebLoader\Filters\Sass;
+use Nette\Environment as NEnvironment,
+	Lohini\WebLoader\Filters\Sass;
 
 class SassFilter
 extends PreFileFilter
@@ -26,7 +27,11 @@ extends PreFileFilter
 			) {
 			return $code;
 			}
-		$filter=new Sass\Parser(array(/*Sass options*/));
+		$so=array();
+		if (!NEnvironment::isProduction()) {
+			$so['debug_info']=TRUE;
+			}
+		$filter=new Sass\Parser($so);
 		return $filter->toCss($file, TRUE);
 	}
 }

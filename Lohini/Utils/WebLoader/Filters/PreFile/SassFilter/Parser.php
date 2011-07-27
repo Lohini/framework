@@ -217,6 +217,10 @@ class Parser
 	 * @see $vendor_properties
 	 */
 	private $_vendorProperties=array(
+		'animation' => array(
+			'-moz-animation',
+			'-webkit-animation'
+			),
 		'border-radius' => array(
 			'-moz-border-radius',
 			'-webkit-border-radius',
@@ -255,6 +259,11 @@ class Parser
 			'-webkit-opacity',
 			'-khtml-opacity'
 			),
+		'transition' => array(
+			'-moz-transition',
+			'-webkit-transition',
+			'-o-transition'
+			)
 		);
 
 
@@ -275,7 +284,7 @@ class Parser
 				$this->vendor_properties=$this->_vendorProperties;
 				}
 			elseif (is_array($options['vendor_properties'])) {
-				$this->vendor_properties=array_merge($this->vendor_properties, $this->_vendorProperties);
+				$this->vendor_properties=array_merge($this->_vendorProperties, $options['vendor_properties']);
 				}
 			}
 		unset($options['vendor_properties']);
@@ -432,7 +441,11 @@ class Parser
 	{
 		if ($isFile) {
 			$this->filename=Sass\File::getFile($source, $this);
+
 			$this->syntax=\Nette\Utils\Strings::lower(pathinfo($this->filename, PATHINFO_EXTENSION));
+			if ($this->syntax!==Sass\File::SASS && $this->syntax!==Sass\File::SCSS) {
+				throw new Sass\Exception('Invalid syntax option');
+				}
 
 			if ($this->cache) {
 				if (($cached=Sass\File::getCachedFile($this->filename))!==NULL) {
@@ -447,9 +460,6 @@ class Parser
 			return $tree;
 			}
 		else {
-			if ($this->syntax!==Sass\File::SASS && $this->syntax!==Sass\File::SCSS) {
-				throw new Sass\Exception('Invalid syntax option');
-				}
 			return $this->toTree($source);
 			}
 	}
@@ -463,6 +473,7 @@ class Parser
 	private function toTree($source)
 	{
 		if ($this->syntax===Sass\File::SASS) {
+			$source=str_replace(array("\r\n", "\n\r", "\r"), "\n", $source);
 			$this->source=explode("\n", $source);
 			$this->setIndentChar();
 			}
@@ -514,7 +525,7 @@ class Parser
 			case Sass\VariableNode::isa($token):
 				return new Sass\VariableNode($token);
 				break;
-			case Sass\PropertyNode::isa($token, $this->property_syntax):
+			case Sass\PropertyNode::isa(array('token'=>$token, 'syntax'=>$this->property_syntax)):
 				return new Sass\PropertyNode($token, $this->property_syntax);
 				break;
 			case Sass\MixinDefinitionNode::isa($token):
@@ -574,7 +585,7 @@ class Parser
 				// Consume Sass comments
 				if (substr($statement, 0, strlen(self::BEGIN_SASS_COMMENT))===self::BEGIN_SASS_COMMENT) {
 					unset($statement);
-					while($this->getLevel($this->source[0])>$level) {
+					while ($this->getLevel($this->source[0])>$level) {
 						array_shift($this->source);
 						$this->line++;
 						}
@@ -622,7 +633,7 @@ class Parser
 	{
 		$indent=strlen($source)-strlen(ltrim($source));
 		$level=$indent/$this->indentSpaces;
-		if (!is_int($level) || preg_match("/[^{$this->indentChar}]/", substr($source, 0, $indent))) {
+		if (!is_int($level) || preg_match("/[^$this->indentChar]/", substr($source, 0, $indent))) {
 			$this->source=$source;
 			throw new Sass\Exception('Invalid indentation', $this);
 			}
@@ -731,8 +742,8 @@ class Parser
 		// Trim the statement removing whitespace, end statement (;), begin block ({), and (unless the statement ends in an interpolation block) end block (})
 		$statement=rtrim($statement, ' '.self::BEGIN_BLOCK.self::END_STATEMENT);
 		$statement= preg_match('/#\{.+?\}$/i', $statement)? $statement : rtrim($statement, self::END_BLOCK);
-		$token= $statement?
-					(object)array(
+		$token= $statement
+					? (object)array(
 						'source' => $statement,
 						'level' => $level,
 						'filename' => $this->filename,
@@ -774,6 +785,9 @@ class Parser
 						}
 					}
 				return new Sass\ImportNode($token);
+				break;
+			case '@each':
+				return new Sass\EachNode($token);
 				break;
 			case '@for':
 				return new Sass\ForNode($token);

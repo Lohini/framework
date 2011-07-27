@@ -87,7 +87,7 @@ extends Node
 	 */
 	public function extend($extendee, $selectors)
 	{
-		$this->extenders[$extendee]= (isset($this->extenders[$extendee])? array_merge($this->extenders[$extendee], $selectors) : $selectors);		
+		$this->extenders[$extendee]= isset($this->extenders[$extendee])? array_merge($this->extenders[$extendee], $selectors) : $selectors;
 	}
 	
 	public function getExtenders()

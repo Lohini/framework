@@ -81,6 +81,7 @@ class Context
 	 */
 	public function getVariable($name)
 	{
+		$name=str_replace('-', '_', $name);
 		if (isset($this->variables[$name])) {
 			return $this->variables[$name];
 			}
@@ -99,7 +100,7 @@ class Context
 	 */
 	public function hasVariable($name)
 	{
-		return isset($this->variables[$name]);
+		return isset($this->variables[str_replace('-', '_', $name)]);
 	}
 
 	/**
@@ -110,7 +111,7 @@ class Context
 	 */
 	public function setVariable($name, $value)
 	{
-		$this->variables[$name]=$value;
+		$this->variables[str_replace('-', '_', $name)]=$value;
 		return $this;
 	}
 

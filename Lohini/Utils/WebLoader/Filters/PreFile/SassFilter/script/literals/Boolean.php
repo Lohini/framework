@@ -42,7 +42,7 @@ extends Literal
 			$this->value=$value;
 			}
 		elseif ($value==='true' || $value==='false') {
-			$this->value=($value==='true' ? TRUE : FALSE);
+			$this->value= $value==='true'? TRUE : FALSE;
 			}
 		else {
 			throw new Sass\BooleanException('Invalid Sass\Boolean', Sass\ScriptParser::$context->node);
@@ -75,6 +75,6 @@ extends Literal
 	 */
 	public static function isa($subject)
 	{
-		return (preg_match(self::MATCH, $subject, $matches)? $matches[0] : FALSE);
+		return preg_match(self::MATCH, $subject, $matches)? $matches[0] : FALSE;
 	}
 }

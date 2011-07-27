@@ -52,7 +52,7 @@ extends Node
 	{
 		parent::__construct($token);
 		preg_match(self::MATCH, $token->source, $matches);
-		if (empty($matches[self::NAME]) || ($matches[self::VALUE]==='')) {
+		if (empty($matches[self::NAME]) || $matches[self::VALUE]==='') {
 			throw new Sass\VariableNodeException('Invalid variable definition; name and expression required', $this);			
 			}
 		$this->name=$matches[self::NAME];
@@ -61,10 +61,10 @@ extends Node
 		
 		// Warn about deprecated features
 		if ($matches[self::IDENTIFIER]===self::SASS_IDENTIFIER) {
-			$this->addWarning('Variables prefixed with "!" is deprecated; use "${name}"', array('{name}'=>$this->name));
+			$this->addWarning("Variables prefixed with '!' is deprecated; use '$$this->name'");
 			}
 		if (!empty($matches[Sass\VariableNode::SASS_ASSIGNMENT])) {
-			$this->addWarning('Setting variables with "{sassDefault}=" is deprecated; use "${name}: {value}{scssDefault}"', array('{sassDefault}'=>(!empty($matches[Sass\VariableNode::SASS_DEFAULT])? '||' : ''), '{name}'=>$this->name, '{value}'=>$this->value, '{scssDefault}'=>(!empty($matches[Sass\VariableNode::SASS_DEFAULT])? ' !default' : '')));
+			$this->addWarning("Setting variables with '".(!empty($matches[Sass\VariableNode::SASS_DEFAULT])? '||' : '')."=' is deprecated; use '$$this->name: $this->value".(!empty($matches[Sass\VariableNode::SASS_DEFAULT])? ' !default' : '')."'");
 			}
 	}
 

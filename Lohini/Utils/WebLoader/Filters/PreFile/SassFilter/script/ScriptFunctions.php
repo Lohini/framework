@@ -105,7 +105,7 @@ class ScriptFunctions
 				$rgba=array();
 				$components=func_get_args();
 				$alpha=array_pop($components);
-				foreach($components as $component) {
+				foreach ($components as $component) {
 					Sass\Literal::assertType($component, __NAMESPACE__.'\Number');
 					if ($component->units=='%') {
 						Sass\Literal::assertInRange($component, 0, 100, '%');
@@ -272,7 +272,6 @@ class ScriptFunctions
 	/*
 	 * Colour Adjustments
 	 */
-
 	/**
 	 * Changes the hue of a colour while retaining the lightness and saturation.
 	 * @param Colour $colour The colour to adjust
@@ -569,8 +568,8 @@ class ScriptFunctions
 		return $colour->with(
 			array(
 				$attribute => self::inRange(
-					($ofCurrent?
-						$colour->$attribute*(1+($amount*($op===self::INCREASE? 1 : -1))/100)
+					($ofCurrent
+						? $colour->$attribute*(1+($amount*($op===self::INCREASE? 1 : -1))/100)
 						: $colour->$attribute+($amount*($op===self::INCREASE? 1 : -1))
 						),
 					$min,
@@ -713,7 +712,7 @@ class ScriptFunctions
 	public static function unitless($number)
 	{
 		Sass\Literal::assertType($number, __NAMESPACE__.'\Number');
-		return new Sass\Boolean(!$number->hasUnits());
+		return new Sass\Boolean($number->isUnitless());
 	}
 
 	/* String Functions */

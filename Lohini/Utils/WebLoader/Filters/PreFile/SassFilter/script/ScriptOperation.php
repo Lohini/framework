@@ -85,7 +85,7 @@ class ScriptOperation
 		if (isset($operation[1])) {
 			$this->associativity=$operation[1];
 			$this->precedence=$operation[2];
-			$this->operandCount=(isset($operation[3])? $operation[3] : NULL);
+			$this->operandCount= isset($operation[3])? $operation[3] : NULL;
 			}
 	}
 
@@ -127,7 +127,8 @@ class ScriptOperation
 				}
 			}
 		if (method_exists($operands[0], $operation)) {
-			return $operands[0]->$operation(!empty($operands[1]) ? $operands[1] : NULL);
+			$op=clone $operands[0];
+			return $op->$operation(!empty($operands[1])? $operands[1] : NULL);
 			}
 		throw new Sass\ScriptOperationException("Undefined operation '$operation' for ".get_class($operands[0]), Sass\ScriptParser::$context->node);
 	}

@@ -279,7 +279,7 @@ class Node
 	public function inDirective()
 	{
 		return $this->parent instanceof Sass\DirectiveNode
-				|| $this->parent instanceof Sass\DirectiveNode;
+				|| $this->parent instanceof Sass\DirectiveNode; // XXX: ???
 	}
 
 	/**
@@ -328,8 +328,7 @@ class Node
 	 */
 	public function addWarning($message, $params=array())
 	{
-		$warning=new Sass\DebugNode($this->token, $message, $params);
-		$this->addChild($warning);
+		$this->addChild(new Sass\DebugNode($this->token, $message, $params));
 	}
 
 	/**

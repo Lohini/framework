@@ -73,8 +73,8 @@ extends Node
 		if (!$this->warning || ($this->root->parser->quiet===FALSE)) {
 			set_error_handler(array($this, 'errorHandler'));
 			trigger_error(
-				$this->warning?
-					$this->interpolate(
+				$this->warning
+					? $this->interpolate(
 						$this->params!==array()? strtr($this->message, $this->params) : $this->message,
 						$context
 						)

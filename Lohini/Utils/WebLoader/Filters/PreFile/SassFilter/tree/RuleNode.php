@@ -108,7 +108,7 @@ extends Node
 
 		return $this->renderer->renderRule($this, $properties, $rules);
 	}
-	
+
 	/**
 	 * Extend this nodes selectors
 	 * $extendee is the subject of the @extend directive
@@ -125,7 +125,7 @@ extends Node
 			else {
 				$pattern=preg_quote($extendee);
 				}
-			foreach (preg_grep('/'.$pattern.'$/', $this->selectors) as $selector) {
+			foreach (preg_grep('/'.$pattern.'/', $this->selectors) as $selector) {
 				foreach ($extenders as $extender) {
 					if (is_array($extendee)) {
 						$this->selectors[]=preg_replace('/(.*?)'.$pattern.'$/', "\\1$extender\\2", $selector);
@@ -140,7 +140,7 @@ extends Node
 				}
 			}
 	}
-	
+
 	/**
 	 * Tests whether the selector is a psuedo selector
 	 * @param string $selector selector to test
@@ -150,7 +150,7 @@ extends Node
 	{
 		return strpos($selector, ':')!==FALSE;
 	}
-	
+
 	/**
 	 * Tests whether the selector is a sequence selector
 	 * @param string $selector selector to test
@@ -160,7 +160,7 @@ extends Node
 	{
 		return strpos($selector, ' ')!==FALSE;
 	}
-	
+
 	/**
 	 * Merges selector sequences
 	 * @param string $extender the extender selector
@@ -175,12 +175,12 @@ extends Node
 		array_pop($selector);
 
 		$common=array();
-		while($extender[0]===$selector[0]) {
+		while ($extender[0]===$selector[0]) {
 			$common[]=array_shift($selector);
 			array_shift($extender);
 			}
 
-		$begining=(!empty($common)? join(' ', $common).' ' : '');
+		$begining= !empty($common)? join(' ', $common).' ' : '';
 
 		return array(
 			$begining.join(' ', $selector).' '.join(' ', $extender).$end,

@@ -53,6 +53,13 @@ extends NodeException
 {}
 
 /**
+ * EachNodeException class
+ */
+class EachNodeException
+extends NodeException
+{}
+
+/**
  * ExtendNodeException class
  */
 class ExtendNodeException

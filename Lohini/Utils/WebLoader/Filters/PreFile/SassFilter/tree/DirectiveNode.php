@@ -19,6 +19,8 @@ namespace Lohini\WebLoader\Filters\Sass;
  * @author Lopo <lopo@lohini.net>
  */
 
+use Nette\Utils\Strings;
+
 /**
  * DirectiveNode class.
  * Represents a CSS directive.
@@ -27,20 +29,15 @@ class DirectiveNode
 extends Node
 {
 	const NODE_IDENTIFIER='@';
-	const MATCH='/^(@\w+)/';
+	const MATCH='/^(@[\w-]+)/';
 
 
-	/**
-	 * @param object $token source token
-	 */
-	public function __construct($token)
-	{
-		parent::__construct($token);
-	}
-	
 	protected function getDirective()
 	{
-		return self::extractDirective($this->token);
+		preg_match('/^(@[\w-]+)(?:\s*(\w+))*/', $this->token->source, $matches);
+		array_shift($matches);
+		$parts=implode(' ', $matches);
+		return Strings::lower($parts);
 	}
 
 	/**
@@ -86,6 +83,6 @@ extends Node
 	public static function extractDirective($token)
 	{
 		preg_match(self::MATCH, $token->source, $matches);
-		return strtolower($matches[1]);
+		return Strings::lower($matches[1]);
 	}
 }

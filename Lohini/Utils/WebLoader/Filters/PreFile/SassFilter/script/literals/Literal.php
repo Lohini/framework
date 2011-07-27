@@ -77,7 +77,7 @@ abstract class Literal
 	 */
 	public function toBoolean()
 	{
-		return (boolean)$this->value;
+		return (boolean)$this->value || $this->value===NULL;
 	}
 
 	/**
@@ -244,6 +244,15 @@ abstract class Literal
 	{
 		return ($this->toBoolean()? $this : $other);
 	}
+
+	/**
+	 * @param Literal $other the value to assign
+	 * @return Literal assigned
+	 */
+	public function op_assign($other)
+	{
+		return $other;
+	}
 	
 	/**
 	 * The Sass\Script xor operation.
@@ -394,6 +403,6 @@ abstract class Literal
 	 */
 	public static function isa($subject)
 	{
-		throw new Sass\LiteralException('Abstract function');
+		throw new Sass\LiteralException('Child classes must override this method');
 	}
 }
