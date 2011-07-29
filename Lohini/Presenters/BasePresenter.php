@@ -56,66 +56,6 @@ extends \Lohini\Application\UI\Presenter
 	}
 
 	/**
-	 * @see \Nette\Application\UI\Presenter::formatLayoutTemplateFiles()
-	 */
-	public function formatLayoutTemplateFiles()
-	{
-		$layout= $this->layout? $this->layout : 'layout';
-		if (isset($this->context->params['useSkins']) && $this->context->params['useSkins']) {
-			$user=$this->getUser();
-			if (!$user->isLoggedIn()) {
-				$skin='default';
-				}
-			else {
-				$i=$user->getIdentity();
-				$skin= (isset($i->skin) && $i->skin)? $i->skin : 'default';
-				}
-			$skinDir=realpath(APP_DIR."/skins/$skin");
-			}
-		else {
-			$skinDir=realpath(APP_DIR.'/templates');
-			}
-		$path='/'.str_replace(':', 'Module/', $this->getName());
-		$pathP=substr_replace($path, '', strrpos($path, '/'), 0);
-		$list=array(
-			"$skinDir$pathP/@$layout.latte",
-			"$skinDir$pathP.@$layout.latte",
-			);
-		while (($path=substr($path, 0, strrpos($path, '/')))!==FALSE) {
-			$list[]="$skinDir$path/@$layout.latte";
-			}
-		return $list;
-	}
-
-	/**
-	 * @see \Nette\Application\UI\Presenter::formatTemplateFiles()
-	 */
-	public function formatTemplateFiles()
-	{
-		if (isset($this->context->params['useSkins']) && $this->context->params['useSkins']) {
-			$user=$this->getUser();
-			if (!$user->isLoggedIn()) {
-				$skin='default';
-				}
-			else {
-				$i=$user->getIdentity();
-				$skin= (isset($i->skin) && $i->skin)? $i->skin : 'default';
-				}
-			$skinDir=realpath(APP_DIR."/skins/$skin");
-			}
-		else {
-			$skinDir=realpath(APP_DIR.'/templates');
-			}
-		$path='/'.str_replace(':', 'Module/', $this->getName());
-		$pathP=substr_replace($path, '', strrpos($path, '/'), 0);
-		$path=substr_replace($path, '', strrpos($path, '/'));
-		return array(
-			"$skinDir$pathP/$this->view.latte",
-			"$skinDir$pathP.$this->view.latte",
-			);
-	}
-
-	/**
 	 * Creates CssLoader control
 	 * @return \Lohini\WebLoader\CssLoader
 	 */

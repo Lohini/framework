@@ -355,7 +355,7 @@ extends \Nette\Application\UI\Control
 	{
 		if (($content=file_get_contents("$this->sourcePath/$file"))===FALSE) {
 			if ($this->throwExceptions) {
-				if ($this->getPresenter(FALSE)->getContext()->params['productionMode'])
+				if ($this->getPresenter(FALSE)->context->params['productionMode'])
 					throw new \Nette\FileNotFoundException("File '$this->sourcePath/$file' doesn't exist.");
 				else {
 					\Nette\Diagnostics\Debugger::processException(new \Nette\FileNotFoundException("File '$this->sourcePath/$file' doesn't exist."));

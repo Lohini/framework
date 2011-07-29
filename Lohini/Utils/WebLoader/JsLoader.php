@@ -57,7 +57,7 @@ extends WebLoader
 			}
 		if (!file_exists("$this->sourcePath/$file")) {
 			if ($this->throwExceptions) {
-				if ($this->getPresenter(FALSE)->getContext()->params['productionMode']) {
+				if ($this->getPresenter(FALSE)->context->params['productionMode']) {
 					throw new \Nette\FileNotFoundException("File '$this->sourcePath/$file' doesn't exist.");
 					}
 				else {
@@ -92,7 +92,7 @@ extends WebLoader
 		$content='';
 		if (($cnt=count($this->files))>0) {
 			if ($cnt==1 && $this->files[0][1]==self::COMPACT) {
-				$this->sourceUri=$this->getPresenter(FALSE)->getContext()->getService('httpRequest')->getUrl()->getBaseUrl().'js/';
+				$this->sourceUri=$this->getPresenter(FALSE)->context->httpRequest->getUrl()->getBaseUrl().'js/';
 				echo $this->useHeadJs
 					? $this->getHeadJsElement($this->sourceUri.$this->files[0][0])
 					: $this->getElement($this->sourceUri.$this->files[0][0]);
@@ -118,7 +118,7 @@ extends WebLoader
 								}
 							else {
 								if ($this->throwExceptions) {
-									if ($this->getPresenter(FALSE)->getContext()->params['productionMode']) {
+									if ($this->getPresenter(FALSE)->context->params['productionMode']) {
 										throw new \Nette\FileNotFoundException("Don't have JSMin class.");
 										}
 									else {
@@ -141,7 +141,7 @@ extends WebLoader
 								}
 							else {
 								if ($this->throwExceptions) {
-									if ($this->getPresenter(FALSE)->getContext()->params['productionMode']) {
+									if ($this->getPresenter(FALSE)->context->params['productionMode']) {
 										throw new \Nette\FileNotFoundException("Don't have JavaScriptPacker class.");
 										}
 									else {
@@ -214,7 +214,7 @@ extends WebLoader
 			$this->addFiles(func_get_args());
 			}
 		$dc=get_declared_classes();
-		$this->sourceUri=$this->getPresenter(FALSE)->getContext()->getService('httpRequest')->getUrl()->getBaseUrl().'js/';
+		$this->sourceUri=$this->getPresenter(FALSE)->context->httpRequest->getUrl()->getBaseUrl().'js/';
 		// u javascriptu zalezi na poradi
 		foreach ($this->files as $file) {
 			switch ($file[1]) {
@@ -235,7 +235,7 @@ extends WebLoader
 						}
 					else {
 						if ($this->throwExceptions) {
-							if ($this->getPresenter(FALSE)->getContext()->params['productionMode'])
+							if ($this->getPresenter(FALSE)->context->params['productionMode'])
 								throw new \Nette\FileNotFoundException("Don't have JSMin class.");
 							else {
 								Debugger::processException(new \Nette\FileNotFoundException("Don't have JSMin class"));
@@ -258,7 +258,7 @@ extends WebLoader
 						}
 					else {
 						if ($this->throwExceptions) {
-							if ($this->getPresenter(FALSE)->getContext()->params['productionMode'])
+							if ($this->getPresenter(FALSE)->context->params['productionMode'])
 								throw new \Nette\FileNotFoundException("Don't have JavaScriptPacker class.");
 							else {
 								Debugger::processException(new \Nette\FileNotFoundException("Don't have JavaScriptPacker class"));
@@ -291,7 +291,7 @@ extends WebLoader
 			$this->clear();
 			$this->addFiles(func_get_args());
 			}
-		$this->sourceUri=$this->getPresenter(FALSE)->getContext()->getService('httpRequest')->getUrl()->getBaseUrl().'js/';
+		$this->sourceUri=$this->getPresenter(FALSE)->context->httpRequest->getUrl()->getBaseUrl().'js/';
 		// u javascriptu zalezi na poradi
 		foreach ($this->files as $file) {
 			switch ($file[1]) {

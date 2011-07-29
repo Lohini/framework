@@ -27,7 +27,9 @@ extends PreFileFilter
 			) {
 			return $code;
 			}
-		$so=array();
+		$so=array(
+			'vendor_properties' => TRUE
+			);
 		if (!NEnvironment::isProduction()) {
 			$so['debug_info']=TRUE;
 			}
