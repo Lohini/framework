@@ -19,7 +19,6 @@ namespace Lohini\WebLoader;
  */
 
 use Nette\Caching\Cache,
-	Nette\Environment as NEnvironment,
 	Nette\Utils\Strings,
 	Lohini\WebLoader\Filters\PreFileFilter;
 
@@ -403,7 +402,7 @@ extends \Nette\Application\UI\Control
 	{
 		if (self::$cacheStorage===NULL) {
 //			return new Caching\Storages\DevNullStorage;
-			$dir=NEnvironment::getVariable('tempDir').'/cache';
+			$dir=\Nette\Environment::getVariable('tempDir').'/cache';
 			umask(0000);
 			@mkdir($dir, 0755); // @ - directory may exists
 			self::$cacheStorage=new WebLoaderCacheStorage($dir);

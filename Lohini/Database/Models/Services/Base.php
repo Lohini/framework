@@ -7,8 +7,7 @@
  */
 namespace Lohini\Database\Models\Services;
 
-use Nette\Environment as NEnvironment,
-	Lohini\Database\Models\IEntity;
+use Lohini\Database\Models\IEntity;
 
 /**
  * BaseService

@@ -7,8 +7,7 @@
  */
 namespace Lohini\WebLoader\Filters;
 
-use Nette\Environment as NEnvironment,
-    Nette\Utils\Strings,
+use Nette\Utils\Strings,
 	Lohini\WebLoader\WebLoader;
 
 /**
@@ -36,7 +35,7 @@ extends \Nette\Object
 			}
 
 		$docroot=realpath(WWW_DIR);
-		$basePath=rtrim(NEnvironment::getService('httpRequest')->getUrl()->getBaseUrl(), '/');
+		$basePath=rtrim(\Nette\Environment::getService('httpRequest')->getUrl()->getBaseUrl(), '/');
 
 		// inside document root
 		if (Strings::startsWith($cssFile, $docroot)) {

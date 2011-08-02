@@ -7,8 +7,6 @@
  */
 namespace Lohini\Browser;
 
-use Nette\Environment as NEnvironment;
-
 /**
  * Lohini Browser
  *
@@ -18,7 +16,7 @@ class Browser
 {
 	public static function getLanguagesPriority()
 	{
-		if (!$header=NEnvironment::getHttpRequest()->getHeader('accept-language')) {
+		if (!$header=\Nette\Environment::getHttpRequest()->getHeader('accept-language')) {
 			return NULL;
 			}
 		$prefered_languages=array();

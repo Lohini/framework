@@ -11,7 +11,7 @@ use Nette\DI\IContainer,
 	Lohini\DI\Container,
 	Nette\Application\UI\Presenter,
 	Nette\Application\Routers\Route,
-	Nette\Environment as NEnvironment,
+	Nette\Environment,
 	Nette\Caching\Cache,
 	Nette\Application\Routers\RouteList;
 
@@ -53,8 +53,8 @@ extends \Nette\Configurator
 //		self::$instance=$this;
 		$container=$this->getContainer();
 		// Back compatibility
-		NEnvironment::setConfigurator($this);
-		NEnvironment::setContext($container);
+		Environment::setConfigurator($this);
+		Environment::setContext($container);
 
 
 		defined('VAR_DIR') && $this->container->params['varDir']=realpath(VAR_DIR);
@@ -158,7 +158,7 @@ extends \Nette\Configurator
 
 		$router[]= $backend= new RouteList('Backend');
 		$backend[]=new Route('admin/[<lang [a-z]{2}>/]<presenter>[/<action>[/<id>]]', array(
-					'lang' => NEnvironment::getVariable('lang', 'en'),
+					'lang' => Environment::getVariable('lang', 'en'),
 					'presenter' => 'Default',
 					'action' => 'default',
 					'id' => NULL
@@ -282,10 +282,10 @@ extends \Nette\Configurator
 			});
 		if ($section===NULL) {
 			if (PHP_SAPI==='cli') {
-				$section=NEnvironment::CONSOLE;
+				$section=Environment::CONSOLE;
 				}
 			else {
-				$section= $container->params['productionMode']? NEnvironment::PRODUCTION : NEnvironment::DEVELOPMENT;
+				$section= $container->params['productionMode']? Environment::PRODUCTION : Environment::DEVELOPMENT;
 				}
 			}
 

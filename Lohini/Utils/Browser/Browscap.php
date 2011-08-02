@@ -39,7 +39,7 @@ namespace Lohini\Utils\Browser;
  */
 
 use Nette\Caching\Cache,
-	Nette\Environment as NEnvironment;
+	Nette\Environment;
 
 class Browscap
 {
@@ -150,7 +150,7 @@ class Browscap
 
 	public function __construct()
 	{
-		$this->iniFilename=realpath(NEnvironment::getVariable('tempDir')).'/browscap.ini';
+		$this->iniFilename=realpath(Environment::getVariable('tempDir')).'/browscap.ini';
 	}
 
 	/**
@@ -197,7 +197,7 @@ class Browscap
 			}
 
 		// Automatically detect the useragent
-		$user_agent= isset($user_agent) ?: NEnvironment::getHttpRequest()->getHeader('user-agent', '');
+		$user_agent= isset($user_agent) ?: Environment::getHttpRequest()->getHeader('user-agent', '');
 
 		$browser=array();
 		foreach ($this->_patterns as $key => $pattern) {
@@ -571,7 +571,7 @@ class Browscap
 	 */
 	protected function getCache()
 	{
-		return NEnvironment::getCache('Lohini.Browscap');
+		return Environment::getCache('Lohini.Browscap');
 		if (!self::$cacheStorage) {
 //			trigger_error('Missing cache storage.', E_USER_WARNING);
 			self::$cacheStorage=new \Nette\Caching\Storages\PhpFileStorage;// DevNullStorage;
@@ -605,7 +605,7 @@ class Browscap
 		$inst=self::getInstance();
 		if (self::$result==NULL || self::$input!=$user_agent) {
 //			$inst->updateMethod=self::UPDATE_LOCAL;
-//			$inst->localFile=realpath(NEnvironment::getVariable('tempDir').'/bcap.ini');
+//			$inst->localFile=realpath(Environment::getVariable('tempDir').'/bcap.ini');
 			self::$result=$inst->getBrowser($user_agent, TRUE);
 			self::$input=$user_agent;
 			}

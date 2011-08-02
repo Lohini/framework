@@ -8,8 +8,7 @@
 namespace Lohini\WebLoader\Filters;
 
 use Nette\Caching\Cache,
-	Lohini\WebLoader\WebLoader,
-	Lohini\Environment;
+	Lohini\WebLoader\WebLoader;
 /**
  * Base class for PreFile filters
  * @author Lopo <lopo@lohini.net>
@@ -47,7 +46,7 @@ abstract class PreFileFilter
 	protected static function getCache()
 	{
 		if (self::$cache===NULL) {
-			self::$cache=Environment::getCache('WebLoader');
+			self::$cache=\Nette\Environment::getCache('Lohini.WebLoader');
 			}
 		return self::$cache;
 	}

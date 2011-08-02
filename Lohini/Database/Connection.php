@@ -7,8 +7,6 @@
  */
 namespace Lohini\Database;
 
-use Lohini\Environment;
-
 /**
  * Lohini Connection
  *

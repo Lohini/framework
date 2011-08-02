@@ -78,8 +78,7 @@ namespace Lohini\WebLoader\Filters;
  * @filesource http://www.conditional-css.com/media/src/Conditional-CSS.zip
  */
 
-use Nette\Utils\Strings,
-	Nette\Environment as NEnvironment;
+use Nette\Utils\Strings;
 
 class CCssFilter
 extends PreFileFilter
@@ -260,7 +259,7 @@ extends PreFileFilter
 			'userBrowser' => '',
 			'userVersion' => 0
 			);
-		$userAgent=NEnvironment::getHttpRequest()->getHeader('user-agent');
+		$userAgent=\Nette\Environment::getHttpRequest()->getHeader('user-agent');
 		// MSIE
 		if (preg_match('/mozilla.*?MSIE ([0-9a-z\+\-\.]+).*/si', $userAgent, $match)) {
 			$browser['userBrowser']='IE';

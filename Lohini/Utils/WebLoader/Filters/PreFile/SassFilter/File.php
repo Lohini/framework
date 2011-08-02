@@ -20,11 +20,12 @@ namespace Lohini\WebLoader\Filters\Sass;
  * @author Lopo <lopo@lohini.net>
  */
 
-use Lohini\WebLoader\Filters\Sass,
-	Nette\Caching\Cache,
+use Nette\Caching\Cache,
 	Nette\Caching\ICacheStorage,
 	Nette\Caching\FileStorage,
-	Nette\Utils\Strings;
+	Nette\Utils\Strings,
+	Nette\Environment,
+	Lohini\WebLoader\Filters\Sass;
 
 /**
  * File class
@@ -181,7 +182,7 @@ class File
 	protected static function getCache()
 	{
 		if (self::$cache===NULL) {
-			self::$cache=\Nette\Environment::getCache('Lohini.WebLoader.Sass');
+			self::$cache=Environment::getCache('Lohini.WebLoader.Sass');
 //			self::$cache=new Cache(self::getCacheStorage(), 'Lohini.WebLoader.Sass');
 			}
 		return self::$cache;
@@ -203,7 +204,7 @@ class File
 	protected static function getCacheStorage()
 	{
 		if (self::$cacheStorage===NULL) {
-			$dir=NEnvironment::getVariable('tempDir').'/cache';
+			$dir=Environment::getVariable('tempDir').'/cache';
 			umask(0000);
 			@mkdir($dir, 0755); // @ - directory may exists
 			self::$cacheStorage=new FileStorage($dir);
