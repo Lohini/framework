@@ -5,7 +5,7 @@
  * @copyright (c) 2010, 2011 Lopo <lopo@lohini.net>
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
-namespace Lohini;
+namespace Lohini\DI;
 
 use Nette\DI\IContainer,
 	Lohini\DI\Container,
@@ -151,18 +151,10 @@ extends \Nette\Configurator
 						);
 				});
 
-		$router[]=new Route('WebLoader/<id>', array(
-					'presenter' => 'WebLoader',
-					'action' => 'default'
-					));
+		$router[]=new Route('WebLoader/<id>', 'WebLoader:default');
 
-		$router[]= $backend= new RouteList('Backend');
-		$backend[]=new Route('admin/[<lang [a-z]{2}>/]<presenter>[/<action>[/<id>]]', array(
-					'lang' => Environment::getVariable('lang', 'en'),
-					'presenter' => 'Default',
-					'action' => 'default',
-					'id' => NULL
-					));
+		$backend= $router[]= new RouteList('Backend');
+		$backend[]=new Route('admin[/<lang=en [a-z]{2}>]/<presenter>[/<action>[/<id>]]', 'Default:default');
 
 		return $router;
 	}

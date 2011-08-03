@@ -19,7 +19,7 @@ namespace Lohini\Localization;
  * Translator panel
  */
 class Panel
-extends \Lohini\FreezableObject
+extends \Lohini\Utils\FreezableObject
 implements \Nette\Diagnostics\IBarPanel
 {
 	const VERSION='2.0';

@@ -28,7 +28,7 @@ namespace Lohini\Localization;
  * @property-read \ArrayIterator $iterator
  */
 class Dictionary
-extends \Lohini\FreezableObject
+extends \Lohini\Utils\FreezableObject
 implements \IteratorAggregate, \Serializable
 {
 	const STATUS_SAVED=TRUE;

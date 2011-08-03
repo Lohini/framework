@@ -25,7 +25,7 @@ use Lohini\Localization\Filters;
  * Translation extractor
  */
 class Extractor
-extends \Lohini\FreezableObject
+extends \Lohini\Utils\FreezableObject
 {
 	/** @var \Lohini\Localization\Translator */
 	protected $translator;

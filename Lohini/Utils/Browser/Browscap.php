@@ -620,17 +620,3 @@ class Browscap
 		return self::$instance;
 	}
 }
-
-
-/**
- * Browscap.ini parsing class exception
- *
- * @package	   Browscap
- * @author	   Jonathan Stoppani <st.jonathan@gmail.com>
- * @copyright  Copyright (c) 2006-2008 Jonathan Stoppani
- * @license	   http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
- * @link	   http://garetjax.info/projects/browscap/
- */
-class BrowscapException
-extends \Exception
-{}

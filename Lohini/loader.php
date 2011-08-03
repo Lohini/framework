@@ -32,9 +32,13 @@ if (!version_compare(\Nette\Framework::VERSION, '2.0-beta', '>=')) {
 @header('X-Powered-By: Lohini');
 
 // load Lohini
-require_once LOHINI_DIR.'/Loaders/LohiniLoader.php';
-\Lohini\Loaders\LohiniLoader::getInstance()->register();
-
+require_once LOHINI_DIR.'/Loaders/SplClassLoader.php';
+\Lohini\Loaders\SplClassLoader::getInstance(array(
+	'Lohini' => LOHINI_DIR,
+	'Doctrine' => LIBS_DIR.'/Doctrine',
+	'DoctrineExtensions' => LIBS_DIR.'/Doctrine/DoctrineExtensions',
+	'Gedmo' => LIBS_DIR.'/Doctrine/Gedmo',
+	'Symfony' => LIBS_DIR.'/Symfony'
+	))->register();
 // Set debug options
 \Nette\Diagnostics\Debugger::$strictMode=TRUE;
-
