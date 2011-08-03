@@ -22,7 +22,7 @@ namespace Lohini\Localization;
  * @property-read array $dictionaries
  */
 class Translator
-extends \Nette\Utils\FreezableObject
+extends \Nette\FreezableObject
 implements ITranslator
 {
 	/** @var array */
