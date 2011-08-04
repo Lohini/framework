@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Script;
 /**
  * SassScriptFunction class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -23,9 +23,7 @@ namespace Lohini\WebLoader\Filters\Sass\Script;
  */
 class ScriptFunction
 {
-	/**@#+
-	 * Regexes for matching and extracting functions and arguments
-	 */
+	/**@#+ Regexes for matching and extracting functions and arguments */
 	const MATCH='/^(((-\w)|(\w))[-\w]*)\(/';
 	const MATCH_FUNC='/^((?:(?:-\w)|(?:\w))[-\w]*)\((.*)\)/';
 	const SPLIT_ARGS='/\s*((?:[\'"].*?["\'])|(?:.+?(?:\(.*\).*?)?))\s*(?:,|$)/';
@@ -127,7 +125,7 @@ class ScriptFunction
 				}
 			elseif ($c===')') {
 				$paren--;
-				}			
+				}
 			}
 		return $match;
 	}

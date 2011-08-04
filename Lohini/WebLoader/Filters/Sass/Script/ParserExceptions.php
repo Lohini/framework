@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Script;
 /**
  * SassScript Parser exception class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -25,21 +25,21 @@ extends \Lohini\WebLoader\Filters\Sass\Exception
 {}
 
 /**
- * ScriptLexerException class
+ * tLexerException class
  */
 class LexerException
 extends ParserException
 {}
 
 /**
- * ScriptOperationException class
+ * OperationException class
  */
 class OperationException
 extends ParserException
 {}
 
 /**
- * ScriptFunctionException class
+ * FunctionException class
  */
 class FunctionException
 extends ParserException

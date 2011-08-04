@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Tree;
 /**
  * SassContext class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -94,7 +94,7 @@ class Context
 	/**
 	 * Returns a value indicating if the variable exists in this context
 	 * @param string $name name of variable to test
-	 * @return boolean true if the variable exists in this context, false if not
+	 * @return bool
 	 */
 	public function hasVariable($name)
 	{

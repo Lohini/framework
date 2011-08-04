@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Script\Literals;
 /**
  * SassBoolean class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -23,14 +23,12 @@ namespace Lohini\WebLoader\Filters\Sass\Script\Literals;
 class Boolean
 extends Literal
 {
-	/**@#+
-	 * Regex for matching and extracting booleans
-	 */
+	/** Regex for matching and extracting booleans */
 	const MATCH='/^(true|false)\b/';
 
 
 	/**
-	 * @param string value of the boolean type
+	 * @param string|bool value of the bool type
 	 * @return Boolean
 	 * @throws BooleanException
 	 */
@@ -49,7 +47,7 @@ extends Literal
 
 	/**
 	 * Returns the value of this boolean.
-	 * @return boolean the value of this boolean
+	 * @return bool
 	 */
 	public function getValue()
 	{

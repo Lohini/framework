@@ -8,7 +8,7 @@
 namespace Lohini\WebLoader\Filters\Sass\Script;
 /**
  * SassScript functions class file.
- * 
+ *
  * Methods in this module are accessible from the SassScript context.
  * For example, you can write:
  *
@@ -29,10 +29,10 @@ namespace Lohini\WebLoader\Filters\Sass\Script;
  * Keep in mind that Sass stylesheets are only compiled once and then left as
  * static CSS files. Any dynamic CSS should be left in <style> tags in the
  * HTML.
- * 
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ *
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -54,14 +54,14 @@ class Functions
 	/* Colour Creation */
 	/**
 	 * Creates a Literals\Colour object from red, green, and blue values.
-	 * @param Number $red the red component.
+	 * @param Literals\Number $red the red component.
 	 * A number between 0 and 255 inclusive, or between 0% and 100% inclusive
-	 * @param Number $green the green component.
+	 * @param Literals\Number $green the green component.
 	 * A number between 0 and 255 inclusive, or between 0% and 100% inclusive
-	 * @param Number $blue the blue component.
+	 * @param Literals\Number $blue the blue component.
 	 * A number between 0 and 255 inclusive, or between 0% and 100% inclusive
-	 * @return new Colour Colour object
-	 * @throws ScriptFunctionException if red, green, or blue are out of bounds
+	 * @return Literals\Colour Colour object
+	 * @throws FunctionException if red, green, or blue are out of bounds
 	 */
 	public static function rgb($red, $green, $blue)
 	{
@@ -84,8 +84,8 @@ class Functions
 	 * * rgba(colour, alpha)
 	 * @param Literals\Colour a Colour object
 	 * @param Literals\Number The alpha channel. A number between 0 and 1.
-	 * 
-	 * @return new Literals\Colour Colour object
+	 *
+	 * @return Literals\Colour Colour object
 	 * @throws FunctionException if any of the red, green, or blue 
 	 * colour components are out of bounds, or or the colour is not a colour, or
 	 * alpha is out of bounds
@@ -95,7 +95,7 @@ class Functions
 		switch (func_num_args()) {
 			case 2:
 				$colour=func_get_arg(0);
-				$alpha=func_get_arg(1);					
+				$alpha=func_get_arg(1);
 				Literals\Literal::assertType($colour, __NAMESPACE__.'\Literals\Colour');
 				Literals\Literal::assertType($alpha, __NAMESPACE__.'\Literals\Number');
 				Literals\Literal::assertInRange($alpha, 0, 1);
@@ -123,7 +123,7 @@ class Functions
 				break;
 			default:
 				throw new FunctionException('Incorrect argument count for '.__METHOD__.'; expected 2 or 4, received '.func_num_args(), Parser::$context->node);
-			}		
+			}
 	}
 
 	/**
@@ -136,7 +136,7 @@ class Functions
 	 * Must be between '0%' and 100%, inclusive
 	 * @param mixed @l The lightness of the colour as a percentage.
 	 * Must be between 0% and 100%, inclusive
-	 * @return new Literals\Colour The resulting colour
+	 * @return Literals\Colour The resulting colour
 	 * @throws FunctionException if saturation or lightness are out of bounds
 	 */
 	public static function hsl($h, $s, $l)
@@ -155,7 +155,7 @@ class Functions
 	 * Must be between 0% and 100% inclusive
 	 * @param float $a The alpha channel. A number between 0 and 1. 
 	 * @return Literals\Colour The resulting colour
-	 * @throws ScriptFunctionException if saturation, lightness or alpha are out of bounds
+	 * @throws FunctionException if saturation, lightness or alpha are out of bounds
 	 */
 	public static function hsla($h, $s, $l, $a)
 	{
@@ -168,11 +168,8 @@ class Functions
 		Literals\Literal::assertInRange($a, 0,   1);
 		return new Literals\Colour(array('hue'=>$h, 'saturation'=>$s, 'lightness'=>$l, 'alpha'=>$a));
 	}
-	
-	/*
-	 * Colour Information
-	 */
 
+	/* Colour Information */
 	/**
 	 * Returns the red component of a colour.
 	 * @param Literals\Colour $colour The colour
@@ -196,7 +193,7 @@ class Functions
 		Literals\Literal::assertType($colour, __NAMESPACE__.'\Literals\Colour');
 		return new Literals\Number($colour->green);
 	}
-	
+
 	/**
 	 * Returns the blue component of a colour.
 	 * @param Literals\Colour $colour The colour
@@ -268,10 +265,8 @@ class Functions
 		Literals\Literal::assertType($colour, __NAMESPACE__.'\Literals\Colour');
 		return new Literals\Number($colour->alpha);
 	}
-	
-	/*
-	 * Colour Adjustments
-	 */
+
+	/* Colour Adjustments */
 	/**
 	 * Changes the hue of a colour while retaining the lightness and saturation.
 	 * @param Literals\Colour $colour The colour to adjust
@@ -436,7 +431,7 @@ class Functions
 	{
 		return self::transparentize($colour, $amount, $ofCurrent);
 	}
-	
+
 	/**
 	 * Returns the complement of a colour.
 	 * Rotates the hue by 180 degrees.
@@ -538,15 +533,15 @@ class Functions
 		$rgba[]=$colour1->alpha*$p+$colour2->alpha*(1-$p);
 		return new Literals\Colour($rgba);
 	}
-	
+
 	/**
 	 * Adjusts the colour
 	 * @param Literals\Colour $colour the colour to adjust
-	 * @param Number $amount the amount to adust by
-	 * @param boolean $ofCurrent whether the amount is a proportion of the current value or
+	 * @param Literals\Number $amount the amount to adust by
+	 * @param bool $ofCurrent whether the amount is a proportion of the current value or
 	 * the total range
 	 * @param string $attribute the attribute to adjust
-	 * @param boolean $op whether to decrease (false) or increase (true) the value of the attribute
+	 * @param bool $op whether to decrease (false) or increase (true) the value of the attribute
 	 * @param float $min minimum value the amount can be
 	 * @param float $max maximum value the amount can bemixed
 	 * @param string $units amount units
@@ -562,7 +557,7 @@ class Functions
 			$ofCurrent=$ofCurrent->value;
 			}
 		
-		$amount=$amount->value*(($attribute==='alpha' && $ofCurrent && $units==='')? 100 : 1); 
+		$amount=$amount->value*(($attribute==='alpha' && $ofCurrent && $units==='')? 100 : 1);
 
 		return $colour->with(
 			array(
@@ -577,7 +572,7 @@ class Functions
 				)
 			);
 	}
-	
+
 	/* Number Functions */
 	/**
 	 * Finds the absolute value of a number.
@@ -634,7 +629,7 @@ class Functions
 		Literals\Literal::assertType($number, __NAMESPACE__.'\Literals\Number');
 		return new Literals\Number(round($number->value).$number->units);
 	}
-	
+
 	/**
 	 * Returns true if two numbers are similar enough to be added, subtracted,
 	 * or compared.
@@ -649,7 +644,7 @@ class Functions
 		Literals\Literal::assertType($number2, __NAMESPACE__.'\Literals\Number');
 		return new Literals\Boolean($number1->isComparableTo($number2));
 	}
-	
+
 	/**
 	 * Converts a decimal number to a percentage.
 	 * @example percentage(100px / 50px) => 200%
@@ -660,7 +655,7 @@ class Functions
 	public static function percentage($number)
 	{
 		if (!$number instanceof Literals\Number || $number->hasUnits()) {
-			throw new FunctionException('number must be a unitless Literals\Number', Literals\ScriptParser::$context->node);
+			throw new FunctionException('number must be a unitless Literals\Number', Parser::$context->node);
 			}
 		$number->value*=100;
 		$number->units='%';
@@ -757,7 +752,7 @@ class Functions
 		Literals\Literal::assertType($obj, __NAMESPACE__.'\Literals\Literal');
 		return new Literals\String($obj->typeOf);
 	}
-	
+
 	/**
 	 * Ensures the value is within the given range, clipping it if needed.
 	 * @param float $value the value to test

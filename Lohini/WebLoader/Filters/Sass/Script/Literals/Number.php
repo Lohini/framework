@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Script\Literals;
 /**
  * SassNumber class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -28,9 +28,7 @@ use Lohini\WebLoader\Filters\Sass\Script\Parser;
 class Number
 extends Literal
 {
-	/**
-	 * Regx for matching and extracting numbers
-	 */
+	/** Regx for matching and extracting numbers */
 	const MATCH='/^((?:-)?(?:\d*\.)?\d+)(([a-z%]+)(\s*[\*\/]\s*[a-z%]+)*)?/i';
 	const VALUE=1;
 	const UNITS=2;
@@ -64,7 +62,7 @@ extends Literal
 	/** @var array denominator units of this number */
 	private $denominatorUnits=array();
 	/**
-	 * @var boolean whether this number is in an expression or a literal number
+	 * @var bool whether this number is in an expression or a literal number
 	 * Used to determine whether division should take place 
 	 */
 	public $inExpression=TRUE;
@@ -84,7 +82,7 @@ extends Literal
 			$numeratorUnits=$denominatorUnits=array();
 
 			foreach (explode('*', $units[0]) as $unit) {
-				$numeratorUnits[]=trim($unit);			
+				$numeratorUnits[]=trim($unit);
 				}
 			if (isset($units[1])) {
 				foreach (explode('*', $units[1]) as $unit) {
@@ -92,7 +90,7 @@ extends Literal
 					}
 				}
 			$units=$this->removeCommonUnits($numeratorUnits, $denominatorUnits);
-			$this->numeratorUnits=$units[0];			
+			$this->numeratorUnits=$units[0];
 			$this->denominatorUnits=$units[1];
 			}
 	}
@@ -111,10 +109,8 @@ extends Literal
 		elseif (!$other instanceof Number) {
 			throw new NumberException('Number must be a number', Parser::$context->node);
 			}
-		else {
-			$other=$this->convert($other);
-			return new Number(($this->value+$other->value).$this->units);
-			}
+		$other=$this->convert($other);
+		return new Number(($this->value+$other->value).$this->units);
 	}
 
 	/**
@@ -140,10 +136,8 @@ extends Literal
 		elseif (!$other instanceof Number) {
 			throw new NumberException('Number must be a number', Parser::$context->node);
 			}
-		else {
-			$other=$this->convert($other);
-			return new Number(($this->value-$other->value).$this->units);
-			}
+		$other=$this->convert($other);
+		return new Number(($this->value-$other->value).$this->units);
 	}
 
 	/**
@@ -177,15 +171,13 @@ extends Literal
 		elseif (!$other instanceof Number) {
 			throw new NumberException('Number must be a number', Parser::$context->node);
 			}
-		else {
-			return new Number(
-				($this->value*$other->value)
-				.$this->unitString(
-					array_merge($this->numeratorUnits, $other->numeratorUnits),
-					array_merge($this->denominatorUnits, $other->denominatorUnits)
-					)
-				);
-			}
+		return new Number(
+			($this->value*$other->value)
+			.$this->unitString(
+				array_merge($this->numeratorUnits, $other->numeratorUnits),
+				array_merge($this->denominatorUnits, $other->denominatorUnits)
+				)
+			);
 	}
 
 	/**
@@ -211,11 +203,9 @@ extends Literal
 					)
 				);
 			}
-		else {
-			return parent::op_div($other);
-			}
+		return parent::op_div($other);
 	}
-	
+
 	/**
 	 * The Sass\Script == operation.
 	 * @param $other
@@ -234,7 +224,7 @@ extends Literal
 			return new Boolean(FALSE);
 			}		
 	}
-	
+
 	/**
 	 * The Sass\Script > operation.
 	 * @param Literal $other the value to compare to this
@@ -249,7 +239,7 @@ extends Literal
 			}
 		return new Boolean($this->value > $this->convert($other)->value);
 	}
-	
+
 	/**
 	 * The Sass\Script >= operation.
 	 * @param Literal $other the value to compare to this
@@ -264,7 +254,7 @@ extends Literal
 			}
 		return new Boolean($this->value >= $this->convert($other)->value);
 	}
-	
+
 	/**
 	 * The Sass\Script < operation.
 	 * @param Literal $other the value to compare to this
@@ -279,7 +269,7 @@ extends Literal
 			}
 		return new Boolean($this->value < $this->convert($other)->value);
 	}
-	
+
 	/**
 	 * The Sass\Script <= operation.
 	 * @param Literal $other the value to compare to this
@@ -328,7 +318,7 @@ extends Literal
 			}
 		return $other;
 	}
-	
+
 	/**
 	 * Returns the value of this number converted to other units.
 	 * The conversion takes into account the relationship between e.g. mm and cm,
@@ -342,15 +332,15 @@ extends Literal
 	public function coerce($numeratorUnits, $denominatorUnits)
 	{
 		return new Number(
-			($this->isUnitless()
-				? $this->value
-				: $this->value*$this->coercionFactor($this->numeratorUnits, $numeratorUnits)/$this->coercionFactor($this->denominatorUnits, $denominatorUnits)
-				)
-			.join(' * ', $numeratorUnits)
-			.(!empty($denominatorUnits)? ' / '.join(' * ', $denominatorUnits) : '')
-			);
+				($this->isUnitless()
+					? $this->value
+					: $this->value*$this->coercionFactor($this->numeratorUnits, $numeratorUnits)/$this->coercionFactor($this->denominatorUnits, $denominatorUnits)
+					)
+				.join(' * ', $numeratorUnits)
+				.(!empty($denominatorUnits)? ' / '.join(' * ', $denominatorUnits) : '')
+				);
 	}
-	
+
 	/**
 	 * Calculates the corecion factor to apply to the value
 	 * @param array $fromUnits units being converted from
@@ -363,11 +353,11 @@ extends Literal
 		$units=$this->removeCommonUnits($fromUnits, $toUnits);
 		$fromUnits=$units[0];
 		$toUnits=$units[1];
-		
+
 		if (sizeof($fromUnits)!==sizeof($toUnits) || !$this->areConvertable(array_merge($fromUnits, $toUnits))) {
 			throw new NumberException("Incompatible units: '".join(' * ', $fromUnits)."' and '".join(' * ', $toUnits)."'", Parser::$context->node);
 			}
-		
+
 		$coercionFactor=1;
 		foreach ($fromUnits as $i => $from) {
 			if (array_key_exists($from) && array_key_exists($from)) { // XXX: ???
@@ -375,15 +365,15 @@ extends Literal
 				}
 			else {
 				throw new NumberException("Incompatible units: '".join(' * ', $fromUnits)."' and '".join(' * ', $toUnits)."'", Parser::$context->node);
-				}			
+				}
 			}
 		return $coercionFactor; 
 	}
-	
+
 	/**
 	 * Returns a value indicating if all the units are capable of being converted
 	 * @param array $units units to test
-	 * @return boolean true if all units can be converted, false if not
+	 * @return bool TRUE if all units can be converted, FALSE if not
 	 */
 	private function areConvertable($units)
 	{
@@ -395,7 +385,7 @@ extends Literal
 			}
 		return TRUE; 
 	}
-	
+
 	/**
 	 * Removes common units from each set.
 	 * We don't use array_diff because we want (for eaxmple) mm*mm/mm*cm to
@@ -422,7 +412,7 @@ extends Literal
 
 	/**
 	 * Returns a value indicating if this number is unitless.
-	 * @return boolean true if this number is unitless, false if not
+	 * @return bool
 	 */
 	public function isUnitless()
 	{
@@ -441,8 +431,7 @@ extends Literal
 	/**
 	 * Returns a value indicating if this number has units that can be represented
 	 * in CSS.
-	 * @return boolean true if this number has units that can be represented in
-	 * CSS, false if not
+	 * @return bool
 	 */
 	public function hasLegalUnits()
 	{
@@ -487,29 +476,29 @@ extends Literal
 	{
 	  return join(' * ', $this->numeratorUnits);
 	}
-	
+
 	/**
 	 * Returns a value indicating if this number can be compared to other.
-	 * @return boolean TRUE if this number can be compared to other, FALSE if not
+	 * @return bool
 	 */
 	public function isComparableTo($other)
 	{
 		try {
 			$this->op_plus($other);
-			return TRUE; 
+			return TRUE;
 			}
 		catch (\Exception $e) {
-			return FALSE; 
-		}
+			return FALSE;
+			}
 	}
 
 	/**
 	 * Returns a value indicating if this number is an integer.
-	 * @return boolean TRUE if this number is an integer, FALSE if not
+	 * @return bool
 	 */
 	public function isInt()
 	{
-	  return $this->value%1===0;
+		return $this->value%1===0;
 	}
 
 	/**
@@ -523,7 +512,7 @@ extends Literal
 
 	/**
 	 * Returns the integer value.
- 	 * @return integer the integer value.
+ 	 * @return int the integer value.
  	 * @throws NumberException if the number is not an integer
 	 */
 	public function toInt()
@@ -557,6 +546,6 @@ extends Literal
 	 */
 	public static function isa($subject)
 	{
-		return (preg_match(self::MATCH, $subject, $matches)? $matches[0] : FALSE);
+		return preg_match(self::MATCH, $subject, $matches)? $matches[0] : FALSE;
 	}
 }

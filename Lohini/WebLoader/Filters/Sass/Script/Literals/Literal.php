@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Script\Literals;
 /**
  * SassLiteral class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -61,23 +61,21 @@ abstract class Literal
 		if (method_exists($this, $getter)) {
 			return $this->$getter();
 			}
-		else {
-			throw new LiteralException("No getter function for $name", Script\Parser::$context->node);
-			}
+		throw new LiteralException("No getter function for $name", Script\Parser::$context->node);
 	}
-	
+
 	public function __toString()
 	{
 		return $this->toString();
 	}
 
 	/**
-	 * Returns the boolean representation of the value of this
-	 * @return boolean the boolean representation of the value of this
+	 * Returns the bool representation of the value of this
+	 * @return bool
 	 */
 	public function toBoolean()
 	{
-		return (boolean)$this->value || $this->value===NULL;
+		return (bool)$this->value || $this->value===NULL;
 	}
 
 	/**
@@ -99,7 +97,7 @@ abstract class Literal
 	{
 		throw new LiteralException('Child classes must override this method', Script\Parser::$context->node);
 	}
-	
+
 	/**
 	 * Adds a child object to this.
 	 * @param Literal $sassLiteral the child object
@@ -229,17 +227,17 @@ abstract class Literal
 	/**
 	 * The Sass\Script and operation.
 	 * @param Literal $other the value to and with this
-	 * @return Literal other if this is boolean true, this if false
+	 * @return Literal other if this is bool TRUE, this if FALSE
 	 */
 	public function op_and($other)
 	{
 		return ($this->toBoolean()? $other : $this);
 	}
-	
+
 	/**
 	 * The Sass\Script or operation.
 	 * @param Literal $other the value to or with this
-	 * @return Literal this if this is boolean true, other if false
+	 * @return Literal this if this is bool TRUE, other if FALSE
 	 */
 	public function op_or($other)
 	{
@@ -254,7 +252,7 @@ abstract class Literal
 	{
 		return $other;
 	}
-	
+
 	/**
 	 * The Sass\Script xor operation.
 	 * @param Literal $other the value to xor with this
@@ -265,17 +263,17 @@ abstract class Literal
 	{
 		return new Boolean($this->toBoolean() xor $other->toBoolean());
 	}
-	
+
 	/**
 	 * The Sass\Script not operation.
-	 * @return Boolean Boolean object with the value true if the
-	 * boolean of this is false or false if it is true
+	 * @return Boolean Boolean object with the value TRUE if the
+	 * bool of this is FALSE or FALSE if it is TRUE
 	 */
 	public function op_not()
 	{
 		return new Boolean(!$this->toBoolean());
 	}
-	
+
 	/**
 	 * The Sass\Script > operation.
 	 * @param Literal $other the value to compare to this
@@ -286,7 +284,7 @@ abstract class Literal
 	{
 		return new Boolean($this->value>$other->value);
 	}
-	
+
 	/**
 	 * The Sass\Script >= operation.
 	 * @param Literal $other the value to compare to this
@@ -297,7 +295,7 @@ abstract class Literal
 	{
 		return new Boolean($this->value>=$other->value);
 	}
-	
+
 	/**
 	 * The Sass\Script < operation.
 	 * @param Literal $other the value to compare to this
@@ -308,7 +306,7 @@ abstract class Literal
 	{
 		return new Boolean($this->value<$other->value);
 	}
-	
+
 	/**
 	 * The Sass\Script <= operation.
 	 * @param Literal $other the value to compare to this
@@ -319,7 +317,7 @@ abstract class Literal
 	{
 		return new Boolean($this->value<=$other->value);
 	}
-	
+
 	/**
 	 * The Sass\Script == operation.
 	 * @param Literal $other the value to compare to this
@@ -330,7 +328,7 @@ abstract class Literal
 	{
 		return new Boolean($this==$other);
 	}
-	
+
 	/**
 	 * The Sass\Script != operation.
 	 * @param Literal $other the value to compare to this
@@ -341,7 +339,7 @@ abstract class Literal
 	{
 		return new Boolean(!$this->op_eq($other)->toBoolean());
 	}
-	
+
 	/**
 	 * The Sass\Script default operation (e.g. $a $b, "foo" "bar").
 	 * @param Literal $other the value to concatenate with a space to this
@@ -361,7 +359,7 @@ abstract class Literal
 	{
 		return new String($this->toString().', '.$other->toString());
 	}
-	
+
 	/**
 	 * Asserts that the literal is the expected type 
 	 * @param Literal the literal to test
@@ -374,7 +372,7 @@ abstract class Literal
 			throw new Script\FunctionException(($literal instanceof Literal? $literal->typeOf : 'literal')." must be a $type", Script\Parser::$context->node);
 			}
 	}
-	
+
 	/**
 	 * Asserts that the value of a literal is within the expected range 
 	 * @param Literal $literal the literal to test

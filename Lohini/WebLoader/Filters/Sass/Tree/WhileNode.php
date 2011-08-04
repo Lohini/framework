@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Tree;
 /**
  * SassWhileNode class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -29,10 +29,7 @@ extends Node
 	const EXPRESSION=2;
 	const IS_DO='do';
 
-	/**
-	 * @var boolean whether this is a do/while.
-	 * A do/while loop is guarenteed to run at least once.
-	 */
+	/** @var bool whether this is a do/while. */
 	private $isDo;
 	/** @var string expression to evaluate */
 	private $expression;

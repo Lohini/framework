@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Tree;
 /**
  * SassMixinDefinitionNode class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -89,7 +89,7 @@ extends Node
 	/**
 	 * Returns a value indicating if the token represents this type of node.
 	 * @param object $token token
-	 * @return boolean true if the token represents this type of node, false if not
+	 * @return bool
 	 */
 	public static function isa($token)
 	{

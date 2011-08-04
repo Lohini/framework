@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Tree;
 /**
  * SassRootNode class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -26,9 +26,9 @@ use Lohini\WebLoader\Filters\Sass;
 class RootNode
 extends Node
 {
-	/** @var ScriptParser Script parser */
+	/** @var Sass\Script\Parser Script parser */
 	protected $script;
-	/** @var Renderer the renderer for this node */
+	/** @var Sass\Renderers\Renderer the renderer for this node */
 	protected $renderer;
 	/** @var Parser */
 	protected $parser;
@@ -77,19 +77,22 @@ extends Node
 		$output='';
 		foreach ($node->children as $child) {
 			$output.=$child->render();
-			} // foreach
+			}
 		return $output;
 	}
 
 	/**
-	 * @param unknown_type $extendee
-	 * @param unknown_type $selectors
+	 * @param string $extendee
+	 * @param array $selectors
 	 */
 	public function extend($extendee, $selectors)
 	{
 		$this->extenders[$extendee]= isset($this->extenders[$extendee])? array_merge($this->extenders[$extendee], $selectors) : $selectors;
 	}
-	
+
+	/**
+	 * @return array
+	 */
 	public function getExtenders()
 	{
 		return $this->extenders;  

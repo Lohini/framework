@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Script;
 /**
  * SassScriptLexer class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -40,7 +40,7 @@ class Lexer
 	{
 		$this->parser=$parser;
 	}
-	
+
 	/**
 	 * Lex an expression into Script tokens.
 	 * @param string $string expression to lex
@@ -56,7 +56,7 @@ class Lexer
 				}
 			elseif (($match=ScriptFunction::isa($string))!==FALSE) {
 				preg_match(ScriptFunction::MATCH_FUNC, $match, $matches);
-				
+
 				$args=array();
 				foreach (ScriptFunction::extractArgs($matches[ScriptFunction::ARGS]) as $expression) {
 					$args[]=$this->parser->evaluate($expression, $context);
@@ -72,7 +72,7 @@ class Lexer
 			elseif (($match=Literals\Colour::isa($string))!==FALSE) {
 				$tokens[]=new Literals\Colour($match);
 				}
-			elseif (($match=Literals\Number::isa($string))!==FALSE) {				
+			elseif (($match=Literals\Number::isa($string))!==FALSE) {
 				$tokens[]=new Literals\Number($match);
 				}
 			elseif (($match=Operation::isa($string))!==FALSE) {
@@ -86,15 +86,15 @@ class Lexer
 				$match='';
 				while (strlen($_string) && !$this->isWhitespace($_string)) {
 					foreach (Operation::$inStrOperators as $operator) {
-						if (substr($_string, 0, strlen($operator))==$operator) {
+						if (\Nette\Utils\Strings::startsWith($_string, $operator)) {
 							break 2;
 							}
 						}
 					$match.=$_string[0];
-					$_string=substr($_string, 1);			
+					$_string=substr($_string, 1);
 					}
 				$tokens[]=new Literals\String($match);
-				}			
+				}
 			$string=substr($string, strlen($match));
 			}
 		return $tokens;

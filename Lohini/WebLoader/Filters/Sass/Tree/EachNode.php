@@ -14,7 +14,7 @@ namespace Lohini\WebLoader\Filters\Sass\Tree;
  * <list> is comma separated.
  * <var> is available to the rest of the script following evaluation
  * and has the value that terminated the loop.
- * 
+ *
  * @author Lopo <lopo@lohini.net>
  */
 

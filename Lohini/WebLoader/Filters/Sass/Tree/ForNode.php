@@ -17,10 +17,10 @@ namespace Lohini\WebLoader\Filters\Sass\Tree;
  * If the step clause is ommitted the <step> = 1.
  * <var> is available to the rest of the script following evaluation
  * and has the value that terminated the loop.
- * 
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ *
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -49,7 +49,7 @@ extends Node
 	private $from;
 	/** @var string expression that provides the loop end value */
 	private $to;
-	/** @var boolean whether the loop end value is inclusive */
+	/** @var bool whether the loop end value is inclusive */
 	private $inclusive;
 	/**
 	 * @var string expression that provides the amount by which the loop variable

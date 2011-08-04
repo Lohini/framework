@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Tree;
 /**
  * SassPropertyNode class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -128,7 +128,7 @@ extends Node
 
 	/**
 	 * Returns a value indicating if this node is in a namespace
-	 * @return boolean true if this node is in a property namespace, false if not
+	 * @return bool true if this node is in a property namespace, false if not
 	 */
 	public function inNamespace()
 	{
@@ -182,7 +182,7 @@ extends Node
 	 * Returns a value indicating if the token represents this type of node.
 	 * @param object $token token
 	 * @param string $syntax the property syntax being used
-	 * @return boolean true if the token represents this type of node, false if not
+	 * @return bool true if the token represents this type of node, false if not
 	 * @throws PropertyNodeException
 	 */
 	public static function isa($token)
@@ -200,12 +200,12 @@ extends Node
 			if (isset($matches[self::VALUE]) && self::isPseudoSelector($matches[self::VALUE])) {
 				return FALSE;
 				}
-		  	if ($token->level===0) {
-		  		throw new PropertyNodeException('Properties can not be assigned at root level', NULL);
-		  		}
-		  	else {
-		  		return TRUE;
-		  		}
+			if ($token->level===0) {
+				throw new PropertyNodeException('Properties can not be assigned at root level', NULL);
+				}
+			else {
+				return TRUE;
+				}
 			}
 		return FALSE;
 	}
@@ -233,7 +233,7 @@ extends Node
 			}
 		return $matches;
 	}
-	
+
 	/**
 	 * Returns a value indicating if the string starts with a pseudo selector.
 	 * This is used to reject pseudo selectors as property values as, for example,
@@ -241,7 +241,7 @@ extends Node
 	 * match regex.
 	 * It will also match interpolation to allow for constructs such as
 	 * content:#{$pos}
-	 * @see isa() 
+	 * @see isa()
 	 * @param string the string to test
 	 * @return bool true if the string starts with a pseudo selector, false if not
 	 */

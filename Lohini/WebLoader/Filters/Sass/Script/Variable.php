@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Script;
 /**
  * SassVariable class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -22,9 +22,7 @@ namespace Lohini\WebLoader\Filters\Sass\Script;
  */
 class Variable
 {
-	/**
-	 * Regex for matching and extracting Variables
-	 */
+	/** Regex for matching and extracting Variables */
 	const MATCH='/^(?<!\\\\)(?(?!!important\b)[!\$]([\w-]+))/';
 	
 	/** @var string name of variable */

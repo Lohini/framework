@@ -9,11 +9,9 @@ namespace Lohini\WebLoader\Filters\Sass;
 /**
  * SassFile class file.
  * File handling utilites.
- * @author                      Chris Yates <chris.l.yates@gmail.com>
- * @copyright   Copyright (c) 2010 PBM Web Development
- * @license                     http://phamlp.googlecode.com/files/license.txt
- * @package                     PHamlP
- * @subpackage  Sass
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -21,10 +19,7 @@ namespace Lohini\WebLoader\Filters\Sass;
  */
 
 use Nette\Caching\Cache,
-	Nette\Caching\ICacheStorage,
-	Nette\Caching\FileStorage,
 	Nette\Utils\Strings,
-	Nette\Environment,
 	Lohini\WebLoader\Filters\Sass;
 
 /**
@@ -55,7 +50,7 @@ class File
 		if (($cached=self::getCachedFile(Strings::webalize(md5($filename))))!==NULL) {
 			return $cached;
 			}
-		$sassParser=new Sass\Parser(array_merge($parser->options, array('line' => 1)));
+		$sassParser=new Sass\Script\Parser(array_merge($parser->options, array('line' => 1)));
 		$tree=$sassParser->parse($filename);
 		self::setCachedFile($tree, Strings::webalize(md5($filename)));
 		return $tree;
@@ -138,12 +133,13 @@ class File
 					return $path;
 					}
 				}
-			} // foreach
+			}
 		return FALSE;
 	}
+
 	/**
-	 * Retrieves the specified item from the cache or NULL if the key is not found (\ArrayAccess implementation).
-	 * @param  string key
+	 * Retrieves the specified item from the cache or NULL if the key is not found ({@link \ArrayAccess} implementation).
+	 * @param string key
 	 * @return mixed|NULL
 	 * @throws \InvalidArgumentException
 	 */
@@ -177,38 +173,13 @@ class File
 
 	/**
 	 * Get cache
-	 * @return Nette\Caching\Cache
+	 * @return \Nette\Caching\Cache
 	 */
 	protected static function getCache()
 	{
 		if (self::$cache===NULL) {
-			self::$cache=Environment::getCache('Lohini.WebLoader.Sass');
-//			self::$cache=new Cache(self::getCacheStorage(), 'Lohini.WebLoader.Sass');
+			self::$cache=\Nette\Environment::getCache('Lohini.WebLoader.Sass');
 			}
 		return self::$cache;
-	}
-
-	/**
-	 * Set cache storage
-	 * @param  Nette\Caching\Cache
-	 */
-	protected static function setCacheStorage(ICacheStorage $storage)
-	{
-		self::$cacheStorage=$storage;
-	}
-
-	/**
-	 * Get cache storage
-	 * @return Nette\Caching\ICacheStorage
-	 */
-	protected static function getCacheStorage()
-	{
-		if (self::$cacheStorage===NULL) {
-			$dir=Environment::getVariable('tempDir').'/cache';
-			umask(0000);
-			@mkdir($dir, 0755); // @ - directory may exists
-			self::$cacheStorage=new FileStorage($dir);
-			}
-		return self::$cacheStorage;
 	}
 }

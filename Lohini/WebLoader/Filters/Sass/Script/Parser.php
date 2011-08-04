@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Script;
 /**
  * SassScriptParser class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -73,7 +73,7 @@ class Parser
 	 * Evaluate a Sass\Script.
 	 * @param string expression to parse
 	 * @param \Lohini\WebLoader\Filters\Sass\Tree\Context the context in which the expression is evaluated
-	 * @param integer the environment in which the expression is evaluated
+	 * @param int the environment in which the expression is evaluated
 	 * @return Literals\Literal parsed value
 	 */
 	public function evaluate($expression, $context, $environment=self::DEFAULT_ENV)
@@ -109,8 +109,8 @@ class Parser
 	 * Parse Sass\Script to a set of tokens in RPN
 	 * using the Shunting Yard Algorithm.
 	 * @param string $expression expression to parse
-	 * @param Context $context the context in which the expression is parsed
-	 * @param integer $environment the environment in which the expression is parsed
+	 * @param \Lohini\WebLoader\Filters\Sass\Tree\Context $context the context in which the expression is parsed
+	 * @param int $environment the environment in which the expression is parsed
 	 * @throws ParserException
 	 * @return array tokens in RPN
 	 */

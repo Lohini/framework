@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Script\Literals;
 /**
  * SassString class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -42,11 +42,11 @@ extends Literal
 		preg_match(self::_MATCH, $value, $matches);
 		if ((isset($matches[self::QUOTE]))) {
 			$this->quote=$matches[self::QUOTE];
-			$this->value=$matches[self::VALUE];			
+			$this->value=$matches[self::VALUE];
 			}
 		else {
 			$this->quote='';
-			$this->value=$value;			
+			$this->value=$value;
 			}
 	}
 

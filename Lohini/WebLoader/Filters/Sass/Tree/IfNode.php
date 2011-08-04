@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Tree;
 /**
  * SassIfNode class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -39,7 +39,7 @@ extends Node
 
 	/**
 	 * @param object $token source token
-	 * @param boolean $if true for an "if" node, false for an "else if | else" node
+	 * @param bool $if true for an "if" node, false for an "else if | else" node
 	 */
 	public function __construct($token, $if=TRUE)
 	{
@@ -93,7 +93,7 @@ extends Node
 
 	/**
 	 * Returns a value indicating if this node is an "else" node.
-	 * @return true if this node is an "else" node, false if this node is an "if"
+	 * @return bool true if this node is an "else" node, false if this node is an "if"
 	 * or "else if" node
 	 */
 	private function isElse()

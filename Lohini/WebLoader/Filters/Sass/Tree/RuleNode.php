@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Tree;
 /**
  * SassRuleNode class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -36,7 +36,7 @@ extends Node
 	private $parentSelectors=array();
 	/** @var array resolved selectors */
 	private $resolvedSelectors=array();
-	/** @var boolean whether the node expects more selectors */
+	/** @var bool whether the node expects more selectors */
 	private $isContinued;
 
 
@@ -63,8 +63,7 @@ extends Node
 
 	/**
 	 * Returns a value indicating if the selectors for this rule are to be continued.
-	 * @param boolean true if the selectors for this rule are to be continued,
-	 * false if not
+	 * @param bool selectors for this rule are to be continued ?
 	 */
 	public function getIsContinued()
 	{
@@ -102,7 +101,7 @@ extends Node
 			else {
 				$properties[]=$child->render();
 				}
-			} // foreach
+			}
 
 		return $this->renderer->renderRule($this, $properties, $rules);
 	}
@@ -142,7 +141,7 @@ extends Node
 	/**
 	 * Tests whether the selector is a psuedo selector
 	 * @param string $selector selector to test
-	 * @return boolean true if the selector is a psuedo selector, false if not
+	 * @return bool
 	 */
 	private function isPsuedo($selector)
 	{
@@ -152,7 +151,7 @@ extends Node
 	/**
 	 * Tests whether the selector is a sequence selector
 	 * @param string $selector selector to test
-	 * @return boolean true if the selector is a sequence selector, false if not
+	 * @return bool
 	 */
 	private function isSequence($selector)
 	{
@@ -194,7 +193,7 @@ extends Node
 	{
 		return $this->selectors;
 	}
-	
+
 	/**
 	 * Resolves selectors.
 	 * Interpolates Sass\Script in selectors and resolves any parent references or
@@ -216,12 +215,12 @@ extends Node
 			elseif ($this->parentSelectors) {
 				foreach ($this->parentSelectors as $parentSelector) {
 					$resolvedSelectors[]="$parentSelector $selector";
-					} // foreach
+					}
 				}
 			else {
 				$resolvedSelectors[]=$selector;
 				}
-			} // foreach
+			}
 		sort($resolvedSelectors);
 		return $resolvedSelectors;
 	}
@@ -251,8 +250,8 @@ extends Node
 	 * Note that the return value may be non-Boolean that evaluates to FALSE,
 	 * i.e. 0. The return value should be tested using the === operator.
 	 * @param string $selector selector to test
-	 * @return mixed integer: position of the the first parent reference,
-	 * boolean: false if there is no parent reference.
+	 * @return mixed int: position of the the first parent reference,
+	 * bool: false if there is no parent reference.
 	 */
 	private function parentReferencePos($selector)
 	{
@@ -275,7 +274,7 @@ extends Node
 	/**
 	 * Determines if there is a parent reference in the selector
 	 * @param string $selector selector
-	 * @return boolean true if there is a parent reference in the selector
+	 * @return bool true if there is a parent reference in the selector
 	 */
 	private function hasParentReference($selector)
 	{
@@ -291,7 +290,7 @@ extends Node
 	 */
 	private function resolveParentReferences($selector, $context)
 	{
-		$resolvedReferences=array(); 
+		$resolvedReferences=array();
 		if (!count($this->parentSelectors)) {
 			throw new RuleNodeException('Can not use parent selector ('.self::PARENT_REFERENCE.') when no parent selectors', $this);
 			}
@@ -314,7 +313,7 @@ extends Node
 		$inString=FALSE;
 		$interpolate=FALSE;
 		$selector='';
-		
+
 		for ($i=0, $l=strlen($string); $i<$l; $i++) {
 			$c=$string[$i];
 			if ($c===self::CONTINUED && !$inString && !$interpolate) {

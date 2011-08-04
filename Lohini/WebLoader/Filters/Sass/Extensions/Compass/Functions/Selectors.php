@@ -11,16 +11,14 @@ namespace Lohini\WebLoader\Filters\Sass\Extensions\Compass\Functions;
  * @author			Chris Yates <chris.l.yates@gmail.com>
  * @copyright 	Copyright (c) 2010 PBM Web Development
  * @license			http://phamlp.googlecode.com/files/license.txt
- * @package			PHamlP
- * @subpackage	Sass.extensions.compass.functions
  */
 /**
  * Lohini port
  * @author Lopo <lopo@lohini.net>
  */
- 
+
 use Lohini\WebLoader\Filters\Sass\Script;
- 
+
 /**
  * Compass extension SassScript selectors functions class.
  * A collection of functions for use in SassSCript.
@@ -28,7 +26,7 @@ use Lohini\WebLoader\Filters\Sass\Script;
 class Selectors
 {
 	const COMMA_SEPARATOR='/\s*,\s*/';
-	
+	/** @var array */
 	private static $defaultDisplay=array(
 		'block' => array(
 			'address', 'blockquote', 'center', 'dir', 'div',
@@ -54,7 +52,7 @@ class Selectors
 		'table-row' => array('tr'),
 		'table-cell' => array('th', 'td')
 		);
-	
+
 
 	/**
 	 * Permute multiple selectors each of which may be comma delimited, the end result is
@@ -67,27 +65,27 @@ class Selectors
 	 * =mixin-b($selector1, $selector2, $selector3)
 	 *	 #{nest($selector, $selector2, $selector3)}
 	 *		 width: 2px
-	 * @return \Lohini\WebLoader\Filters\Sass\Script\Literals\String
-	 * @throws \Lohini\WebLoader\Filters\Sass\Script\FunctionException
+	 * @return Script\Literals\String
+	 * @throws Script\FunctionException
 	 */
 	public static function nest()
 	{
 		if (func_num_args()<2) {
 			throw new Script\FunctionException('nest() requires two or more arguments', Script\Parser::$context->node);
 			}
-			
+
 		$args=func_get_args();
 		$arg=array_shift($args);
 		$ancestors=preg_split(self::COMMA_SEPARATOR, $arg->value);
-		
+
 		foreach ($args as $arg) {
 			$nested=array();
 			foreach (preg_split(self::COMMA_SEPARATOR, $arg->value) as $descenant) {
 				foreach ($ancestors as $ancestor) {
-					$nested[]="$ancestor $descenant"; 
+					$nested[]="$ancestor $descenant";
 					}
 				}
-			$ancestors=$nested;		
+			$ancestors=$nested;
 			}
 		sort($nested);
 		return new Script\Literals\String(join(', ', $nested));
@@ -105,7 +103,7 @@ class Selectors
 	 * =mixin-b($selector, $to_append)
 	 *	 #{append_selector($selector, $to_append)}
 	 *		 width: 2px
-	 * @return \Lohini\WebLoader\Filters\Sass\Script\Literals\String
+	 * @return Script\Literals\String
 	 */
 	public static function append_selector($selector, $to_append)
 	{
@@ -124,7 +122,7 @@ class Selectors
 	 * @example headers(all) => h1, h2, h3, h4, h5, h6
 	 * @example headers(4) => h1, h2, h3, h4
 	 * @example headers(2,4) => h2, h3, h4
-	 * @return \Lohini\WebLoader\Filters\Sass\Script\Literals\String
+	 * @return Script\Literals\String
 	 */
 	public static function headers($from=NULL, $to=NULL)
 	{
@@ -136,14 +134,14 @@ class Selectors
 			$to=$from;
 			$from=new Script\Literals\Number(1);
 			}
-		
+
 		return new Script\Literals\String('h'.join(', h', range($from->value, $to->value)));
 	}
 
 	/**
 	 * @param type $from
 	 * @param type $to
-	 * @return \Lohini\WebLoader\Filters\Sass\Script\Literals\String
+	 * @return Script\Literals\String
 	 */
 	public static function headings($from=NULL, $to=NULL)
 	{
@@ -153,7 +151,7 @@ class Selectors
 	/**
 	 * Return an enumerated set of comma separated selectors.
 	 * @example enumerate('foo', 1, 4) => foo-1, foo-2, foo-3, foo-4
-	 * @return \Lohini\WebLoader\Filters\Sass\Script\Literals\String
+	 * @return Script\Literals\String
 	 */
 	public static function enumerate($prefix, $from, $to, $separator=NULL)
 	{
@@ -164,7 +162,7 @@ class Selectors
 	/**
 	 * returns a comma delimited string for all the
 	 * elements according to their default css3 display value.
-	 * @return \Lohini\WebLoader\Filters\Sass\Script\Literals\String
+	 * @return Script\Literals\String
 	 */
 	public static function elements_of_type($display)
 	{

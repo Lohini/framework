@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Script\Literals;
 /**
  * SassColour class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -24,14 +24,14 @@ use Lohini\WebLoader\Filters\Sass\Script\Parser;
  * A Sass\Script object representing a CSS colour.
  * 
  * A colour may be represented internally as RGBA, HSLA, or both. It is
- * originally represented as whatever its input is; if itĂ˘â‚¬â„˘s created with RGB
- * values, itĂ˘â‚¬â„˘s represented as RGBA, and if itĂ˘â‚¬â„˘s created with HSL values, itĂ˘â‚¬â„˘s
+ * originally represented as whatever its input is; if it's created with RGB
+ * values, it's represented as RGBA, and if it's created with HSL values, it's
  * represented as HSLA. Once a property is accessed that requires the other
- * representation Ă˘â‚¬â€ś for example, Colour::red for an HSL color Ă˘â‚¬â€ś that
+ * representation - for example, Colour::red for an HSL color - that
  * component is calculated and cached.
  * 
  * The alpha channel of a color is independent of its RGB or HSL representation.
- * ItĂ˘â‚¬â„˘s always stored, as 1 if nothing else is specified. If only the alpha
+ * It's always stored, as 1 if nothing else is specified. If only the alpha
  * channel is modified using Colour::with(), the cached RGB and HSL values
  * are retained.
  * 
@@ -43,16 +43,14 @@ use Lohini\WebLoader\Filters\Sass\Script\Parser;
 class Colour
 extends Literal
 {
-	/**@#+
-	 * Regexes for matching and extracting colours
-	 */
+	/**@#+ Regexes for matching and extracting colours */
 	const MATCH='/^((#([\da-f]{6}|[\da-f]{3}))|transparent|{CSS_COLOURS})/';
 	const EXTRACT_3='/#([\da-f])([\da-f])([\da-f])/';
 	const EXTRACT_6='/#([\da-f]{2})([\da-f]{2})([\da-f]{2})/';
 	const TRANSPARENT='transparent';
-	/**@#-*/
+	/**@#- */
 
-	/**@#-*/
+	/** @var array */
 	static private $svgColours=array(
 		'aliceblue' => '#f0f8ff',
 		'antiquewhite' => '#faebd7',
@@ -202,13 +200,9 @@ extends Literal
 		'yellow' => '#ffff00',
 		'yellowgreen' => '#9acd32'
 		);
-	/**
-	 * @var array reverse array (value => name) of named SVG1.0 colours
-	 */
+	/** @var array reverse array (value => name) of named SVG1.0 colours */
 	static private $_svgColours;
-	/**
-	* @var array reverse array (value => name) of named HTML4 colours
-	*/
+	/** @var array reverse array (value => name) of named HTML4 colours */
 	static private $_html4Colours=array(
 		'#000000' => 'black',
 		'#000080' => 'navy',
@@ -228,50 +222,27 @@ extends Literal
 		'#ffffff' => 'white',
 		);
 	static private $regex;
-	
-	/**@#+
-	 * RGB colour components
-	 */
-	/**
-	 * @var array RGB colour components. Used to check for RGB attributes.
-	 */
+	/**@#+ RGB colour components */
+	/** @var array RGB colour components. Used to check for RGB attributes. */
 	static private $rgb=array('red', 'green', 'blue');
-	/**
-	 * @var integer red component. 0 - 255
-	 */
+	/** @var int red component. 0 - 255 */
 	private $red;
-	/**
-	 * @var integer green component. 0 - 255
-	 */
+	/** @var int green component. 0 - 255 */
 	private $green;
-	/**
-	 * @var integer blue component. 0 - 255
-	 */
+	/** @var int blue component. 0 - 255 */
 	private $blue;
-	/**@#-*/
-	/**@#+
-	 * HSL colour components
-	 */
-	/**
-	 * @var array HSL colour components. Used to check for HSL attributes.
-	 */
+	/**@#- */
+	/**@#+ HSL colour components */
+	/** @var array HSL colour components. Used to check for HSL attributes. */
 	static private $hsl=array('hue', 'saturation', 'lightness');
-	/**
-	 * @var float hue component. 0 - 360
-	 */
+	/** @var float hue component. 0 - 360 */
 	private $hue;
-	/**
-	 * @var float saturation component. 0 - 100
-	 */
+	/** @var float saturation component. 0 - 100 */
 	private $saturation;
-	/**
-	 * @var float lightness component. 0 - 100
-	 */
+	/** @var float lightness component. 0 - 100 */
 	private $lightness;
-	/**@#-*/
-	/**
-	 * @var float alpha component. 0 - 1
-	 */
+	/**@#- */
+	/** @var float alpha component. 0 - 1 */
 	private $alpha=1;
 
 
@@ -348,7 +319,7 @@ extends Literal
 			throw new ColourException('Colour must be a array', Parser::$context->node);
 			}
 	}
-	
+
 	/**
 	 * Colour addition
 	 * @param mixed $other Colour|Number value to add
@@ -691,7 +662,7 @@ extends Literal
 
 	/**
 	 * Returns the blue component of this colour.
-	 * @return integer the blue component of this colour.
+	 * @return int the blue component of this colour.
 	 */
 	public function getBlue()
 	{
@@ -703,7 +674,7 @@ extends Literal
 
 	/**
 	 * Returns the green component of this colour.
-	 * @return integer the green component of this colour.
+	 * @return int the green component of this colour.
 	 */
 	public function getGreen()
 	{
@@ -715,7 +686,7 @@ extends Literal
 
 	/**
 	 * Returns the red component of this colour.
-	 * @return integer the red component of this colour.
+	 * @return int the red component of this colour.
 	 */
 	public function getRed()
 	{
@@ -773,7 +744,7 @@ extends Literal
 
 	/**
 	 * Returns whether this colour object is translucent; that is, whether the alpha channel is non-1.
-	 * @return boolean true if this colour is translucent, false if not
+	 * @return bool
 	 */
 	public function isTranslucent()
 	{
@@ -782,7 +753,7 @@ extends Literal
 
 	/**
 	 * Converts the colour to a string.
-	 * @param boolean $css3 whether to use CSS3 SVG1.0 colour names
+	 * @param bool $css3 whether to use CSS3 SVG1.0 colour names
  	 * @return string the colour as a named colour, rgba(r,g,g,a) or #rrggbb
 	 */
 	public function toString($css3=FALSE)
@@ -808,7 +779,7 @@ extends Literal
 			return (array_key_exists($colour, self::$_html4Colours)? self::$_html4Colours[$colour] : $colour);
 			}
 	}
-	
+
 	/**
 	 * Converts from HSL to RGB colourspace
 	 * Algorithm from the CSS3 spec: {@link http://www.w3.org/TR/css3-color/#hsl-color}
@@ -827,7 +798,7 @@ extends Literal
 		$this->green=$this->hue2rgb($m1, $m2, $h);
 		$this->blue=$this->hue2rgb($m1, $m2, $h-1/3);
 	}
-	
+
 	/**
 	 * Converts from hue to RGB colourspace
 	 * @param $m1
@@ -853,7 +824,7 @@ extends Literal
 			}
 		return $c*255; 
 	}
-	
+
 	/**
 	 * Converts from RGB to HSL colourspace
 	 * Algorithm adapted from {@link http://en.wikipedia.org/wiki/HSL_and_HSV#Conversion_from_RGB_to_HSL_or_HSV}
@@ -889,13 +860,13 @@ extends Literal
 			}
 		$this->hue=fmod($h, 360);
 	}
-	
+
 	/**
 	* Asserts that the colour space is valid.
 	* Returns the name of the colour space: 'rgb' if red, green, or blue keys given;
 	* 'hsl' if hue, saturation or lightness keys given; null if a non-associative array
 	* @param array $colour the colour to test
-	* @param boolean $all whether all colour space keys must be given
+	* @param bool $all whether all colour space keys must be given
 	* @return string name of the colour space
 	* @throws ColourException if mixed colour space keys given or not all
 	* keys for a colour space are required but not given (contructor)

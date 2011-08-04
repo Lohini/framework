@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Tree;
 /**
  * SassDebugNode class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -35,14 +35,14 @@ extends Node
 	 * only used by internal warning messages
 	 */
 	private $params;
-	/** @var boolean true if this is a warning */
+	/** @var bool true if this is a warning */
 	private $warning;
 
 
 	/**
 	 * @param object $token source token
 	 * @param mixed $message string: an internally generated warning message about the source
-	 * boolean: the source token is a @debug or @warn directive containing the
+	 * bool: the source token is a @debug or @warn directive containing the
 	 * message; TRUE if this is a @warn directive
 	 * @param array $params parameters for the message
 	 * @return DebugNode
@@ -86,7 +86,7 @@ extends Node
 						$context
 						)->toString()
 				);
-			restore_error_handler();			
+			restore_error_handler();
 			}
 		return array();
 	}

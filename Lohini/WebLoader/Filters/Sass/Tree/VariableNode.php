@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Tree;
 /**
  * SassVariableNode class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -38,7 +38,7 @@ extends Node
 	private $name;
 	/** @var string value of the variable or expression to evaluate */
 	private $value;
-	/** @var boolean whether the variable is optionally assigned */
+	/** @var bool whether the variable is optionally assigned */
 	private $isDefault;
 
 
@@ -51,7 +51,7 @@ extends Node
 		parent::__construct($token);
 		preg_match(self::MATCH, $token->source, $matches);
 		if (empty($matches[self::NAME]) || $matches[self::VALUE]==='') {
-			throw new VariableNodeException('Invalid variable definition; name and expression required', $this);			
+			throw new VariableNodeException('Invalid variable definition; name and expression required', $this);
 			}
 		$this->name=$matches[self::NAME];
 		$this->value=$matches[self::VALUE];
@@ -84,7 +84,7 @@ extends Node
 	/**
 	 * Returns a value indicating if the token represents this type of node.
 	 * @param object $token token
-	 * @return boolean true if the token represents this type of node, false if not
+	 * @return bool true if the token represents this type of node, false if not
 	 */
 	public static function isa($token)
 	{

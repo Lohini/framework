@@ -8,11 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Tree;
 /**
  * SassDirectiveNode class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
- * @package			PHamlP
- * @subpackage	Sass.tree
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -32,12 +30,14 @@ extends Node
 	const MATCH='/^(@[\w-]+)/';
 
 
+	/**
+	 * @return string
+	 */
 	protected function getDirective()
 	{
 		preg_match('/^(@[\w-]+)(?:\s*(\w+))*/', $this->token->source, $matches);
 		array_shift($matches);
-		$parts=implode(' ', $matches);
-		return Strings::lower($parts);
+		return Strings::lower(implode(' ', $matches));
 	}
 
 	/**
@@ -68,7 +68,7 @@ extends Node
 	/**
 	 * Returns a value indicating if the token represents this type of node.
 	 * @param object $token token
-	 * @return boolean true if the token represents this type of node, false if not
+	 * @return bool true if the token represents this type of node, false if not
 	 */
 	public static function isa($token)
 	{
@@ -77,7 +77,7 @@ extends Node
 
 	/**
 	 * Returns the directive
-	 * @param object $tokentoken
+	 * @param object $token token
 	 * @return string the directive
 	 */
 	public static function extractDirective($token)

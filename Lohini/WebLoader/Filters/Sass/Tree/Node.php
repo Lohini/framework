@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Tree;
 /**
  * SassNode class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -31,7 +31,7 @@ class Node
 	protected $children=array();
 	/** @var object source token */
 	protected $token;
-	
+
 
 	/**
 	 * @param object $token source token
@@ -40,7 +40,7 @@ class Node
 	{
 		$this->token=$token;
 	}
-	
+
 	/**
 	 * Getter
 	 * @param string $name name of property to get
@@ -84,7 +84,7 @@ class Node
 
 	/**
 	 * Return a value indicating if this node has a parent
-	 * @return array the node's parent
+	 * @return bool
 	 */
 	public function hasParent()
 	{
@@ -116,17 +116,17 @@ class Node
 		else {
 			$this->children[]=$child;
 			$child->parent=$this;
-			$child->root=$this->root;			
+			$child->root=$this->root;
 			}
 		// The child will have children if a debug node has been added
 		foreach ($child->children as $grandchild) {
-			$grandchild->root=$this->root;		
+			$grandchild->root=$this->root;
 			}
 	}
 
 	/**
 	 * Returns a value indicating if this node has children
-	 * @return boolean true if the node has children, false if not
+	 * @return bool true if the node has children, false if not
 	 */
 	public function hasChildren()
 	{
@@ -146,7 +146,7 @@ class Node
 	 * Returns a value indicating if this node is a child of the passed node.
 	 * This just checks the levels of the nodes. If this node is at a greater
 	 * level than the passed node if is a child of it.
-	 * @return boolean true if the node is a child of the passed node, false if not
+	 * @return bool true if the node is a child of the passed node, false if not
 	 */
 	public function isChildOf($node)
 	{
@@ -164,7 +164,7 @@ class Node
 
 	/**
 	 * Returns the level of this node.
-	 * @return integer the level of this node
+	 * @return int the level of this node
 	 */
 	private function getLevel()
 	{
@@ -182,7 +182,7 @@ class Node
 
 	/**
 	 * Returns the debug_info option setting for this node
-	 * @return boolean the debug_info option setting for this node
+	 * @return bool the debug_info option setting for this node
 	 */
 	private function getDebug_info()
 	{
@@ -200,7 +200,7 @@ class Node
 
 	/**
 	 * Returns the line_numbers option setting for this node
-	 * @return boolean the line_numbers option setting for this node
+	 * @return bool the line_numbers option setting for this node
 	 */
 	private function getLine_numbers()
 	{
@@ -245,7 +245,7 @@ class Node
 
 	/**
 	 * Returns the Sass\Script parser
-	 * @return ScriptParser the Sass\Script parser
+	 * @return \Lohini\WebLoader\Filters\Sass\Script\Parser the Sass\Script parser
 	 */
 	public function getScript()
 	{
@@ -254,7 +254,7 @@ class Node
 
 	/**
 	 * Returns the renderer
-	 * @return Renderer the renderer
+	 * @return \Lohini\WebLoader\Filters\Sass\Renderers\Renderer the renderer
 	 */
 	public function getRenderer()
 	{
@@ -272,7 +272,7 @@ class Node
 
 	/**
 	 * Returns a value indicating whether this node is in a directive
-	 * @param boolean true if the node is in a directive, false if not
+	 * @param bool true if the node is in a directive, false if not
 	 */
 	public function inDirective()
 	{
@@ -301,7 +301,7 @@ class Node
 	 * @param string $expression expression to evaluate
 	 * @param Context $context the context in which the expression is evaluated
 	 * @param $x
-	 * @return Literal value of parsed expression
+	 * @return \Lohini\WebLoader\Filters\Sass\Script\Literals\Literal value of parsed expression
 	 */
 	protected function evaluate($expression, $context, $x=NULL)
 	{
@@ -320,7 +320,7 @@ class Node
 		$context->node=$this;
 		return $this->script->interpolate($expression, $context);
 	}
-	
+
 	/**
 	 * Adds a warning to the node. 
 	 * @param string $message warning message
@@ -348,7 +348,6 @@ class Node
 	/**
 	 * Returns a value indicating if the token represents this type of node.
 	 * @param object $token token
-	 * @return boolean true if the token represents this type of node, false if not
 	 * @throws NodeException
 	 */
 	public static function isa($token)

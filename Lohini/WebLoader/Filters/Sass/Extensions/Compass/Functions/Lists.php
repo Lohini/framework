@@ -11,16 +11,14 @@ namespace Lohini\WebLoader\Filters\Sass\Extensions\Compass\Functions;
  * @author			Chris Yates <chris.l.yates@gmail.com>
  * @copyright 	Copyright (c) 2010 PBM Web Development
  * @license			http://phamlp.googlecode.com/files/license.txt
- * @package			PHamlP
- * @subpackage	Sass.extensions.compass.functions
  */
 /**
  * Lohini port
  * @author Lopo <lopo@lohini.net>
  */
- 
+
 use Lohini\WebLoader\Filters\Sass\Script\Literals\String;
- 
+
 /**
  * Compass extension SassScript lists functions class.
  * A collection of functions for use in SassSCript.
@@ -46,7 +44,7 @@ class Lists
 	/**
 	 * Return the nth value from a space separated list.
 	 * @param String $list
-	 * @param type $n
+	 * @param \Lohini\WebLoader\Filters\Sass\Script\Literals\Number $n
 	 * @return String
 	 */
 	public static function nth_value_of($list, $n)

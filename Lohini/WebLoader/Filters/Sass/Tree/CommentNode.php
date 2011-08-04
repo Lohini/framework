@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Tree;
 /**
  * SassCommentNode class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -36,11 +36,11 @@ extends Node
 	 */
 	public function __construct($token)
 	{
-		parent::__construct($token);		
+		parent::__construct($token);
 		preg_match(self::MATCH, $token->source, $matches);
 		$this->value=$matches[self::COMMENT];
 	}
-	
+
 	protected function getValue()
 	{
 		return $this->value; 
@@ -68,7 +68,7 @@ extends Node
 	/**
 	 * Returns a value indicating if the token represents this type of node.
 	 * @param object $token token
-	 * @return boolean true if the token represents this type of node, false if not
+	 * @return bool true if the token represents this type of node, false if not
 	 */
 	public static function isa($token)
 	{

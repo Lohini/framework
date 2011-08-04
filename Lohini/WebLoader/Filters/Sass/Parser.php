@@ -20,11 +20,9 @@ namespace Lohini\WebLoader\Filters\Sass;
  * 
  * The bugs are mine. Please report any found at {@link http://code.google.com/p/phamlp/issues/list}
  * 
- * @author                      Chris Yates <chris.l.yates@gmail.com>
- * @copyright   Copyright (c) 2010 PBM Web Development
- * @license                     http://phamlp.googlecode.com/files/license.txt
- * @package                     PHamlP
- * @subpackage  Sass
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -39,9 +37,7 @@ use Lohini\WebLoader\Filters\Sass;
  */
 class Parser
 {
-	/**#@+
-	 * Default option values
-	 */
+	/**#@+ Default option values */
 	const CACHE=TRUE;
 	const TEMPLATE_LOCATION='./sass-templates'; // XXX: potrebuje nastavit z vonku
 	const BEGIN_COMMENT='/';
@@ -55,6 +51,7 @@ class Parser
 	const END_STATEMENT=';';
 	const DOUBLE_QUOTE='"';
 	const SINGLE_QUOTE="'";
+	/**#@- */
 
 	/**
 	 * @var string the character used for indenting
@@ -65,28 +62,22 @@ class Parser
 	/** @var array allowable characters for indenting */
 	private $indentChars=array(' ', "\t");
 	/**
-	 * @var integer number of spaces for indentation.
-	 * Used to calculate {@link Level} if {@link indentChar} is space.
+	 * @var int number of spaces for indentation.
+	 * Used to calculate {@link Level} if {@link $indentChar} is space.
 	 */
 	private $indentSpaces=2;
 	/** @var string source */
 	private $source;
-	/**#@+
-	 * Option
-	 */
+	/**#@+ Option */
 	/**
-	 * cache:
-	 * @var boolean Whether parsed Sass files should be cached, allowing greater speed.
-	 * 
+	 * @var bool Whether parsed Sass files should be cached, allowing greater speed
 	 * Defaults to true.
 	 */
 	private $cache;
 	/**
-	 * debug_info:
-	 * @var boolean When true the line number and file where a selector is defined
+	 * @var bool When true the line number and file where a selector is defined
 	 * is emitted into the compiled CSS in a format that can be understood by the
-	 * {@link https://addons.mozilla.org/en-US/firefox/addon/103988/
-	 * FireSass Firebug extension}.
+	 * {@link https://addons.mozilla.org/en-US/firefox/addon/103988/ FireSass Firebug extension}.
 	 * Disabled when using the compressed output style.
 	 * 
 	 * Defaults to false.
@@ -94,36 +85,31 @@ class Parser
 	 */
 	private $debug_info;
 	/**
-	 * extensions:
 	 * @var array Sass extensions, e.g. Compass. An associative array of the form
 	 * $name => $options where $name is the name of the extension and $options
 	 * is an array of name=>value options pairs.
 	 */
 	protected $extensions;
 	/**
-	 * filename:
 	 * @var string The filename of the file being rendered. 
 	 * This is used solely for reporting errors.
 	 */
 	protected $filename;
 	/**
-	 * function_paths:
 	 * @var array An array of filesystem paths which should be searched for
 	 * Sass\Script functions.
 	 */
 	private $function_paths;
 	/**
-	 * line:
-	 * @var integer The number of the first line of the Sass template. Used for
+	 * @var int The number of the first line of the Sass template. Used for
 	 * reporting line numbers for errors. This is useful to set if the Sass
 	 * template is embedded.
 	 * 
-	 * Defaults to 1. 
+	 * Defaults to 1.
 	 */
 	private $line;
 	/**
-	 * line_numbers:
-	 * @var boolean When true the line number and filename where a selector is
+	 * @var bool When true the line number and filename where a selector is
 	 * defined is emitted into the compiled CSS as a comment. Useful for debugging
 	 * especially when using imports and mixins.
 	 * Disabled when using the compressed output style or the debug_info option.
@@ -134,7 +120,6 @@ class Parser
 	 */
 	private $line_numbers;
 	/**
-	 * load_paths:
 	 * @var array An array of filesystem paths which should be searched for
 	 * Sass templates imported with the @import directive.
 	 * 
@@ -142,7 +127,6 @@ class Parser
 	 */
 	private $load_paths;
 	/**
-	 * property_syntax: 
 	 * @var string Forces the document to use one syntax for
 	 * properties. If the correct syntax isn't used, an error is thrown. 
 	 * Value can be:
@@ -157,13 +141,11 @@ class Parser
 	 */
 	private $property_syntax;
 	/**
-	 * quiet:
-	 * @var boolean When set to true, causes warnings to be disabled.
-	 * Defaults to false.
+	 * @var bool When set to true, causes warnings to be disabled.
+	 * Defaults to FALSE
 	 */
 	private $quiet;
 	/**
-	 * style:
 	 * @var string the style of the CSS output.
 	 * Value can be:
 	 * + nested - Nested is the default Sass style, because it reflects the
@@ -185,7 +167,6 @@ class Parser
 	 */
 	private $style;
 	/**
-	 * syntax:
 	 * @var string The syntax of the input file.
 	 * 'sass' for the indented syntax and 'scss' for the CSS-extension syntax.
 	 * 
@@ -193,24 +174,21 @@ class Parser
 	 */
 	private $syntax;
 	/**
-	 * template_location:
-	 * @var string Path to the root sass template directory for your
-	 * application.
+	 * @var string Path to the root sass template directory for your application
 	 */
 	private $template_location;
 	/**
-	 * vendor_properties:
 	 * If enabled a property need only be written in the standard form and vendor
 	 * specific versions will be added to the style sheet.
 	 * @var mixed array: vendor properties, merged with the built-in vendor
 	 * properties, to automatically apply.
-	 * Boolean true: use built in vendor properties.
+	 * Bool TRUE: use built in vendor properties.
 	 * 
 	 * Defaults to vendor_properties disabled.
 	 * @see $_vendorProperties
 	 */
 	private $vendor_properties=array();
-	/**#@-*/
+	/**#@- */
 	/**
 	 * Defines the build-in vendor properties
 	 * @var array built-in vendor properties
@@ -265,7 +243,6 @@ class Parser
 	/**
 	 * Sets parser options
 	 * @param array $options
-	 * @return Parser
 	 * @throws Exception
 	 */
 	public function __construct($options=array())
@@ -335,21 +312,33 @@ class Parser
 		throw new Exception("No getter function for $name");
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function getCache()
 	{
 		return $this->cache;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function getDebug_info()
 	{
 		return $this->debug_info; 
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getFilename()
 	{
 		return $this->filename; 
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getLine()
 	{
 		return $this->line; 
@@ -360,46 +349,73 @@ class Parser
 		return $this->source; 
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function getLine_numbers()
 	{
 		return $this->line_numbers; 
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getFunction_paths()
 	{
 		return $this->function_paths; 
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getLoad_paths()
 	{
 		return $this->load_paths; 
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getProperty_syntax()
 	{
 		return $this->property_syntax; 
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function getQuiet()
 	{
 		return $this->quiet; 
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getStyle()
 	{
 		return $this->style; 
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getSyntax()
 	{
 		return $this->syntax; 
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getTemplate_location()
 	{
 		return $this->template_location; 
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getVendor_properties()
 	{
 		return $this->vendor_properties;
@@ -515,8 +531,8 @@ class Parser
 	}
 
 	/**
-	 * Creates and returns the next Sass\Tree\Node.
-	 * The tpye of Sass\Tree\Node depends on the content of the Sass\Token.
+	 * Creates and returns the next {@link Sass\Tree\Node}.
+	 * The tpye of {@link Sass\Tree\Node} depends on the content of the Sass\Token.
 	 * @param Sass\Tree\Node $node
 	 * @return Sass\Tree\Node a Sass\Tree\Node of the appropriate type. NULL when no more source to parse.
 	 * @throws Exception
@@ -638,7 +654,7 @@ class Parser
 	 * Returns the level of the line.
 	 * Used for .sass source
 	 * @param string $source the source
-	 * @return integer the level of the source
+	 * @return int the level of the source
 	 * @throws Exception if the source indentation is invalid
 	 */
 	private function getLevel($source)
@@ -655,7 +671,7 @@ class Parser
 	/**
 	 * Returns an object that contains the next source statement and meta data
 	 * about it from SCSS source.
-	 * @return object Statement token. Null if end of source.
+	 * @return object Statement token. NULL if end of source.
 	 * @throws Exception
 	 */
 	private function scss2Token()
@@ -735,9 +751,8 @@ class Parser
 	}
 
 	/**
-	 * Returns an object that contains the source statement and meta data about
-	 * it.
-	 * If the statement is just and end block we update the meta data and return null.
+	 * Returns an object that contains the source statement and meta data about it.
+	 * If the statement is just and end block we update the meta data and return NULL.
 	 * @param string $statement source statement
 	 * @return Sass\Token
 	 */

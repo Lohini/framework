@@ -11,16 +11,15 @@ namespace Lohini\WebLoader\Filters\Sass\Extensions\Compass\Functions;
  * @author			Chris Yates <chris.l.yates@gmail.com>
  * @copyright 	Copyright (c) 2010 PBM Web Development
  * @license			http://phamlp.googlecode.com/files/license.txt
- * @package			PHamlP
- * @subpackage	Sass.extensions.compass.functions
  */
 /**
  * Lohini port
  * @author Lopo <lopo@lohini.net>
  */
- 
-use Lohini\WebLoader\Filters\Sass\Script\Literals;
- 
+
+use Lohini\WebLoader\Filters\Sass\Script\Literals,
+	Lohini\WebLoader\Filters\Sass\Extensions\Compass\Config;
+
 /**
  * Compass extension SassScript urls functions class.
  * A collection of functions for use in SassSCript.
@@ -35,7 +34,7 @@ class Urls
 	public function stylesheet_url($path, $only_path=NULL)
 	{
 		$path=$path->value; # get to the string value of the literal.
-		
+
 		# Compute the $path to the stylesheet, either root relative or stylesheet relative
 		# or nil if the http_images_path is not set in the configuration.
 		if (Config::config('relative_assets')) {
@@ -122,19 +121,6 @@ class Urls
 			$path=$http_images_path.$path;
 			}
 
-/*		# Compute the asset host unless in relative mode.
-		asset_host=if !(self::relative()) && Compass.configuration.asset_host
-			Compass.configuration.asset_host.call($path)
-		}
-
-		# Compute and append the cache buster if there is one.
-		if buster=compute_cache_buster($path, real_path)
-			$path += "?#{buster}"
-		}
-
-		# prepend the asset host if there is one.
-		$path="#{asset_host}#{'/' unless $path[0..0] == "/"}#{$path}" if asset_host*/
-
 		return new Literals\String(self::clean($path, $only_path));
 	}
 
@@ -142,21 +128,21 @@ class Urls
 	 * takes off any leading "./".
 	 * if $only_path emits a $path, else emits a url
 	 * @param string $url
-	 * @param \Lohini\WebLoader\Filters\Script\Literals\Boolean $only_path
+	 * @param Literals\Boolean $only_path
 	 * @return string
 	 */
 	private function clean($url, $only_path)
 	{
 		if (!$only_path instanceof Literals\Boolean) {
-			$only_path=new Literals\Boolean('false');
+			$only_path=new Literals\Boolean(FALSE);
 			}
-		
+
 		$url= substr($url, 0, 2)==='./'? substr($url, 2) : $url;
 		return $only_path->toBoolean()? $url : "url('$url')";
 	}
 
 	/**
-	 * @param type $path
+	 * @param string $path
 	 * @return bool
 	 */
 	private function is_absolute_path($path)
@@ -164,33 +150,13 @@ class Urls
 		return ($path[0]==='/' || substr($path, 0, 4)==='http');
 	}
 
-	// returns the path relative to the target css file
+	/**
+	 * returns the path relative to the target css file
+	 * @param string $path
+	 * @return string
+	 */
 	private function compute_relative_path($path)
 	{
 		return $path;
-/*		if (target_css_file = options[:css_filename]) {
-			Pathname.new($path).relative_path_from(Pathname.new(File.dirname(target_css_file))).to_s
-		}*/
 	}
-
-/*	private function compute_cache_buster($path, real_path) {
-		if Compass.configuration.asset_cache_buster {
-			args = [$path]
-			if Compass.configuration.asset_cache_buster.arity > 1 {
-				args << (File.new(real_path) if real_path)
-			}
-			Compass.configuration.asset_cache_buster.call(*args)
-		elseif real_path {
-			default_cache_buster($path, real_path)
-		}
-	}
-
-	private function default_cache_buster($path, real_path) {
-		if File.readable?(real_path) {
-			File.mtime(real_path).to_i.to_s
-		}
-		else {
-			$stderr.puts "WARNING: '#{File.basename($path)}' was not found (or cannot be read) in #{File.dirname(real_path)}"
-		}
-	}	*/
 }

@@ -8,9 +8,9 @@
 namespace Lohini\WebLoader\Filters\Sass\Script;
 /**
  * SassScriptOperation class file.
- * @author			Chris Yates <chris.l.yates@gmail.com>
- * @copyright 	Copyright (c) 2010 PBM Web Development
- * @license			http://phamlp.googlecode.com/files/license.txt
+ * @author Chris Yates <chris.l.yates@gmail.com>
+ * @copyright Copyright (c) 2010 PBM Web Development
+ * @license http://phamlp.googlecode.com/files/license.txt
  */
 /**
  * Lohini port
@@ -65,9 +65,9 @@ class Operation
 	private $operator;
 	/** @var string associativity of the operator; left or right */
 	private $associativity;
-	/** @var integer precedence of the operator */
+	/** @var int precedence of the operator */
 	private $precedence;
-	/** @var integer number of operands required by the operator */
+	/** @var int number of operands required by the operator */
 	private $operandCount;
 
 

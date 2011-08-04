@@ -16,8 +16,9 @@ namespace Lohini\WebLoader\Filters\Sass\Extensions\Compass\Functions;
  * Lohini port
  * @author Lopo <lopo@lohini.net>
  */
- 
-use Lohini\WebLoader\Filters\Sass\Script;
+
+use Lohini\WebLoader\Filters\Sass\Script,
+	Lohini\WebLoader\Filters\Sass\Extensions\Compass\Config;
 
 /**
  * Compass extension Script inline data functions class.
@@ -56,7 +57,7 @@ class InlineData
 		if ($mime_type) {
 			return $mime_type;
 			}
-		
+
 		switch (true) {
 			case preg_match('/\.png$/i', $path):
 				return 'image/png';
@@ -91,8 +92,7 @@ class InlineData
 	private function data($real_path)
 	{
 		if (file_exists($real_path)) {
-			$fp = fopen($real_path, 'rb');
-			return base64_encode(fread($fp, filesize($real_path)));
+			return base64_encode(file_get_contents($real_path));
 			}
 		throw new Script\FunctionException("Unable to find 'file': $real_path", Script\Parser::$context->node);
 	}
