@@ -85,7 +85,7 @@ extends \Lohini\Database\DataSources\Mapped
 					}
 				}
 			elseif ($chainType===self::CHAIN_OR) {
-				$this->df->where('%or', $conds);
+				$this->df->where('(%or)', $conds);
 				}
 			}
 		else {
@@ -135,7 +135,7 @@ extends \Lohini\Database\DataSources\Mapped
 	public function reduce($count, $start=0)
 	{
 		if ($count==NULL || $count>0) { //intentionally ==
-			$this->df->limit($count==NULL? NULL : $count);
+			$this->df->limit($count==NULL? 0 : $count);
 			}
 		else {
 			throw new \OutOfRangeException;
