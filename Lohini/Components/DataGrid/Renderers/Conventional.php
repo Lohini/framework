@@ -111,7 +111,7 @@ implements IRenderer
 
 	public function __construct()
 	{
-		$this->file=__DIR__.'/grid.latte';
+		$this->file=__DIR__.'/conventional.latte';
 	}
 
 	/**
