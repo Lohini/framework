@@ -5,7 +5,7 @@
  * @copyright (c) 2010, 2011 Lopo <lopo@lohini.net>
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
-namespace Lohini\Utils\Browser;
+namespace Lohini\Utils;
 /**
  * Browscap.ini parsing class with caching and update capabilities
  *

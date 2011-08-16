@@ -5,10 +5,10 @@
  * @copyright (c) 2010, 2011 Lopo <lopo@lohini.net>
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
-namespace Lohini\Browser;
+namespace Lohini\Utils;
 
 /**
- * Lohini Browser
+ * Browser utils
  *
  * @author Lopo <lopo@lohini.net>
  */
