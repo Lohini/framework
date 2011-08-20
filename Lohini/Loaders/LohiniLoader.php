@@ -85,7 +85,6 @@ extends \Nette\Loaders\AutoLoader
 		'lohini\database\doctrine\mapping\fieldtypes\timetype' => '/Database/Doctrine/Mapping/FieldTypes/TimeType.php',
 		'lohini\database\doctrine\mapping\fieldtypes\vardatetype' => '/Database/Doctrine/Mapping/FieldTypes/VarDateType.php',
 		'lohini\database\doctrine\mapping\ifieldtype' => '/Database/Doctrine/Mapping/IFiledType.php',
-		'lohini\database\doctrine\mapping\tableprefix' => '/Database/Doctrine/Mapping/TablePrefix.php',
 		'lohini\database\doctrine\mapping\typemapper' => '/Database/Doctrine/Mapping/TypeMapper.php',
 		'lohini\database\doctrine\odm\container' => '/Database/Doctrine/ODM/Container.php',
 		'lohini\database\doctrine\odm\couchdbhelper' => '/Database/Doctrine/ODM/CouchDBHelper.php',
