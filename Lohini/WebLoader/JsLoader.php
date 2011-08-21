@@ -91,7 +91,7 @@ extends WebLoader
 		$filenames=array();
 		$content='';
 		if (($cnt=count($this->files))>0) {
-			if ($cnt==1 && $this->files[0][1]==self::COMPACT) {
+			if ($this->enableDirect && $cnt==1 && $this->files[0][1]==self::COMPACT) {
 				$this->sourceUri=$this->getPresenter(FALSE)->context->httpRequest->getUrl()->getBaseUrl().'js/';
 				echo $this->useHeadJs
 					? $this->getHeadJsElement($this->sourceUri.$this->files[0][0])
@@ -219,15 +219,21 @@ extends WebLoader
 		foreach ($this->files as $file) {
 			switch ($file[1]) {
 				case self::COMPACT:
-					echo $this->getElement($this->sourceUri.$file[0]);
+					echo $this->enableDirect
+						? $this->getElement($this->sourceUri.$file[0])
+						: $this->getElement($this->getPresenter()->link(':WebLoader:', $this->generate(array($file[0]))));
 					break;
 				case self::MINIFY:
 					// dean edwards packer neumi cz/sk znaky!!
 					if (Strings::endsWith($file[0], '.min.js')) { // already minified ?
-						echo $this->getElement($this->sourceUri.$file[0]);
+						echo $this->enableDirect
+							? $this->getElement($this->sourceUri.$file[0])
+							: $this->getElement($this->getPresenter()->link(':WebLoader:', $this->generate(array($file[0]))));
 						}
 					elseif (is_file("$this->sourcePath/".substr($file[0], 0, -3).'.min.js')) { // have minified ?
-						echo $this->getElement($this->sourceUri.substr($file[0], 0, -3).'.min.js');
+						echo $this->enableDirect
+							? $this->getElement($this->sourceUri.substr($file[0], 0, -3).'.min.js')
+							: $this->getElement($this->getPresenter()->link(':WebLoader:', $this->generate(array(substr($file[0], 0, -3).'.min.js'))));
 						}
 					elseif (in_array('JSMin', $dc) || class_exists('JSMin')) { // minify
 						$content=\JSMin::minify($this->loadFile($file[0]));
@@ -241,15 +247,21 @@ extends WebLoader
 								Debugger::processException(new \Nette\FileNotFoundException("Don't have JSMin class"));
 								}
 							}
-						echo $this->getElement($this->sourceUri.$file[0]);
+					echo $this->enableDirect
+						? $this->getElement($this->sourceUri.$file[0])
+						: $this->getElement($this->getPresenter()->link(':WebLoader:', $this->generate(array($file[0]))));
 						}
 					break;
 				case self::PACK:
 					if (Strings::endsWith($file[0], '.pack.js')) { // already packed ?
-						echo $this->getElement($this->sourceUri.$file[0]);
+						echo $this->enableDirect
+							? $this->getElement($this->sourceUri.$file[0])
+							: $this->getElement($this->getPresenter()->link(':WebLoader:', $this->generate(array($file[0]))));
 						}
 					elseif (is_file($pfile="$this->sourcePath/".substr($file[0], 0, -3).'.pack.js')) { // have packed ?
-						echo $this->getElement($this->sourceUri.substr($file[0], 0, -3).'.pack.js');
+						echo $this->enableDirect
+							? $this->getElement($this->sourceUri.substr($file[0], 0, -3).'.pack.js')
+							: $this->getElement($this->getPresenter()->link(':WebLoader:', $this->generate(array(substr($file[0], 0, -3).'.pack.js'))));
 						}
 					elseif (in_array('JavaScriptPacker', $dc) || class_exists('JavaScriptPacker')) {
 						$jsp=new \JavaScriptPacker($this->loadFile($file[0]));
@@ -264,7 +276,9 @@ extends WebLoader
 								Debugger::processException(new \Nette\FileNotFoundException("Don't have JavaScriptPacker class"));
 								}
 							}
-						echo $this->getElement($this->sourceUri.$file[0]);
+						echo $this->enableDirect
+							? $this->getElement($this->sourceUri.$file[0])
+							: $this->getElement($this->getPresenter()->link(':WebLoader:', $this->generate(array($file[0]))));
 						}
 					break;
 				default:
@@ -286,6 +300,9 @@ extends WebLoader
 	 */
 	public function renderStatic()
 	{
+		if (!$this->enableDirect) {
+			throw new \Nette\InvalidStateException('Static linking not available with disabled direct linking');
+			}
 		if ($hasArgs=(func_num_args()>0)) {
 			$backup=$this->files;
 			$this->clear();

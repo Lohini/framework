@@ -39,7 +39,7 @@ extends WebLoader
 		$this->preFileFilters[]=new \Lohini\WebLoader\Filters\CCssFilter;
 		$this->preFileFilters[]=new \Lohini\WebLoader\Filters\XCssFilter;
 		$this->preFileFilters[]=new \Lohini\WebLoader\Filters\SassFilter;
-		$this->fileFilters[]=new CssUrlsFilter;
+//		$this->fileFilters[]=new CssUrlsFilter;
 	}
 
 	/**
@@ -101,7 +101,10 @@ extends WebLoader
 	 */
 	public function renderFiles()
 	{
-		if (count($this->files)==1 && substr($this->files[0][0], -4)=='.css') { // single raw, don't parse|cache
+		if ($this->enableDirect
+			&& count($this->files)==1
+			&& substr($this->files[0][0], -4)=='.css'
+			) { // single raw, don't parse|cache
 			echo $this->getElement($this->getPresenter(FALSE)->context->httpRequest->getUrl()->getBaseUrl().'css/'.$this->files[0][0], $this->files[0][1]);
 			return;
 			}
@@ -143,7 +146,7 @@ extends WebLoader
 			$arg=func_get_arg(0);
 			$file= is_array($arg)? key($arg) : $arg;
 			$media= is_array($arg)? $arg[$file] : 'all';
-			if (strtolower(substr($file, -4))=='.css') {
+			if ($this->enableDirect && strtolower(substr($file, -4))=='.css') {
 				echo $this->getElement($this->getPresenter(FALSE)->context->httpRequest->getUrl()->getBaseUrl().'css/'.$file, $media);
 				return;
 				}
@@ -179,7 +182,7 @@ extends WebLoader
 			}
 
 		foreach ($this->files as $f) {
-			if (strtolower(substr($f[0], -4))=='.css') {
+			if ($this->enableDirect && strtolower(substr($f[0], -4))=='.css') {
 				echo $this->getElement($this->getPresenter(FALSE)->context->httpRequest->getUrl()->getBaseUrl().'css/'.$f[0], $f[1]);
 				}
 			else {
@@ -194,9 +197,13 @@ extends WebLoader
 	/**
 	 * Generates and render links - no processing
 	 * @example {control css:static 'file.css', 'file2.css'}
+	 * @throws \Nette\InvalidStateException
 	 */
 	public function renderStatic()
 	{
+		if (!$this->enableDirect) {
+			throw new \Nette\InvalidStateException('Static linking not available with disabled direct linking');
+			}
 		if ($hasArgs=(func_num_args()>0)) {
 			$backup=$this->files;
 			$this->clear();

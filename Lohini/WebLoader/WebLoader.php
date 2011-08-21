@@ -56,6 +56,8 @@ extends \Nette\Application\UI\Control
 	private static $cacheStorage;
 	/** @var string */
 	protected $contentType;
+	/** @var bool */
+	protected $enableDirect=TRUE;
 
 	/**
 	 * Get html element including generated content
@@ -136,6 +138,16 @@ extends \Nette\Application\UI\Control
 	public function setJoinFiles($join)
 	{
 		$this->joinFiles=(bool)$join;
+		return $this;
+	}
+
+	/**
+	 * @param bool $enable
+	 * return WebLoader (fluent)
+	 */
+	public function setEnableDirect($enable=TRUE)
+	{
+		$this->enableDirect=(bool)$enable;
 		return $this;
 	}
 
@@ -318,7 +330,7 @@ extends \Nette\Application\UI\Control
 		$cache=self::getCache();
 
 		if ($cache[$key]===NULL) {
-			if (is_null($content)) {
+			if ($content===NULL) {
 				$content=$this->getContent($files);
 				}
 			$sPath=$this->sourcePath;
