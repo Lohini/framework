@@ -14,7 +14,7 @@ namespace Lohini\Database\Models\Entities;
  * @table(name="users")
  * @service(class="Lohini\Database\Models\Services\Users")
  *
- * @property \Lohini\Database\Models\Entities\Identity $identity
+ * @property Identity $identity
  * @property string $username
  * @property string $password
  * @property string $email
@@ -26,7 +26,7 @@ implements \Lohini\Database\Models\IEntity
 	/**
 	 * @oneToOne(targetEntity="Identity", fetch="EAGER")
 	 * @joinColumn(name="user_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
-	 * @var \Lohini\Database\Models\Entities\Identity
+	 * @var Identity
 	 */
 	private $identity;
 	/**
@@ -52,7 +52,7 @@ implements \Lohini\Database\Models\IEntity
 
 
 	/**
-	 * @return \Lohini\Database\Models\Entities\Identity
+	 * @return Identity
 	 */
 	public function getIdentity()
 	{
@@ -60,10 +60,10 @@ implements \Lohini\Database\Models\IEntity
 	}
 
 	/**
-	 * @param \Lohini\Database\Models\Entities\Identity
-	 * @return \Lohini\Database\Models\Entities\User (fluent)
+	 * @param Identity $identity
+	 * @return User (fluent)
 	 */
-	public function setIdentity(\Lohini\Database\Models\Entities\Identity $identity)
+	public function setIdentity(Identity $identity)
 	{
 		$this->identity=$identity;
 		return $this;
@@ -79,7 +79,7 @@ implements \Lohini\Database\Models\IEntity
 
 	/**
 	 * @param string
-	 * @return \Lohini\Database\Models\Entities\User (fluent)
+	 * @return User (fluent)
 	 */
 	public function setUsername($username)
 	{
@@ -97,7 +97,7 @@ implements \Lohini\Database\Models\IEntity
 
 	/**
 	 * @param string $password
-	 * @return \Lohini\Database\Models\Entities\User (fluent)
+	 * @return User (fluent)
 	 */
 	public function setPassword($password)
 	{
@@ -115,7 +115,7 @@ implements \Lohini\Database\Models\IEntity
 
 	/**
 	 * @param string
-	 * @return \Lohini\Database\Models\Entities\User (fluent)
+	 * @return User (fluent)
 	 */
 	public function setEmail($email)
 	{
@@ -124,7 +124,7 @@ implements \Lohini\Database\Models\IEntity
 	}
 
 	/**
-	 * @return \Lohini\Database\Models\Entities\AuthConnection
+	 * @return AuthConnection
 	 */
 	public function getAuthconnection()
 	{
@@ -132,8 +132,8 @@ implements \Lohini\Database\Models\IEntity
 	}
 
 	/**
-	 * @param \Lohini\Database\Models\Entities\AuthConnection $aconn
-	 * @return \Lohini\Database\Models\Entities\User (fluent)
+	 * @param AuthConnection $aconn
+	 * @return User (fluent)
 	 */
 	public function setAuthconnection($aconn)
 	{

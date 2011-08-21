@@ -41,7 +41,7 @@ implements ITranslator
 	public function __construct(\Nette\Caching\IStorage $cacheStorage=NULL)
 	{
 		if ($cacheStorage) {
-			$this->cache=new \Nette\Caching\Cache($cacheStorage, "Nella.Translator");
+			$this->cache=new \Nette\Caching\Cache($cacheStorage, 'Lohini.Translator');
 			}
 	}
 	
@@ -52,7 +52,7 @@ implements ITranslator
 	{
 		if (!$this->storage) {
 			$this->storage=new \Lohini\Localization\Storages\Gettext; // default storage
-		}
+			}
 		return $this->storage;
 	}
 	

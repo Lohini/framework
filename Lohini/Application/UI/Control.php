@@ -71,6 +71,10 @@ extends \Nette\Application\UI\Control
 	 */
 	protected function createTemplate($class=NULL)
 	{
-		return $this->getContext()->templateFactory->createTemplate($this, $class);
+		$template=$this->getContext()->templateFactory->createTemplate($this, $class);
+		if ($this->getContext()->hasService('translator')) {
+			$template->setTranslator($this->getContext()->translator);
+			}
+		return $template;
 	}
 }

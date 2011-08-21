@@ -27,7 +27,8 @@ namespace Lohini\Database\Doctrine;
  * @author Lopo <lopo@lohini.net>
  */
 
-use Nette\Reflection\ClassType;
+use Nette\Reflection\ClassType,
+	Nette\Caching\Cache as NCache;
 
 /**
  * Cache driver for doctrine
@@ -36,12 +37,12 @@ class Cache
 extends \Doctrine\Common\Cache\AbstractCache
 {
 	/** @var string */
-	const CACHED_KEYS_KEY='Lohini.Doctrine.Cache.Keys';
+	const CACHED_KEY='Lohini.Doctrine';
 
 	/** @var \Nette\Caching\Cache */
-	private $data;
-	/** @var \Nette\Caching\Cache */
-	private $keys;
+	private $cache;
+	/** @var string The namespace to prefix all cache ids with */
+	private $namespace;
 
 
 	/**
@@ -49,34 +50,49 @@ extends \Doctrine\Common\Cache\AbstractCache
 	 */
 	public function __construct(\Nette\Caching\IStorage $storage)
 	{
-		$this->data= $cache= new \Nette\Caching\Cache($storage, 'Lohini.Doctrine');
-		$this->keys=$cache->derive('Keys.List');
+		$this->cache=new NCache($storage, self::CACHED_KEY);
 	}
 
 	/**
-	 * @param scalar $key
+	 * Set the namespace to prefix all cache ids with
+	 *
+	 * @param string $namespace
 	 */
-	private function removeCacheKey($key)
+	public function setNamespace($namespace)
 	{
-		$keys=$this->keys[self::CACHED_KEYS_KEY];
-		if (isset($keys[$key])) {
-			unset($keys[$key]);
-			$this->keys[self::CACHED_KEYS_KEY]=$keys;
-			}
-		return $keys;
+		$this->namespace=(string)$namespace;
+		return parent::setNamespace($namespace);
 	}
 
 	/**
-	 * @param scalar $key
+	 * Prefix the passed id with the configured namespace value
+	 *
+	 * @param string $id The id to namespace
+	 * @return string $id The namespaced id
 	 */
-	private function addCacheKey($key, $lifetime=0)
+	private function getNamespacedId($id)
 	{
-		$keys=$this->keys->load(self::CACHED_KEYS_KEY);
-		if (!isset($keys[$key]) || $keys[$key]!==($lifetime ?: TRUE)) {
-			$keys[$key]= $lifetime ?: TRUE;
-			$this->keys->save(self::CACHED_KEYS_KEY, $keys);
+		if (!$this->namespace || strpos($id, $this->namespace)===0) {
+			return $id;
 			}
-		return $keys;
+		return $this->namespace.$id;
+	}
+
+	/**
+	 * @return \Nette\Caching\Cache
+	 */
+	private function getCache()
+	{
+		$this->cache->release();
+		return $this->cache;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function saveDependingOnFiles($id, $data, array $files, $lifeTime=0)
+	{
+		return $this->doSaveDependingOnFiles($this->getNamespacedId($id), $data, $files, $lifeTime);
 	}
 
 	/**
@@ -84,18 +100,17 @@ extends \Doctrine\Common\Cache\AbstractCache
 	 */
 	public function getIds()
 	{
-		$keys=(array)$this->keys->load(self::CACHED_KEYS_KEY);
-		$keys=array_filter($keys, function($expire) {
-			if ($expire>0 && $expire<time()) {
-				return FALSE;
-				} // otherwise it's still valid
-			return TRUE;
-			});
+		return array();
+	}
 
-		if ($keys!==$this->keys->load(self::CACHED_KEYS_KEY)) {
-			$this->keys->save(self::CACHED_KEYS_KEY, $keys);
-			}
-		return array_keys($keys);
+	/**
+	 * Delete all cache entries
+	 *
+	 * @return array Array of the deleted cache ids
+	 */
+	public function deleteAll()
+	{
+		$this->getCache()->clean(array(NCache::TAGS => array('doctrine')));
 	}
 
 	/**
@@ -103,7 +118,7 @@ extends \Doctrine\Common\Cache\AbstractCache
 	 */
 	protected function _doFetch($id)
 	{
-		return $this->data->load($id) ?: FALSE;
+		return $this->getCache()->load($id) ?: FALSE;
 	}
 
 	/**
@@ -111,7 +126,7 @@ extends \Doctrine\Common\Cache\AbstractCache
 	 */
 	protected function _doContains($id)
 	{
-		return $this->ids->load($id)!==NULL && $this->data->load($id)!==NULL;
+		return $this->getCache()->load($id)!==NULL;
 	}
 
 	/**
@@ -121,20 +136,32 @@ extends \Doctrine\Common\Cache\AbstractCache
 	{
 		$files=array();
 		if ($data instanceof \Doctrine\ORM\Mapping\ClassMetadata) {
-			$files[]=ClassType::from($data->name)->getFileName();
+			$files[]=ClassType::from($data->name)->getFilename();
 			foreach ($data->parentClasses as $class) {
 				$files[]=ClassType::from($class)->getFileName();
 				}
 			}
+		return $this->doSaveDependingOnFiles($id, $data, $files, $lifeTime);
+	}
 
+	/**
+	 * @param string $id
+	 * @param mixed $data
+	 * @param array $files
+	 * @param int $lifeTime
+	 * @return bool
+	 */
+	protected function doSaveDependingOnFiles($id, $data, array $files, $lifeTime=0)
+	{
+		$dp=array(
+			NCache::TAGS => array('doctrine'),
+			NCache::FILES => $files
+			);
 		if ($lifeTime!=0) {
-			$this->data->save($id, $data, array('expire' => time()+$lifeTime, 'tags' => array('doctrine'), 'files' => $files));
-			$this->addCacheKey($id, time()+$lifeTime);
+			$dp[NCache::EXPIRE]=time()+$lifeTime;
 			}
-		else {
-			$this->data->save($id, $data, array('tags' => array('doctrine'), 'files' => $files));
-			$this->addCacheKey($id);
-			}
+
+		$this->getCache()->save($id, $data, $dp);
 		return TRUE;
 	}
 
@@ -143,8 +170,7 @@ extends \Doctrine\Common\Cache\AbstractCache
 	 */
 	protected function _doDelete($id)
 	{
-		unset($this->data[$id]);
-		$this->removeCacheKey($id);
+		$this->getCache()->save($id, NULL);
 		return TRUE;
 	}
 }

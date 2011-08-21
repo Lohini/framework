@@ -20,7 +20,7 @@ namespace Lohini\Database\DataSources;
  */
 abstract class DataSource
 extends \Nette\Object
-implements \Lohini\Database\DataSources\IDataSource
+implements IDataSource
 {
 	/**
 	 * Validates filter operation

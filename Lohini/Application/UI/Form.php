@@ -7,6 +7,8 @@
  */
 namespace Lohini\Application\UI;
 
+use Lohini\Forms\Controls;
+
 /**
  * Extended UI Form
  * - preregistered translator
@@ -29,6 +31,14 @@ extends \Nette\Application\UI\Form
 		$this->addProtection("Ehm ... Please try to submit the form 1 more time, the goblin stoled something.");
 	}
 
+	protected function attached($presenter)
+	{
+		parent::attached($presenter);
+		if ($this->getPresenter()->context->hasService('translator')) {
+			$this->setTranslator($this->getPresenter()->context->translator);
+			}
+	}
+
 	/**
 	 * @param string $name
 	 * @param string $label
@@ -38,7 +48,7 @@ extends \Nette\Application\UI\Form
 	 */
 	public function addPswd($name, $label=NULL, $cols=NULL, $maxLength=NULL)
 	{
-		return $this[$name]=new \Lohini\Forms\Controls\PswdInput($label, $cols, $maxLength);
+		return $this[$name]=new Controls\PswdInput($label, $cols, $maxLength);
 	}
 
 	/**
@@ -48,7 +58,7 @@ extends \Nette\Application\UI\Form
 	 */
 	public function addCBox3S($name, $label=NULL)
 	{
-		return $this[$name]=new \Lohini\Forms\Controls\CBox3S($label);
+		return $this[$name]=new Controls\CBox3S($label);
 	}
 
 	/**
@@ -60,7 +70,7 @@ extends \Nette\Application\UI\Form
 	 */
 	public function addDatePicker($name, $label=NULL, $cols=NULL, $maxLenght=NULL)
 	{
-		return $this[$name]=new \Lohini\Forms\Controls\DatePicker($label, $cols, $maxLenght);
+		return $this[$name]=new Controls\DatePicker($label, $cols, $maxLenght);
 	}
 
 	/**
@@ -70,6 +80,6 @@ extends \Nette\Application\UI\Form
 	 */
 	public function addReset($name, $caption=NULL)
 	{
-		return $this[$name]=new \Lohini\Forms\Controls\ResetButton($caption);
+		return $this[$name]=new Controls\ResetButton($caption);
 	}
 }

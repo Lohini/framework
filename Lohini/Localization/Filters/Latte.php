@@ -38,7 +38,8 @@ implements \Lohini\Localization\IFilter
 	{
 		$dictionary->freeze();
 
-		$parser=new \Nette\Latte\Parser;
+		$latte=new \Nette\Latte\Engine;
+		$parser=$latte->parser;
 		$macros=LatteMacros::install($parser);
 
 		$files=\Nette\Utils\Finder::findFiles($this->exts)->from($dictionary->dir);

@@ -7,8 +7,6 @@
  */
 namespace Lohini\Database\Doctrine\ORM\Entities;
 
-use \Nette\Environment;
-
 /**
  * @MappedSuperclass
  * @HasLifecycleCallbacks

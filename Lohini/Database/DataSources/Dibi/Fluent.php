@@ -75,7 +75,7 @@ extends \Lohini\Database\DataSources\Mapped
 						$value=WildcardHelper::formatLikeStatementWildcards($value);
 						}
 
-					$conds[]=array('%n', $this->mapping[$column], $t, '%'.$modifier, $value);
+					$conds[]=array('%n', $this->mapping[$column], $t, "%$modifier", $value);
 					}
 				}
 
@@ -100,7 +100,7 @@ extends \Lohini\Database\DataSources\Mapped
 					$value=WildcardHelper::formatLikeStatementWildcards($value);
 					}
 
-				$this->df->where('%n', $this->mapping[$column], $operation, '%'.$modifier, $value);
+				$this->df->where('%n', $this->mapping[$column], $operation, "%$modifier", $value);
 				}
 			}
 

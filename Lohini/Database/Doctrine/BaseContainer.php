@@ -38,12 +38,12 @@ extends Container
 	{
 		$this->addService('context', $context);
 		$this->addService('cache', $context->doctrineCache);
-		$this->params+=(array)$parameters;
+		$this->params=(array)$parameters+$this->params;
 
 		array_walk_recursive($this->params, function(&$value) use ($context) {
 			$value=$context->expand($value);
 			});
-
+/*
 		foreach (get_class_methods(get_called_class()) as $method) {
 			if (\Nette\Utils\Strings::startsWith($method, 'createService')) {
 				$name=strtolower(substr($method, 13, 1)).substr($method, 14);
@@ -52,6 +52,7 @@ extends Container
 					}
 				}
 			}
+*/
 	}
 
 

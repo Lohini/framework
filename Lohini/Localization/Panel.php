@@ -15,6 +15,8 @@ namespace Lohini\Localization;
  * @author	Patrik VotoÄŤek
  */
 
+use Nette\DI\IContainer;
+
 /**
  * Translator panel
  */
@@ -25,17 +27,17 @@ implements \Nette\Diagnostics\IBarPanel
 	const VERSION='2.0';
 	const XHR_HEADER='X-Translation-Client';
 
-	/** @var \Lohini\Localization\ITranslator */
+	/** @var ITranslator */
 	private $translator;
-	/** @var \Lohini\Localization\Extractor */
+	/** @var Extractor */
 	private $extractor;
 
 
 	/**
 	 * @param \Nette\DI\IContainer
-	 * @param \Lohini\Localization\ITranslator
+	 * @param ITranslator
 	 */
-	public function __construct(\Nette\DI\IContainer $container, ITranslator $translator=NULL)
+	public function __construct(IContainer $container, ITranslator $translator=NULL)
 	{
 		if (!$translator) {
 			$translator=$container->translator;
@@ -50,7 +52,7 @@ implements \Nette\Diagnostics\IBarPanel
 	}
 
 	/**
-	 * @return \Lohini\Localization\Extractor
+	 * @return Extractor
 	 */
 	public function getExtractor()
 	{
@@ -105,7 +107,7 @@ implements \Nette\Diagnostics\IBarPanel
 	/**
 	 * @param \Nette\DI\IContainer
 	 */
-	protected function processRequests(\Nette\DI\IContainer $container)
+	protected function processRequests(IContainer $container)
 	{
 		$this->updating();
 
@@ -136,7 +138,7 @@ implements \Nette\Diagnostics\IBarPanel
 
 			$response->send($httpRequest, $httpResponse);
 			exit(255);
-		}
+			}
 
 		$this->freeze();
 	}

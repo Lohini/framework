@@ -88,10 +88,8 @@ extends \Lohini\Database\Doctrine\BaseContainer
 	 */
 	protected function createServiceAnnotationReader()
 	{
-		// Dis Like!!!
-		Annotations\AnnotationRegistry::registerFile(
-			$this->context->params['libsDir'].'/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php'
-			);
+		Annotations\AnnotationRegistry::registerFile(LIBS_DIR.'/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
+		Annotations\AnnotationRegistry::registerFile(LOHINI_DIR.'/Database/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
 
 		Annotations\AnnotationReader::addGlobalIgnoredName('service');
 
@@ -102,7 +100,7 @@ extends \Lohini\Database\Doctrine\BaseContainer
 		$reader->setIgnoreNotImportedAnnotations(TRUE);
 		$reader->setEnableParsePhpImports(FALSE);
 
-		return new Annotations\CachedReader(
+		return new \Lohini\Database\Doctrine\Annotations\CachedReader(
 				new Annotations\IndexedReader($reader),
 				$this->hasService('annotationCache')? $this->annotationCache : $this->cache
 				);
@@ -144,7 +142,7 @@ extends \Lohini\Database\Doctrine\BaseContainer
 			$config->setAutoGenerateProxyClasses(TRUE);
 			$config->setSQLLogger($this->logger);
 			}
-		$config->addEntityNamespace('BIE', 'Lohini\Database\Models\Entities');
+		$config->addEntityNamespace('LE', 'Lohini\Database\Models\Entities');
 		return $config;
 	}
 
@@ -242,8 +240,7 @@ extends \Lohini\Database\Doctrine\BaseContainer
 			}
 
 		$class=$this->defaultServiceClass;
-		$em=$this->getEntityManager();
-		$metadata=$em->getClassMetadata($entityClass);
+		$metadata=$this->getEntityManager()->getClassMetadata($entityClass);
 		if (!$metadata) {
 			throw new \Nette\InvalidStateException("Entity metadata '$entityClass' not found");
 			}

@@ -7,9 +7,7 @@
  */
 namespace Lohini\DI;
 
-use Nette\DI\IContainer,
-	Lohini\DI\Container,
-	Nette\Application\UI\Presenter,
+use Nette\Application\UI\Presenter,
 	Nette\Application\Routers\Route,
 	Nette\Environment,
 	Nette\Caching\Cache,
@@ -65,7 +63,7 @@ extends \Nette\Configurator
 
 		$this->onAfterLoadConfig[]=function(Container $container) {
 			// Load panels
-			if (!$container->params['consoleMode'] && !$container->params['productionMode']) {
+			if (!$container->params['consoleMode']) {
 				$container->translatorPanel;
 				$container->userPanel;
 				}
@@ -160,31 +158,30 @@ extends \Nette\Configurator
 	}
 
 	/**
-	 * @param \Nette\DI\IContainer
+	 * @param \Nette\DI\Container
 	 * @return \Lohini\Diagnostics\Panels\Callback
 	 */
-	public static function createServiceCallbackPanel(IContainer $container)
+	public static function createServiceCallbackPanel(Container $container)
 	{
 		return new \Lohini\Diagnostics\Panels\Callback($container);
 	}
 
 	/**
-	 * @param \Nette\DI\IContainer
+	 * @param \Nette\DI\Container
 	 * @return \Lohini\Localization\ITranslator
 	 */
-	public static function createServiceTranslator(IContainer $container)
+	public static function createServiceTranslator(Container $container)
 	{
 		$translator=new \Lohini\Localization\Translator;
 		$translator->addDictionary('Lohini', $container->expand(LOHINI_DIR.'/lang'));
-		$translator->addDictionary('Application', $container->expand(APP_DIR.'/lang'));
 		return $translator;
 	}
 
 	/**
-	 * @param \Nette\DI\IContainer
+	 * @param \Nette\DI\Container
 	 * @return \Lohini\Localization\Panel
 	 */
-	public static function createServiceTranslatorPanel(IContainer $container)
+	public static function createServiceTranslatorPanel(Container $container)
 	{
 		return new \Lohini\Localization\Panel($container);
 	}
@@ -262,13 +259,26 @@ extends \Nette\Configurator
 
 	/**
 	 * Loads configuration from file(s) and process it.
+	 * @param array|string $file
 	 * @return \Nette\DI\Container
 	 * @throws \Nette\InvalidStateException
+	 * @throws \Nette\InvalidArgumentException
 	 */
-	public function loadConfig($file, $section=NULL)
+	public function loadConfig($file=NULL, $section=NULL)
 	{
 		$this->onBeforeLoadConfig($container=$this->getContainer());
-		$files= $file= $file===NULL? array($this->defaultConfigFile) : $file;
+		if ($file===NULL) {
+			$files=array($this->defaultConfigFile);
+			}
+		elseif (is_array($file)) {
+			$files=$file;
+			}
+		elseif (is_string($file)) {
+			$files=array($file);
+			}
+		else {
+			throw new \Nette\InvalidArgumentException('Invalid type of file argument');
+			}
 		array_walk($files, function(&$file) use ($container) {
 			$file=$container->expand($file);
 			});

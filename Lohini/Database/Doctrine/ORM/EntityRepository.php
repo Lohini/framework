@@ -6,18 +6,6 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
 namespace Lohini\Database\Doctrine\ORM;
-/**
- * This file is part of the Kdyby (http://www.kdyby.org)
- *
- * Copyright (c) 2008, 2011 Filip Procházka (filip.prochazka@kdyby.org)
- *
- * @license http://www.kdyby.org/license
- * @author Filip Procházka
- */
-/**
- * Lohini port
- * @author Lopo <lopo@lohini.net>
- */
 
 use Nette\ObjectMixin;
 
@@ -97,6 +85,19 @@ extends \Doctrine\ORM\EntityRepository
 			}
 	}
 
+	/**
+	 * Does an entity with a key equal to value exist?
+	 *
+	 * @param string
+	 * @param mixed
+	 * @return bool
+	 */
+	public function doesExistByColumn($key, $value)
+	{
+		$res=$this->findOneBy(array($key => $value));
+		return !empty($res);
+	}
+
 	/********************* Nette\Object behaviour ****************d*g**/
 	/**
 	 * @return \Nette\Reflection\ClassType
@@ -104,6 +105,61 @@ extends \Doctrine\ORM\EntityRepository
 	public static function getReflection()
 	{
 		return new \Nette\Reflection\ClassType(get_called_class());
+	}
+
+	/**
+	 * Call to undefined method
+	 *
+	 * @param string $name method name
+	 * @param array $args
+	 * @return mixed
+	 * @throws \Nette\MemberAccessException
+	 */
+	public function __call($name, $args)
+	{
+		try {
+			return parent::__call($name, $args);
+			}
+		catch (\BadMethodCallException $e) {
+			return ObjectMixin::call($this, $name, $args);
+			}
+	}
+
+	/**
+	 * Call to undefined static method
+	 *
+	 * @param string $name method name (in lower case!)
+	 * @param array $args
+	 * @return mixed
+	 * @throws \Nette\MemberAccessException
+	 */
+	public static function __callStatic($name, $args)
+	{
+		return ObjectMixin::callStatic(get_called_class(), $name, $args);
+	}
+
+	/**
+	 * Adding method to class
+	 *
+	 * @param string $name method name
+	 * @param mixed $callback callback or closure
+	 * @return mixed
+	 */
+	public static function extensionMethod($name, $callback=NULL)
+	{
+		if (strpos($name, '::')===FALSE) {
+			$class=get_called_class();
+			}
+		else {
+			list($class, $name)=explode('::', $name);
+			}
+		$class=new \Nette\Reflection\ClassType($class);
+		if ($callback===NULL) {
+			return $class->getExtensionMethod($name);
+			}
+		else {
+			$class->setExtensionMethod($name, $callback);
+			}
 	}
 
 	/**

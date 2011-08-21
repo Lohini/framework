@@ -19,16 +19,18 @@ namespace Lohini\Database\Doctrine\ODM;
  * @author Lopo <lopo@lohini.net>
  */
 
-use Doctrine\ODM\CouchDB\DocumentManager;
+use Doctrine\ODM\CouchDB\DocumentManager,
+	Doctrine\Common\Annotations;
 
 /**
  *
- * @property-read Kdyby\DI\Container $context
+ * @property-read Lohini\DI\Container $context
  * @property-read DocumentManager $documentManager
  * @property-read Doctrine\CouchDB\HTTP\SocketClient $httpClient
- * @property-read Doctrine\Common\Annotations\AnnotationReader $annotationReader
+ * @property-read Doctrine\CouchDB\CouchDBClient $couchClient
+ * @property-read Lohini\Database\Doctrine\Annotations\CachedReader $annotationReader
  * @property-read Doctrine\ODM\CouchDB\Mapping\Driver\AnnotationDriver $annotationDriver
- * @property-read \Doctrine\ODM\CouchDB\Configuration $configuration
+ * @property-read Doctrine\ODM\CouchDB\Configuration $configuration
  */
 class Container
 extends \Lohini\Database\Doctrine\BaseContainer
@@ -53,10 +55,15 @@ extends \Lohini\Database\Doctrine\BaseContainer
 	 */
 	protected function createServiceAnnotationReader()
 	{
-		$reader=new \Doctrine\Common\Annotations\AnnotationReader();
+		Annotations\AnnotationRegistry::registerFile(LIBS_DIR.'/Doctrine/ODM/CouchDB/Mapping/Driver/DoctrineAnnotations.php');
+
+		$reader=new Annotations\AnnotationReader();
 		$reader->setDefaultAnnotationNamespace('Doctrine\ODM\CouchDB\Mapping\\');
 
-		return $reader;
+		return new \Lohini\Database\Doctrine\Annotations\CachedReader(
+				new Annotations\IndexedReader($reader),
+				$this->hasService('annotationCache')? $this->annotationCache : $this->cache
+				);
 	}
 
 	/**
@@ -64,12 +71,21 @@ extends \Lohini\Database\Doctrine\BaseContainer
 	 */
 	protected function createServiceAnnotationDriver()
 	{
-		$reader=new \Doctrine\Common\Annotations\CachedReader(
-			new \Doctrine\Common\Annotations\IndexedReader($this->annotationReader),
-			$this->hasService('annotationCache')? $this->annotationCache : $this->cache
-			);
+		return new \Lohini\Database\Doctrine\ODM\Mapping\Driver\AnnotationDriver(
+				$this->annotationReader,
+				$this->params['documentDirs']
+				);
+	}
 
-		return new \Lohini\Database\Doctrine\ODM\Mapping\Driver\AnnotationDriver($this->annotationReader, $this->params['documentDirs']);
+	/**
+	 * @return \Doctrine\CouchDB\CouchDBClient
+	 */
+	protected function createServiceCouchClient()
+	{
+		return new \Doctrine\CouchDB\CouchDBClient(
+				$this->httpClient,
+				$this->params['database']
+				);
 	}
 
 	/**
@@ -79,10 +95,7 @@ extends \Lohini\Database\Doctrine\BaseContainer
 	{
 		$config=new \Doctrine\ODM\CouchDB\Configuration();
 
-		$config->setDatabase($this->params['database']);
 		$config->setMetadataDriverImpl($this->annotationDriver);
-
-		$config->setHttpClient($this->httpClient);
 		$config->setLuceneHandlerName('_fti');
 
 		$config->setProxyDir($this->params['proxiesDir']);
@@ -96,7 +109,7 @@ extends \Lohini\Database\Doctrine\BaseContainer
 	 */
 	protected function createServiceDocumentManager()
 	{
-		return DocumentManager::create($this->configuration);
+		return DocumentManager::create($this->couchClient, $this->configuration);
 	}
 
 	/**

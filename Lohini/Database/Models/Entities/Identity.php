@@ -85,7 +85,7 @@ implements \Lohini\Database\Models\IEntity, \Nette\Security\IIdentity, \Serializ
 	}
 
 	/**
-	 * @return \Lohini\Database\Models\Entities\User
+	 * @return User
 	 */
 	public function getUser()
 	{

@@ -19,6 +19,8 @@ namespace Lohini\Database\Doctrine\ORM\Mapping;
  * @author Lopo <lopo@lohini.net>
  */
 
+use Doctrine\ORM;
+
 class EntityDefaultsListener
 extends \Nette\Object
 implements \Doctrine\Common\EventSubscriber
@@ -29,14 +31,14 @@ implements \Doctrine\Common\EventSubscriber
 	public function getSubscribedEvents()
 	{
 		return array(
-			\Doctrine\ORM\Events::loadClassMetadata,
+			ORM\Events::loadClassMetadata,
 			);
 	}
 
 	/**
 	 * @param \Doctrine\ORM\Event\LoadClassMetadataEventArgs $args
 	 */
-	public function loadClassMetadata(\Doctrine\ORM\Event\LoadClassMetadataEventArgs $args)
+	public function loadClassMetadata(ORM\Event\LoadClassMetadataEventArgs $args)
 	{
 		$meta=$args->getClassMetadata();
 		if (!$meta->customRepositoryClassName) {

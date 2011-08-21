@@ -14,6 +14,8 @@ namespace Lohini\Database\Doctrine\ORM;
  * @author Lopo <lopo@lohini.net>
  */
 
+use Nette\ObjectMixin;
+
 class QueryBuilder
 extends \Doctrine\ORM\QueryBuilder
 {

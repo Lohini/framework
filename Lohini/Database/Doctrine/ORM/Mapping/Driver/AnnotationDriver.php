@@ -19,8 +19,6 @@ namespace Lohini\Database\Doctrine\ORM\Mapping\Driver;
  * @author Lopo <lopo@lohini.net>
  */
 
-require_once __DIR__.'/DoctrineAnnotations.php';
-
 class AnnotationDriver
 extends \Doctrine\ORM\Mapping\Driver\AnnotationDriver
 {

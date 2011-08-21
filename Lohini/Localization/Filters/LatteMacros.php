@@ -39,10 +39,7 @@ extends \Nette\Latte\Macros\MacroSet
 	public static function install(\Nette\Latte\Parser $parser)
 	{
 		$me=new static($parser);
-
-		// _
 		$me->addMacro('_', array($me, 'macroTranslate'));
-
 		return $me;
 	}
 

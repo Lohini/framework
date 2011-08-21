@@ -50,23 +50,4 @@ extends \Lohini\Database\Doctrine\ORM\BaseService
 			$this->processPDOException($e);
 			}
 	}
-
-	/**
-	 * @param string $nameOrEmail
-	 * @return \Nette\Security\IIdentity
-	 */
-	public function findByUsernameOrEmail($nameOrEmail)
-	{
-		$qb=$this->createQueryBuilder('u')
-				->where('u.username = :nameOrEmail')
-				->orWhere('u.email = :nameOrEmail')
-				->setParameter('nameOrEmail', $nameOrEmail);
-
-		try {
-			return $qb->getQuery()->getSingleResult();
-			}
-		catch (\Doctrine\ORM\NoResultException $e) {
-			return NULL;
-			}
-	}
 }
