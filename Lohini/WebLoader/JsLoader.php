@@ -75,7 +75,7 @@ extends WebLoader
 	 *
 	 * in case you want to send some javascript code, that is generated in presenters, and should not be cached, and it is easier to create this code in presenters
 	 * something like this
-	 * <script type="text/javascript">BASE_IMAGES={$basePath}'design/images/';</script>
+	 * <script>BASE_IMAGES={$basePath}'design/images/';</script>
 	 */
 	public function addCode($code)
 	{
@@ -173,7 +173,6 @@ extends WebLoader
 	public function getElement($source)
 	{
 		return Html::el('script')
-				->type('text/javascript')
 				->src($source);
 	}
 
@@ -185,7 +184,6 @@ extends WebLoader
 	public function getCodeElement($code)
 	{
 		return Html::el('script')
-				->type('text/javascript')
 				->setHtml($code);
 	}
 
@@ -197,7 +195,6 @@ extends WebLoader
 	public function getHeadJsElement($source)
 	{
 		return Html::el('script')
-				->type('text/javascript')
 				->setHtml("head.js('$source');");
 	}
 
@@ -366,6 +363,92 @@ extends WebLoader
 			}
 		$this->useHeadJs=FALSE;
 		$this->renderFiles();
+		if ($hasArgs) {
+			$this->files=$backup;
+			}
+	}
+
+	/**
+	 * Generates and render link
+	 *
+	 * @example {control js:link 'file.js', 'file2.js'}
+	 */
+	public function renderLink()
+	{
+		if ($hasArgs=(func_num_args()>0)) {
+			$backup=$this->files;
+			$this->clear();
+			$this->addFiles(func_get_args());
+			}
+		$filenames=array();
+		$content='';
+		if (($cnt=count($this->files))>0) {
+			if ($this->enableDirect && $cnt==1 && $this->files[0][1]==self::COMPACT) {
+				$this->sourceUri=$this->getPresenter(FALSE)->context->httpRequest->getUrl()->getBaseUrl().'js/';
+				echo $this->sourceUri.$this->files[0][0];
+				}
+			else {
+				$dc=get_declared_classes();
+				// u javascriptu zalezi na poradi
+				foreach ($this->files as $file) {
+					switch ($file[1]) {
+						case self::COMPACT:
+							$content.=$this->loadFile($file[0]);
+							break;
+						case self::MINIFY:
+							// dean edwards packer neumi cz/sk znaky!!
+							if (Strings::endsWith($file[0], '.min.js')) { // already minified ?
+								$content.=$this->loadFile($file[0]);
+								}
+							elseif (is_file($mfile="$this->sourcePath/".substr($file[0], 0, -3).'.min.js')) { // have minified ?
+								$content.=file_get_contents($mfile);
+								}
+							elseif (in_array('JSMin', $dc) || class_exists('JSMin')) { // minify
+								$content.=\JSMin::minify($this->loadFile($file[0]));
+								}
+							else {
+								if ($this->throwExceptions) {
+									if ($this->getPresenter(FALSE)->context->params['productionMode']) {
+										throw new \Nette\FileNotFoundException("Don't have JSMin class.");
+										}
+									else {
+										Debugger::processException(new \Nette\FileNotFoundException("Don't have JSMin class"));
+										}
+									}
+								$content.=$this->loadFile($file[0]);
+								}
+							break;
+						case self::PACK:
+							if (Strings::endsWith($file[0], '.pack.js')) { // already packed ?
+								$content.=$this->loadFile($file[0]);
+								}
+							elseif (is_file($pfile="$this->sourcePath/".substr($file[0], 0, -3).'.pack.js')) { // have packed ?
+								$content.=file_get_contents($pfile);
+								}
+							elseif (in_array('JavaScriptPacker', $dc) || class_exists('JavaScriptPacker')) {
+								$jsp=new \JavaScriptPacker($this->loadFile($file[0]));
+								$content.=$jsp->pack();
+								}
+							else {
+								if ($this->throwExceptions) {
+									if ($this->getPresenter(FALSE)->context->params['productionMode']) {
+										throw new \Nette\FileNotFoundException("Don't have JavaScriptPacker class.");
+										}
+									else {
+										Debugger::processException(new \Nette\FileNotFoundException("Don't have JavaScriptPacker class"));
+										}
+									}
+								$content.=$this->loadFile($file[0]);
+								}
+							break;
+						default:
+							return;
+						}
+					$filenames[]=$file[0];
+					}
+				echo $this->getPresenter()->link(':WebLoader:', $this->generate($filenames, $content));
+				}
+			}
 		if ($hasArgs) {
 			$this->files=$backup;
 			}

@@ -131,7 +131,6 @@ extends WebLoader
 	{
 		return Html::el('link')
 				->rel('stylesheet')
-				->type('text/css')
 				->media($media)
 				->href($source);
 	}
@@ -215,6 +214,37 @@ extends WebLoader
 			}
 		if ($hasArgs) {
 			$this->files=$backup;
+			}
+	}
+
+	/**
+	 * Generates and render link
+	 * @example {control css:link 'file.css', 'file2.css'}
+	 * @throws \Nette\InvalidStateException
+	 */
+	public function renderLink()
+	{
+		if ($this->enableDirect
+			&& count($this->files)==1
+			&& substr($this->files[0][0], -4)=='.css'
+			) { // single raw, don't parse|cache
+			echo $this->getPresenter(FALSE)->context->httpRequest->getUrl()->getBaseUrl().'css/'.$this->files[0][0];
+			return;
+			}
+		$filesByMedia=array();
+		foreach ($this->files as $f) {
+			$filesByMedia[$f[1]][]=$f[0];
+			}
+		if (count($filesByMedia)>1) {
+			throw new \Nette\InvalidStateException("Can't generate link for combined media.");
+			}
+		foreach ($filesByMedia as $media => $filenames) {
+			if ($this->joinFiles) {
+				echo $this->getPresenter()->link(':WebLoader:', $this->generate($filenames));
+				}
+			else {
+				throw new \Nette\InvalidStateException("Can't generate link when disabled joinFiles.");
+				}
 			}
 	}
 }
