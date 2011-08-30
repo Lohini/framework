@@ -81,4 +81,13 @@ extends \Lohini\Application\UI\Presenter
 	{
 		return new \Lohini\Components\Gravatar;
 	}
+
+	/**
+	 * Creates Gravatar img component
+	 * @return \Lohini\Components\Gravatar
+	 */
+	protected function createComponentTexyla()
+	{
+		return new \Lohini\WebLoader\TexylaLoader;
+	}
 }

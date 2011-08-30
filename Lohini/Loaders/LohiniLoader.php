@@ -239,6 +239,7 @@ extends \Nette\Loaders\AutoLoader
 		'lohini\webloader\filters\sass\tree\whilenodeexception' => '/Utils/WebLoader/Filters/Sass/Tree/NodeExceptions.php',
 		'lohini\webloader\filters\xcssfilter' => '/Utils/WebLoader/Filters/PreFile/XCssFilter.php',
 		'lohini\webloader\jsloader' => '/Utils/WebLoader/JsLoader.php',
+		'lohini\webloader\texylaloader' => '/Utils/WebLoader/TexylaLoader.php',
 		'lohini\webloader\webloader' => '/Utils/WebLoader/WebLoader.php',
 		'lohini\webloader\webloadercachestorage' => '/Utils/WebLoader/WebLoaderCacheStorage.php'
 		);
