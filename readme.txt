@@ -18,7 +18,12 @@ Optional
 - Leafo's lessphp (https://github.com/leafo/lessphp) for Less PreFile filter in WebLoader
 - JSMin from Minify (http://code.google.com/p/minify/) for JS minify filter in WebLoader
 - Packer JavaScript en PHP (http://joliclic.free.fr/php/javascript-packer/en/) for JS packer filter in WebLoader
-- Pawlik's xCSS (http://xcss.antpaw.org/) for XCss PreFile filter in WebLoader
+- Pawlik's xCSS (http://xcss.antpaw.org) for XCss PreFile filter in WebLoader
+- DG's Texy! (http://texy.info)
+- Texyla (https://github.com/janmarek/Texyla)
+- Kukulich's FSHL (https://github.com/kukulich/fshl) for block/code syntax highlighting in Texy!
+- GeSHi (http://qbnz.com/highlighter) for block/code syntax highlighting in Texy!
 
 -----
 repository: https://github.com/Lopo/Lohini
+homepage: http://www.lohini.net
