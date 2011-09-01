@@ -82,25 +82,25 @@ implements \Lohini\Database\Models\IService
 
 	/**
 	 * @param \PDOException
-	 * @throws \Lohini\Database\Models\Exception
-	 * @throws \Lohini\Database\Models\EmptyValueException
-	 * @throws \Lohini\Database\Models\DuplicateEntryException
+	 * @throws \Lohini\Database\Doctrine\Exception
+	 * @throws \Lohini\Database\Doctrine\EmptyValueException
+	 * @throws \Lohini\Database\Doctrine\DuplicateEntryException
 	 */
 	protected function processPDOException(\PDOException $e)
 	{
 		$info=$e->errorInfo;
 		if ($info[0]==23000 && $info[1]==1062) { // unique fail
 			// @todo how to detect column name ?
-			throw new \Lohini\Database\Models\DuplicateEntryException($e->getMessage(), NULL, $e);
+			throw new \Lohini\Database\Doctrine\DuplicateEntryException($e->getMessage(), NULL, $e);
 			}
 		elseif ($info[0]==23000 && $info[1]==1048) { // notnull fail
 			// @todo convert table column name to entity column name
 			$name=substr($info[2], strpos($info[2], "'")+1);
 			$name=substr($name, 0, strpos($name, "'"));
-			throw new \Lohini\Database\Models\EmptyValueException($e->getMessage(), $name, $e);
+			throw new \Lohini\Database\Doctrine\EmptyValueException($e->getMessage(), $name, $e);
 			}
 		else { // other fail
-			throw new \Lohini\Database\Models\Exception($e->getMessage(), 0, $e);
+			throw new \Lohini\Database\Doctrine\Exception($e->getMessage(), 0, $e);
 			}
 	}
 
