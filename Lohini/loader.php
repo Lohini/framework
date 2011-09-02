@@ -42,3 +42,4 @@ require_once LOHINI_DIR.'/Loaders/SplClassLoader.php';
 	))->register();
 // Set debug options
 \Nette\Diagnostics\Debugger::$strictMode=TRUE;
+require_once __DIR__.'/Localization/shortcuts.php';

@@ -38,7 +38,7 @@ implements ITemplateFactory
 	/**
 	 * @param \Nette\ComponentModel\Component $component
 	 * @param string $class
-	 * @return \Lohini\Templating\FileTemplate
+	 * @return \Nette\Templating\ITemplate
 	 */
 	public function createTemplate(\Nette\ComponentModel\Component $component, $class=NULL)
 	{
@@ -46,6 +46,9 @@ implements ITemplateFactory
 
 		// find presenter
 		$presenter=$component->getPresenter(FALSE);
+
+		// translator
+		$template->setTranslator($presenter->getContext()->getService('translator'));
 
 		// latte
 		$template->onPrepareFilters[]=callback($this, 'templatePrepareFilters');
@@ -83,7 +86,6 @@ implements ITemplateFactory
 
 	/**
 	 * @param \Nette\Templating\ITemplate
-	 * @return void
 	 */
 	public function templatePrepareFilters(\Nette\Templating\ITemplate $template)
 	{

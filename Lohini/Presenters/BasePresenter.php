@@ -14,7 +14,7 @@ namespace Lohini\Presenters;
 abstract class BasePresenter
 extends \Lohini\Application\UI\Presenter
 {
-	/**#@+ Base presenter flash messages class */
+	/**#@+ Base presenter flash messages */
 	const FLASH_SUCCESS='success';
 	const FLASH_ERROR='error';
 	const FLASH_INFO='info';
@@ -31,7 +31,7 @@ extends \Lohini\Application\UI\Presenter
 	{
 		$user=$this->getUser();
 		$this->template->identity= $user->isLoggedIn()? $user->getIdentity() : NULL;
-		$this->template->titleSeparator= $this->getContext()->getParam('titleSeparator', ' | ');
+		$this->template->titleSeparator= $this->context->getParam('titleSeparator', ' | ');
 		$this->template->lang=$this->lang;
 	}
 
@@ -45,18 +45,16 @@ extends \Lohini\Application\UI\Presenter
 	}
 
 	/**
-	 * @param string $class
 	 * @see \Nette\Application\UI\Control::createTemplate()
 	 */
 	protected function createTemplate($class=NULL)
 	{
-		$template=$this->getContext()->templateFactory->createTemplate($this, $class);
-		$template->setTranslator($this->context->translator->setLang($this->lang));
+		$template=$this->context->templateFactory->createTemplate($this, $class);
 		return $template;
 	}
 
 	/**
-	 * Creates CssLoader control
+	 * Creates CssLoader component
 	 * @return \Lohini\WebLoader\CssLoader
 	 */
 	protected function createComponentCss()
@@ -83,8 +81,8 @@ extends \Lohini\Application\UI\Presenter
 	}
 
 	/**
-	 * Creates Gravatar img component
-	 * @return \Lohini\Components\Gravatar
+	 * Creates Texyla JsLoader component
+	 * @return \Lohini\WebLoader\TexylaLoader
 	 */
 	protected function createComponentTexyla()
 	{
