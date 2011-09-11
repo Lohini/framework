@@ -41,7 +41,7 @@ extends WebLoader
 		$this->setGeneratedFileNamePrefix('jsldr-');
 		$this->setGeneratedFileNameSuffix('.js');
 		$this->sourcePath=WWW_DIR.'/js';
-		$this->contentType='text/javascript';
+		$this->contentType='application/javascript';
 	}
 
 	/**
@@ -369,11 +369,10 @@ extends WebLoader
 	}
 
 	/**
-	 * Generates and render link
-	 *
-	 * @example {control js:link 'file.js', 'file2.js'}
+	 * Generates link
+	 * @return string
 	 */
-	public function renderLink()
+	public function getLink()
 	{
 		if ($hasArgs=(func_num_args()>0)) {
 			$backup=$this->files;
@@ -385,7 +384,11 @@ extends WebLoader
 		if (($cnt=count($this->files))>0) {
 			if ($this->enableDirect && $cnt==1 && $this->files[0][1]==self::COMPACT) {
 				$this->sourceUri=$this->getPresenter(FALSE)->context->httpRequest->getUrl()->getBaseUrl().'js/';
-				echo $this->sourceUri.$this->files[0][0];
+				$link=$this->sourceUri.$this->files[0][0];
+				if ($hasArgs) {
+					$this->files=$backup;
+					}
+				return $link;
 				}
 			else {
 				$dc=get_declared_classes();
@@ -442,11 +445,18 @@ extends WebLoader
 								}
 							break;
 						default:
+							if ($hasArgs) {
+								$this->files=$backup;
+								}
 							return;
 						}
 					$filenames[]=$file[0];
 					}
-				echo $this->getPresenter()->link(':WebLoader:', $this->generate($filenames, $content));
+				$link=$this->getPresenter()->link(':WebLoader:', $this->generate($filenames, $content));
+				if ($hasArgs) {
+					$this->files=$backup;
+					}
+				return $link;
 				}
 			}
 		if ($hasArgs) {

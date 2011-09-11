@@ -218,18 +218,26 @@ extends WebLoader
 	}
 
 	/**
-	 * Generates and render link
-	 * @example {control css:link 'file.css', 'file2.css'}
+	 * Generates link
+	 * @return string
 	 * @throws \Nette\InvalidStateException
 	 */
-	public function renderLink()
+	public function getLink()
 	{
+		if ($hasArgs=(func_num_args()>0)) {
+			$backup=$this->files;
+			$this->clear();
+			$this->addFiles(func_get_args());
+			}
 		if ($this->enableDirect
 			&& count($this->files)==1
 			&& substr($this->files[0][0], -4)=='.css'
 			) { // single raw, don't parse|cache
-			echo $this->getPresenter(FALSE)->context->httpRequest->getUrl()->getBaseUrl().'css/'.$this->files[0][0];
-			return;
+			$link=$this->getPresenter(FALSE)->context->httpRequest->getUrl()->getBaseUrl().'css/'.$this->files[0][0];
+			if ($hasArgs) {
+				$this->files=$backup;
+				}
+			return $link;
 			}
 		$filesByMedia=array();
 		foreach ($this->files as $f) {
@@ -238,13 +246,15 @@ extends WebLoader
 		if (count($filesByMedia)>1) {
 			throw new \Nette\InvalidStateException("Can't generate link for combined media.");
 			}
-		foreach ($filesByMedia as $media => $filenames) {
-			if ($this->joinFiles) {
-				echo $this->getPresenter()->link(':WebLoader:', $this->generate($filenames));
+		if ($this->joinFiles) {
+			$link=$this->getPresenter()->link(':WebLoader:', $this->generate($filesByMedia[$f[1]]));
+			if ($hasArgs) {
+				$this->files=$backup;
 				}
-			else {
-				throw new \Nette\InvalidStateException("Can't generate link when disabled joinFiles.");
-				}
+			return $link;
+			}
+		else {
+			throw new \Nette\InvalidStateException("Can't generate link when disabled joinFiles.");
 			}
 	}
 }

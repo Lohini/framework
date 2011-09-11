@@ -76,6 +76,10 @@ extends \Nette\Application\UI\Control
 	 * @param mixed $mixed
 	 */
 	abstract public function addFile($file, $mixed);
+	/**
+	 * Generates link
+	 */
+	abstract public function getLink();
 
 	/**
 	 * Generate compiled file(s) and render link(s)
@@ -160,6 +164,14 @@ extends \Nette\Application\UI\Control
 	{
 		$this->generatedFileNamePrefix=(string)$prefix;
 		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getGeneratedFileNamePrefix()
+	{
+		return $this->generatedFileNamePrefix;
 	}
 
 	/**
@@ -451,5 +463,21 @@ extends \Nette\Application\UI\Control
 	public static function clean()
 	{
 		self::getCache()->clean(array(Cache::NAMESPACE_ONLY => TRUE, Cache::ALL => TRUE));
+	}
+
+	/**
+	 * Generates and render link
+	 */
+	public function renderLink()
+	{
+		if ($hasArgs=(func_num_args()>0)) {
+			$backup=$this->files;
+			$this->clear();
+			$this->addFiles(func_get_args());
+			}
+		echo $this->getLink();
+		if ($hasArgs) {
+			$this->files=$backup;
+			}
 	}
 }
