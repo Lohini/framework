@@ -259,11 +259,14 @@ extends \Lohini\Database\DataSources\Mapped
 		$query->setHint(\Doctrine\ORM\Query::HINT_CUSTOM_TREE_WALKERS, array(__NAMESPACE__.'\Utils\DistinctASTWalker'));
 		$query->setMaxResults(NULL)->setFirstResult(NULL);
 		$query->setHint('distinct', $this->mapping[$column]);
+		if (!count($res=$query->getArrayResult())) {
+			return array();
+			}
 		$r=array_map(
-			function($row) use($column) {
-				return $row[$column];
+			function($row) {
+				return $row[key($row)];
 				},
-			$query->getArrayResult()
+			$res
 			);
 		return array_combine($r, $r);
 	}
