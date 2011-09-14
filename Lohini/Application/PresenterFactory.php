@@ -20,13 +20,34 @@ implements \Nette\Application\IPresenterFactory
 	private $container;
 	/** @var array */
 	public static $presenters=array(
+		'plugin_module' => array(
+			'prefix' => "LohiniPlugins\\",
+			'format' => '{0}\{tmp}',
+			'replace' => array(
+				0 => NULL,
+				':' => "Module\\",
+				)
+			),
+		'plugin' => array(
+			'prefix' => "LohiniPlugins\\",
+			'format' => '{tmp}',
+			'replace' => array(
+				':' => "\\Presenters\\"
+				)
+			),
 		'app' => array(
 			'prefix' => "App\\",
-			'replace' => "Module\\"
+			'format' => '{tmp}',
+			'replace' => array(
+				':' => "Module\\"
+				)
 			),
 		'fw' => array(
 			'prefix' => "Lohini\\Presenters\\",
-			'replace' => "\\"
+			'format' => '{tmp}',
+			'replace' => array(
+				':' => "\\"
+				)
 			),
 		);
 	/** @var cache */
@@ -44,7 +65,7 @@ implements \Nette\Application\IPresenterFactory
 	/**
 	 * Creates new presenter instance
 	 * @param  string  presenter name
-	 * @return IPresenter
+	 * @return \Nette\Application\IPresenter
 	 */
 	public function createPresenter($name)
 	{
@@ -68,7 +89,6 @@ implements \Nette\Application\IPresenterFactory
 		if (!is_string($name) || !Strings::match($name, "#^[a-zA-Z\x7f-\xff][a-zA-Z0-9\x7f-\xff:]*$#")) {
 			throw InvalidPresenterException::invalidName($name);
 			}
-
 		$class=$this->formatPresenterClasses($name);
 		$reflection=\Nette\Reflection\ClassType::from($class);
 		$class=$reflection->getName();
@@ -91,13 +111,35 @@ implements \Nette\Application\IPresenterFactory
 	/**
 	 * Formats presenter class name from its name.
 	 * @param string $presenter
+	 * @param string $type
 	 * @return string
 	 */
 	public function formatPresenterClass($presenter, $type='app')
 	{
 		if (isset(static::$presenters[$type])) {
-			$epn=explode(':', $presenter);
-			return static::$presenters[$type]['prefix'].str_replace(':', static::$presenters[$type]['replace'], $presenter.'Presenter');
+			$epni= $epn= explode(':', $presenter);
+			foreach (static::$presenters[$type]['replace'] as $k => $v) {
+				if (is_int($k)) {
+					if ($v===NULL) {
+						unset($epni[$k]);
+						}
+					else {
+						$epni[$k]=$v;
+						}
+					}
+				}
+			$tmp=implode(':', $epni);
+			$format=static::$presenters[$type]['format'];
+			foreach (static::$presenters[$type]['replace'] as $search => $replace) {
+				if (is_string($search)) {
+					$tmp=str_replace($search, $replace, $tmp);
+					}
+				elseif (is_int($search)) {
+					$format=str_replace('{'."$search}", $epn[$search], $format);
+					}
+				}
+			$class=static::$presenters[$type]['prefix'].str_replace('{tmp}', $tmp, $format).'Presenter';
+			return $class;
 			}
 		else {
 			return str_replace(':', "\\", $presenter).'Presenter';
@@ -118,7 +160,19 @@ implements \Nette\Application\IPresenterFactory
 			};
 		if (count($presenters=array_filter(static::$presenters, $mapper))) {
 			$prefix=current($presenters);
-			return str_replace($prefix['replace'], ':', substr($class, $class[0]=="\\"? (strlen($prefix['prefix'])+1) : strlen($prefix['prefix']), -9));
+			$presenter=substr($class, $class[0]=="\\"? (strlen($prefix['prefix'])+1) : strlen($prefix['prefix']), -9);
+			foreach ($prefix['replace'] as $value => $search) {
+				$presenter=str_replace($search, $value, $presenter);
+				}
+			if (!Strings::startsWith(key($presenters), 'plugin')) {
+				return $presenter;
+				}
+			$epn=preg_split('/[:\\\\]/', $presenter);
+			if (($i=array_search('Presenters', $epn))!==FALSE) {
+				unset($epn[$i]);
+				}
+			$presenter=implode(':', $epn);
+			return $presenter;
 			}
 		else {
 			return str_replace("\\", ':', substr($class, $class[0]=="\\"? 1 : 0, -9)); // Module\\ ?
@@ -140,7 +194,6 @@ implements \Nette\Application\IPresenterFactory
 				return $class;
 				}
 			}
-		$class=$this->formatPresenterClass($name);
-		throw InvalidPresenterException::notFound($name, $class);
+		throw InvalidPresenterException::notFound($name, $this->formatPresenterClass($name));
 	}
 }
