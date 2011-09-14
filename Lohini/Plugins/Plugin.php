@@ -23,6 +23,15 @@ extends \Nette\Object
 
 	/** @var \Lohini\Database\Models\Entities\Plugin */
 	protected $entity;
+	/**
+	 * @var array
+	 */
+	protected $validDependencies=array(
+		'nette', 'lohini', 'php',
+		'php_functions',
+		'plugins'
+		);
+	protected $dependencies=array();
 
 
 	/**
@@ -44,9 +53,61 @@ extends \Nette\Object
 	public function injectTranslation(\Lohini\Localization\ITranslator $translator) {}
 
 	/**
+	 * @throws PluginException
+	 * @throws \Nette\InvalidStateException
+	 */
+	public function checkDependencies()
+	{
+		foreach ($this->dependencies as $dk => $dv) {
+			if (!in_array($dk, $this->validDependencies)) {
+				throw PluginException::invalidDependency($dk);
+				}
+			switch ($dk) {
+				case 'Nette':
+					$av=\Nette\Framework::VERSION;
+					break;
+				case 'Lohini':
+					$av=\Lohini\Core::VERSION;
+					break;
+				case 'PHP':
+					$av=phpversion();
+					break;
+				case 'php_functions':
+					foreach ($dv as $fn) {
+						if (!function_exists($fn)) {
+							throw PluginException::missingDependency("PHP function $dk");
+							}
+						}
+					continue;
+				case 'plugins':
+					$pl=Environment::getService('pluginManager')->getPlugins();
+					foreach ($dv as $pn => $pv) {
+						if (!in_array($pn, $pl)) {
+							throw PluginException::missingDependency("Plugin '$pn'");
+							}
+						if (!$pl[$pn]->enabled) {
+							throw new \Nette\InvalidStateException("Required plugin '$pn' isn't enabled");
+							}
+						if (version_compare($pl[$pn]->iversion, $pv, '>=')) {
+							throw PluginException::outdatedDependency("plugin '$pn'", $pv, $pl[$pn]->iversion);
+							}
+						}
+					continue;
+				}
+			if (version_compare($av, $dv, '>=')) {
+				throw PluginException::outdatedDependency($dk, $dv, $av);
+				}
+			}
+		return TRUE;
+	}
+
+	/**
 	 * 
 	 */
-	public function preInstall() {}
+	public function preInstall()
+	{
+		$this->checkDependencies();
+	}
 
 	/**
 	 * installs plugin

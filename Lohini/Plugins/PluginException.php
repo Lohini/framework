@@ -22,6 +22,7 @@ extends \Exception
 	const OUTDATED_DEPENDENCY=6;
 	const INSTALL_ERROR=7;
 	const NOT_FOUND=8;
+	const INVALID_DEPENDENCY=9;
 
 
 	/**
@@ -97,5 +98,14 @@ extends \Exception
 	public static function notFound($name)
 	{
 		return new self("Plugin $name not found.", self::NOT_FOUND);
+	}
+
+	/**
+	 * @param string $name
+	 * @return PluginException
+	 */
+	public static function invalidDependency($name)
+	{
+		return new self("Invalid dependency '$name'", self::INVALID_DEPENDENCY);
 	}
 }

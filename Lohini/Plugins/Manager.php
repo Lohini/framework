@@ -34,7 +34,6 @@ implements IManager
 		foreach ($context->sqldb->getRepository('LE:Plugin')->findAll() as $plugin) {
 			$this->addPlugin($plugin->name, $plugin);
 			}
-		$this->updateAvailability();
 		$context->sqldb->getModelService('Lohini\Database\Models\Entities\Plugin')->disableUpdatedSources();
 	}
 
