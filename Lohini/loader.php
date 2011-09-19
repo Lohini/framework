@@ -9,7 +9,7 @@
 // define basic constants
 define('LOHINI', TRUE);
 define('LOHINI_DIR', __DIR__);
-define('LOHINI_VERSION_ID', 100); //0.1.0
+define('LOHINI_VERSION_ID', 200); //0.2.0
 define('LOHINI_PACKAGE', '5.3');
 
 // check required PHP version

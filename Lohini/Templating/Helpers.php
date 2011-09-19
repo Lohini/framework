@@ -116,68 +116,8 @@ final class Helpers
 
 	public static function texy($text)
 	{
-		$texy=new \Texy;
-		$texy->encoding='utf-8';
-		$texy->allowedTags=\Texy::NONE;
-		$texy->allowedStyles=\Texy::NONE;
-		$texy->setOutputMode(\Texy::HTML5);
-		$texy->addHandler('block', array(__CLASS__, 'texyBlockHandler'));
-
-		return $texy->process($text).\Nette\Utils\Html::el('style', $texy->styleSheet);
-	}
-
-	public static function texyBlockHandler($invocation, $blocktype, $content, $lang, $modifier)
-	{
-		list(, $highlighter)=explode('/', Strings::lower($blocktype));
-		if (!in_array($highlighter, array('code', 'fshl', 'geshi'))) {
-			return $invocation->proceed();
-			}
-		
-		$texy=$invocation->getTexy();
-		$content=\Texy::outdent($content);
-
-		switch ($highlighter) {
-			case 'geshi':
-				if (!class_exists('GeSHi')) {
-					return $invocation->proceed();
-					}
-				if ($lang=='html') {
-					$lang='html5';
-					}
-				$geshi=new \GeSHi($content, $lang, LIBS_DIR.'/GeSHi/geshi');
-				if ($geshi->error) {
-					return $invocation->proceed();
-					}
-
-				$geshi->enable_classes();
-				$geshi->set_case_keywords(GESHI_CAPS_NO_CHANGE);
-				$geshi->set_tab_width(4);
-				$geshi->enable_keyword_links(FALSE);
-
-				$geshi->set_overall_style('color: #000066; border: 1px solid #d0d0d0; background-color: #f0f0f0;', TRUE);
-				$geshi->set_line_style('font: normal normal 95% \'Courier New\', Courier, monospace; color: #003030;', 'font-weight: bold; color: #006060;', TRUE);
-				$geshi->set_code_style('color: #000020;', 'color: #000020;');
-				$geshi->set_link_styles(GESHI_LINK, 'color: #000060;');
-				$geshi->set_link_styles(GESHI_HOVER, 'background-color: #f0f000;');
-				$texy->styleSheet.=$geshi->get_stylesheet();
-
-				$content=$geshi->parse_code();
-				return \TexyHtml::el(NULL, $texy->protect(iconv('UTF-8', 'UTF-8//IGNORE', $content), \Texy::CONTENT_BLOCK));
-			case 'fshl':
-			case 'code':
-				if (!class_exists('\FSHL\Highlighter')) {
-					return $invocation->proceed();
-					}
-				$fshl=new \FSHL\Highlighter(new \FSHL\Output\Html, \FSHL\Highlighter::OPTION_TAB_INDENT);
-				$lc='\FSHL\Lexer\\'.Strings::firstUpper(Strings::lower($lang));
-				$content=$texy->protect($fshl->highlight($content, new $lc), \Texy::CONTENT_BLOCK);
-				$elPre=\TexyHtml::el('pre');
-				if ($modifier) {
-					$modifier->decorate($texy, $elPre);
-					}
-				$elPre->attrs['class']=strtolower($lang);
-				$elPre->create('code', $content);
-				return $elPre;
-			}
+		$texy=\Nette\Environment::getService('texy')->texy;
+		return $texy->process($text)
+				.\Nette\Utils\Html::el('style', $texy->styleSheet); // geshi formatting css
 	}
 }

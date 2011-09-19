@@ -23,34 +23,36 @@ extends JsLoader
 	{
 		parent::__construct($parent, $name);
 
+		$this->setSourcePath(WWW_DIR.'/texyla');
 		$this->setGeneratedFileNamePrefix('tldr-');
 
 		$this->addFiles(array(
 			// core
-			'texyla/texyla.js',
-			'texyla/selection.js',
-			'texyla/texy.js',
-			'texyla/buttons.js',
-			'texyla/dom.js',
-			'texyla/view.js',
-			'texyla/ajaxupload.js',
-			'texyla/window.js',
+			'js/texyla.js',
+			'js/selection.js',
+			'js/texy.js',
+			'js/buttons.js',
+			'js/dom.js',
+			'js/view.js',
+			'js/ajaxupload.js',
+			'js/window.js',
 			// languages
-			'texyla/languages/cs.js',
-			'texyla/languages/sk.js',
-			'texyla/languages/en.js',
+			'languages/cs.js',
+			'languages/sk.js',
+			'languages/en.js',
 			// plugins
-			'texyla/plugins/keys/keys.js',
-			'texyla/plugins/resizableTextarea/resizableTextarea.js',
-			'texyla/plugins/img/img.js',
-			'texyla/plugins/table/table.js',
-			'texyla/plugins/link/link.js',
-			'texyla/plugins/emoticon/emoticon.js',
-			'texyla/plugins/symbol/symbol.js',
-			'texyla/plugins/files/files.js',
-			'texyla/plugins/color/color.js',
-			'texyla/plugins/textTransform/textTransform.js',
-			'texyla/plugins/youtube/youtube.js',
+			'plugins/keys/keys.js',
+			'plugins/resizableTextarea/resizableTextarea.js',
+			'plugins/img/img.js',
+			'plugins/table/table.js',
+			'plugins/link/link.js',
+			'plugins/emoticon/emoticon.js',
+			'plugins/symbol/symbol.js',
+			'plugins/files/files.js',
+			'plugins/color/color.js',
+			'plugins/textTransform/textTransform.js',
+			'plugins/youtube/youtube.js',
+			'plugins/gravatar/gravatar.js'
 			));
 	}
 }

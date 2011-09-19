@@ -32,6 +32,7 @@ use Nette\Application\UI\Presenter,
  * @property-read \Lohini\Diagnostics\Panels\Callback $callbackPanel
  * @property-read \Lohini\Security\Authenticator $authenticator
  * @property-read \Lohini\Security\User $user
+ * @property-read \Lohini\DI\TexyContainer $texy
  */
 class Configurator
 extends \Nette\Configurator
@@ -173,7 +174,7 @@ extends \Nette\Configurator
 	public static function createServiceTranslator(Container $container)
 	{
 		$translator=new \Lohini\Localization\Translator;
-		$translator->addDictionary('Lohini', $container->expand(LOHINI_DIR.'/lang'));
+		$translator->addDictionary('Lohini', LOHINI_DIR.'/lang');
 		return $translator;
 	}
 
@@ -431,7 +432,7 @@ extends \Nette\Configurator
 
 	/**
 	 * @param \Nette\DI\Container $container
-	 * @return Kdyby\Http\User
+	 * @return Lohini\Security\User
 	 */
 	public static function createServiceUser(\Nette\DI\Container $container)
 	{
@@ -461,5 +462,14 @@ extends \Nette\Configurator
 	public static function createServiceAuthorizator(Container $container)
 	{
 		return new \Lohini\Security\Authorizator($container->users);
+	}
+
+	/**
+	 * @param Container $container
+	 * @return \Lohini\Utils\TexyContainer
+	 */
+	public static function createServiceTexy(Container $container)
+	{
+		return new \Lohini\DI\TexyContainer($container);
 	}
 }

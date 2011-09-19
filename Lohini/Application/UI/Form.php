@@ -82,4 +82,16 @@ extends \Nette\Application\UI\Form
 	{
 		return $this[$name]=new Controls\ResetButton($caption);
 	}
+
+	/**
+	 * @param string $name
+	 * @param string $label
+	 * @param int $cols
+	 * @param int $rows
+	 * @return \Nette\Forms\Controls\TextArea 
+	 */
+	public function addTexyla($name, $label=NULL, $cols=40, $rows=10)
+	{
+		return $this[$name]=new Controls\Texyla($label, $cols, $rows);
+	}
 }

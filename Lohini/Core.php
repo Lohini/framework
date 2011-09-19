@@ -16,7 +16,7 @@ final class Core
 {
 	/**#@+ Lohini version ID's */
 	const NAME='Lohini';
-	const VERSION='0.1.0-dev';
+	const VERSION='0.2.0-dev';
 	const REVISION='$WCREV$ released on $WCDATE$';
 	const DEVELOPMENT=TRUE;
 	/**#@-*/
