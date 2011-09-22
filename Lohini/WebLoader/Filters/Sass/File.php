@@ -33,7 +33,7 @@ class File
 
 	/** @var array */
 	private static $extensions=array(self::SASS, self::SCSS);
-	/** @var \Nette\Caching\Cache */
+	/** @var Cache */
 	private static $cache;
 
 
@@ -41,16 +41,16 @@ class File
 	 * Returns the parse tree for a file.
 	 * If caching is enabled a cached version will be used if possible; if not the
 	 * parsed file will be cached.
-	 * @param string $filename filename to parse
-	 * @param Sass\Script\Parser $parser Sass parser
-	 * @return Sass\Tree\RootNode
+	 * @param string $filename to parse
+	 * @param Parser $parser Sass parser
+	 * @return Tree\RootNode
 	 */
 	public static function getTree($filename, $parser)
 	{
 		if (($cached=self::getCachedFile(Strings::webalize(md5($filename))))!==NULL) {
 			return $cached;
 			}
-		$sassParser=new Sass\Script\Parser(array_merge($parser->options, array('line' => 1)));
+		$sassParser=new Sass\Parser(array_merge($parser->options, array('line' => 1)));
 		$tree=$sassParser->parse($filename);
 		self::setCachedFile($tree, Strings::webalize(md5($filename)));
 		return $tree;
@@ -63,7 +63,7 @@ class File
 	 * If the filename does not end in .sass or .scss try the current syntax first
 	 * then, if a file is not found, try the other syntax.
 	 * @param string $filename filename to find
-	 * @param Sass\Script\Parser $parser Sass parser
+	 * @param Script\Parser $parser Sass parser
 	 * @return string path to file
 	 * @throws Exception if file not found
 	 */
@@ -111,9 +111,9 @@ class File
 	/**
 	 * Looks for the file recursively in the specified directory.
 	 * This will also look for _filename to handle Sass partials.
-	 * @param string $filename filename to look for
+	 * @param string $filename to look for
 	 * @param string $dir path to directory to look in and under
-	 * @return mixed string: full path to file if found, false if not
+	 * @return mixed string: full path to file if found, FALSE if not
 	 */
 	public static function findFile($filename, $dir)
 	{
@@ -139,9 +139,8 @@ class File
 
 	/**
 	 * Retrieves the specified item from the cache or NULL if the key is not found ({@link \ArrayAccess} implementation).
-	 * @param string key
+	 * @param string $filename
 	 * @return mixed|NULL
-	 * @throws \InvalidArgumentException
 	 */
 	public static function getCachedFile($filename)
 	{
@@ -150,8 +149,8 @@ class File
 
 	/**
 	 * Saves a cached version of the file.
-	 * @param Sass\Tree\RootNode $sassc Sass tree to save
-	 * @param string $filename filename to save
+	 * @param Tree\RootNode $sassc Sass tree to save
+	 * @param string $filename to save
 	 * @return string key of created record
 	 */
 	public static function setCachedFile($sassc, $filename)
@@ -173,7 +172,7 @@ class File
 
 	/**
 	 * Get cache
-	 * @return \Nette\Caching\Cache
+	 * @return Cache
 	 */
 	protected static function getCache()
 	{
