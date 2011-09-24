@@ -764,4 +764,15 @@ class Functions
 	{
 		return ($value<$min? $min : ($value>$max? $max : $value));
 	}
+
+	/**
+	 * @param Literals\Boolean $condition
+	 * @param mixed $if_true value for true condition
+	 * @param mixed $if_false value for false condition
+	 * @return mixed
+	 */
+	public static function if_($condition, $if_true, $if_false)
+	{
+		return $condition->value? $if_true : $if_false;
+	}
 }

@@ -55,6 +55,9 @@ class ScriptFunction
 	public function perform()
 	{
 		$name=str_replace('-', '_', $this->name);
+		if ($name=='if') {
+			$name='if_';
+			}
 		foreach (Parser::$context->node->parser->function_paths as $path) { // TODO: remake to use RobotLoader
 			$_path=explode(DIRECTORY_SEPARATOR, $path);
 			$_class=ucfirst($_path[sizeof($_path)-2]);
@@ -74,12 +77,12 @@ class ScriptFunction
 			return call_user_func_array(array(__NAMESPACE__.'\Functions', $name), $this->args);
 			}
 
-		// CSS function: create a \Lohini\WebLoader\Filters\Sass\Script\Literals\String that will emit the function into the CSS
+		// CSS function: create a Literals\String that will emit the function into the CSS
 		$args=array();
 		foreach ($this->args as $arg) {
 			$args[]=$arg->toString();
 			}
-		return new \Lohini\WebLoader\Filters\Sass\Script\Literals\String("$this->name(".join(', ', $args).')');
+		return new Literals\String("$this->name(".join(', ', $args).')');
 	}
 
 	/**
