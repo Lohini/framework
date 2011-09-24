@@ -835,6 +835,12 @@ class Parser
 			case '@warn':
 				return new Sass\Tree\DebugNode($token, TRUE);
 				break;
+			case '@function':
+				return new Sass\Tree\FunctionNode($token);
+				break;
+			case '@return':
+				return new Sass\Tree\ReturnNode($token);
+				break;
 			default:
 				return new Sass\Tree\DirectiveNode($token);
 				break;

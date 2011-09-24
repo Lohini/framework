@@ -128,3 +128,10 @@ extends NodeException
 class WhileNodeException
 extends NodeException
 {}
+
+/**
+ * FunctionNodeException class
+ */
+class FunctionNodeException
+extends NodeException
+{}

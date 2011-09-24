@@ -20,7 +20,7 @@ namespace Lohini\WebLoader\Filters\Sass\Tree;
 /**
  * Context class.
  * Defines the context that the parser is operating in and so allows variables to be scoped.
- * A new context is created for Mixins and imported files.
+ * A new context is created for Mixins, Functions and imported files.
  */
 class Context
 {
@@ -30,6 +30,8 @@ class Context
 	protected $mixins=array();
 	/** @var array variables defined in this context */
 	protected $variables=array();
+	/** @var array functions defined in this context */
+	protected $functions=array();
 	/** @var Node the node being processed */
 	public $node; 
 
@@ -44,8 +46,8 @@ class Context
 
 	/**
 	 * Adds a mixin
-	 * @param string $name name of mixin
-	 * @param $mixin
+	 * @param string $name of mixin
+	 * @param MixinDefinitionNode $mixin
 	 * @return Context the mixin
 	 */
 	public function addMixin($name, $mixin)
@@ -56,7 +58,7 @@ class Context
 
 	/**
 	 * Returns a mixin
-	 * @param string $name name of mixin to return
+	 * @param string $name of mixin to return
 	 * @return MixinDefinitionNode the mixin
 	 * @throws ContextException if mixin not defined in this context
 	 */
@@ -73,7 +75,7 @@ class Context
 
 	/**
 	 * Returns a variable defined in this context
-	 * @param string $name name of variable to return
+	 * @param string $name of variable to return
 	 * @return string the variable
 	 * @throws ContextException if variable not defined in this context
 	 */
@@ -93,7 +95,7 @@ class Context
 
 	/**
 	 * Returns a value indicating if the variable exists in this context
-	 * @param string $name name of variable to test
+	 * @param string $name of variable to test
 	 * @return bool
 	 */
 	public function hasVariable($name)
@@ -103,8 +105,8 @@ class Context
 
 	/**
 	 * Sets a variable to the given value
-	 * @param string $name name of variable
-	 * @param Literal $value value of variable
+	 * @param string $name of variable
+	 * @param Literal $value of variable
 	 * @return Context
 	 */
 	public function setVariable($name, $value)
@@ -114,13 +116,53 @@ class Context
 	}
 
 	/**
-	 * Makes variables and mixins from this context available in the parent context.
-	 * Note that if there are variables or mixins with the same name in the two
+	 * Makes variables, mixins and functions from this context available in the parent context.
+	 * Note that if there are variables or mixins or functions with the same name in the two
 	 * contexts they will be set to that defined in this context.
 	 */
 	public function merge()
 	{
 		$this->parent->variables=array_merge($this->parent->variables, $this->variables);
 		$this->parent->mixins=array_merge($this->parent->mixins, $this->mixins);
+		$this->parent->functions=array_merge($this->parent->functions, $this->functions);
+	}
+
+	/**
+	 * Adds a function
+	 * @param string $name of function
+	 * @param FunctionNode $function
+	 * @return Context the function
+	 */
+	public function addFunction($name, $function)
+	{
+		$this->functions[$name]=$function;
+		return $this;
+	}
+
+	/**
+	 * Returns a value indicating if the function exists in this context
+	 * @param string $name of function to test
+	 * @return bool
+	 */
+	public function hasFunction($name)
+	{
+		return isset($this->functions[$name]);
+	}
+
+	/**
+	 * Returns a function
+	 * @param string $name of function to return
+	 * @return FunctionNode the function
+	 * @throws ContextException if function not defined in this context
+	 */
+	public function getFunction($name)
+	{
+		if (isset($this->functions[$name])) {
+			return $this->functions[$name];
+			}
+		elseif (!empty($this->parent)) {
+			return $this->parent->getFunction($name);
+			}
+		throw new ContextException("Undefined Function: $name", $this->node);
 	}
 }

@@ -272,17 +272,16 @@ class Node
 
 	/**
 	 * Returns a value indicating whether this node is in a directive
-	 * @param bool true if the node is in a directive, false if not
+	 * @param bool TRUE if the node is in a directive, FALSE if not
 	 */
 	public function inDirective()
 	{
-		return $this->parent instanceof DirectiveNode
-				|| $this->parent instanceof DirectiveNode; // XXX: ???
+		return $this->parent instanceof DirectiveNode;
 	}
 
 	/**
 	 * Returns a value indicating whether this node is in a Sass\Script directive
-	 * @param bool true if this node is in a Sass\Script directive, false if not
+	 * @param bool TRUE if this node is in a Sass\Script directive, FALSE if not
 	 */
 	public function inSassScriptDirective()
 	{
@@ -293,7 +292,9 @@ class Node
 				|| $this->parent instanceof IfNode
 				|| $this->parent->parent instanceof IfNode
 				|| $this->parent instanceof WhileNode
-				|| $this->parent->parent instanceof WhileNode;
+				|| $this->parent->parent instanceof WhileNode
+				|| $this->parent instanceof FunctionNode
+				|| $this->parent->parent instanceof FunctionNode;
 	}
 
 	/**

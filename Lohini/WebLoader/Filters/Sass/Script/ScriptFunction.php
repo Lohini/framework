@@ -7,7 +7,7 @@
  */
 namespace Lohini\WebLoader\Filters\Sass\Script;
 /**
- * SassScriptFunction class file.
+ * ScriptFunction class file.
  * @author Chris Yates <chris.l.yates@gmail.com>
  * @copyright Copyright (c) 2010 PBM Web Development
  * @license http://phamlp.googlecode.com/files/license.txt
@@ -57,6 +57,9 @@ class ScriptFunction
 		$name=str_replace('-', '_', $this->name);
 		if ($name=='if') {
 			$name='if_';
+			}
+		if (Parser::$context->hasFunction($name)) {
+			return Parser::$context->getFunction($name)->perform($this->args); // FunctionNode
 			}
 		foreach (Parser::$context->node->parser->function_paths as $path) { // TODO: remake to use RobotLoader
 			$_path=explode(DIRECTORY_SEPARATOR, $path);
