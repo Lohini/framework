@@ -135,7 +135,7 @@ class Context
 	 */
 	public function addFunction($name, $function)
 	{
-		$this->functions[$name]=$function;
+		$this->functions[str_replace('-', '_', $name)]=$function;
 		return $this;
 	}
 
@@ -146,7 +146,7 @@ class Context
 	 */
 	public function hasFunction($name)
 	{
-		return isset($this->functions[$name]);
+		return isset($this->functions[str_replace('-', '_', $name)]);
 	}
 
 	/**
@@ -157,6 +157,7 @@ class Context
 	 */
 	public function getFunction($name)
 	{
+		$name=str_replace('-', '_', $name);
 		if (isset($this->functions[$name])) {
 			return $this->functions[$name];
 			}
