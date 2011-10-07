@@ -32,13 +32,8 @@ extends \Nette\Application\UI\Control
 	 */
 	protected function getElement($email)
 	{
-		$url='http://www.gravatar.com/avatar/'
-			.md5(strtolower(trim($email)))
-			.'?d='.$this->default
-			.'&s='.$this->size
-			.($this->rating!==NULL? '&r='.$this->rating : '');
 		$img=\Nette\Utils\Html::el('img')
-			->src($url)
+			->src($this->getUrl($email))
 			->alt('')
 			->width($this->size)
 			->height($this->size);
@@ -71,5 +66,23 @@ extends \Nette\Application\UI\Control
 		$gi->default=$default;
 		$gi->rating=$rating;
 		return $gi->getElement($email);
+	}
+
+	/**
+	 * @param string $email
+	 * @return string
+	 */
+	private function getUrl($email)
+	{
+		return 'http://www.gravatar.com/avatar/'
+			.md5(strtolower(trim($email)))
+			.'?d='.$this->default
+			.'&amp;s='.$this->size
+			.($this->rating!==NULL? '&amp;r='.$this->rating : '');
+	}
+
+	public function renderLink()
+	{
+		echo $this->getUrl(func_get_arg(0));
 	}
 }
