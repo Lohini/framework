@@ -63,13 +63,13 @@ extends \Nette\Object
 				throw PluginException::invalidDependency($dk);
 				}
 			switch ($dk) {
-				case 'Nette':
+				case 'nette':
 					$av=\Nette\Framework::VERSION;
 					break;
-				case 'Lohini':
+				case 'lohini':
 					$av=\Lohini\Core::VERSION;
 					break;
-				case 'PHP':
+				case 'php':
 					$av=phpversion();
 					break;
 				case 'php_functions':
@@ -94,7 +94,7 @@ extends \Nette\Object
 						}
 					continue;
 				}
-			if (version_compare($av, $dv, '>=')) {
+			if (!version_compare($av, $dv, '>=')) {
 				throw PluginException::outdatedDependency($dk, $dv, $av);
 				}
 			}
