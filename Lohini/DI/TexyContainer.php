@@ -7,8 +7,7 @@
  */
 namespace Lohini\DI;
 
-use Nette\Environment,
-	Nette\Utils\Strings;
+use Nette\Utils\Strings;
 
 /**
  * Texy container
@@ -108,7 +107,7 @@ extends Container
 				parse_str($params, $arr);
 				}
 
-			$link->URL=Environment::getApplication()->getPresenter()->link($presenter, $arr);
+			$link->URL=$this->getService('context')->application->getPresenter()->link($presenter, $arr);
 			}
 
 		return $invocation->proceed();
@@ -216,6 +215,10 @@ extends Container
 		list(, $highlighter)=explode('/', Strings::lower($blocktype));
 		if (!in_array($highlighter, array('code', 'fshl', 'geshi'))) {
 			return $invocation->proceed();
+			}
+		if ($lang===NULL) {
+			$lang='minimal';
+			$highlighter='fshl';
 			}
 		
 		$texy=$invocation->getTexy();
