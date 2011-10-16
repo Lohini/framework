@@ -61,4 +61,19 @@ final class Network
 		$range=self::CIDR2LongRange($net);
 		return ($ip>=$range[0] && $ip<=$range[1]);
 	}
+
+	/**
+	 * @return string
+	 */
+	public static function getRemoteIP()
+	{
+		if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+			return $_SERVER['HTTP_X_FORWARDED_FOR'];
+			}
+		if (isset($_SERVER['HTTP_CLIENT_IP']) && !empty($_SERVER['HTTP_CLIENT_IP'])) {
+			$ip=explode('.', $_SERVER['HTTP_CLIENT_IP']);
+			return $ip[3].".{$ip[2]}.{$ip[1]}.".$ip[0];
+			}
+		return $_SERVER['REMOTE_ADDR'];
+	}
 }
