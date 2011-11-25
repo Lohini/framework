@@ -58,7 +58,7 @@ implements \ArrayAccess
 	public $rememberState=FALSE;
 	/** @var int|string session timeout (default: until is browser closed) */
 	public $timeout=0;
-	/** @var \Lohini\Components\DataGrid\Renderers\IRenderer */
+	/** @var Renderers\IRenderer */
 	protected $renderer;
 	/** @var \Lohini\Database\DataSources\IDataSource */
 	protected $dataSource;
@@ -159,7 +159,7 @@ implements \ArrayAccess
 		return $this->onOperationSubmit;
 	}
 
-	/*	 * ******************* Iterators getters ******************** */
+	/********************* Iterators getters *********************/
 	/**
 	 * Iterates over datagrid rows.
 	 * 
@@ -629,9 +629,9 @@ implements \ArrayAccess
 	/*	 * ******************* renderers ******************** */
 	/**
 	 * Sets data grid renderer
-	 * @param \Lohini\Components\DataGrid\Renderers\IRenderer
+	 * @param Renderers\IRenderer
 	 */
-	public function setRenderer(\Lohini\Components\DataGrid\Renderers\IRenderer $renderer)
+	public function setRenderer(Renderers\IRenderer $renderer)
 	{
 		$this->renderer=$renderer;
 	}
@@ -643,14 +643,14 @@ implements \ArrayAccess
 	public function getRenderer()
 	{
 		if ($this->renderer===NULL) {
-			$this->renderer=new \Lohini\Components\DataGrid\Renderers\Conventional;
+			$this->renderer=new Renderers\Conventional;
 			}
 		return $this->renderer;
 	}
 
 	/**
 	 * Renders data grid
-	 * @throws InvalidStateException
+	 * @throws \Nette\InvalidStateException
 	 */
 	public function render()
 	{
@@ -669,7 +669,7 @@ implements \ArrayAccess
 
 			if ($this->hasActions() || $this->hasOperations()) {
 				if ($this->keyName==NULL) {
-					throw new \InvalidStateException("Name of key for operations or actions was not set for DataGrid '".$this->getName()."'.");
+					throw new \Nette\InvalidStateException("Name of key for operations or actions was not set for DataGrid '".$this->getName()."'.");
 					}
 				}
 
@@ -691,7 +691,7 @@ implements \ArrayAccess
 
 	/**
 	 * Template factory
-	 * @return \Nette\Temlatng\ITemplate
+	 * @return \Nette\Temlating\ITemplate
 	 */
 	protected function createTemplate($class=NULL)
 	{
@@ -976,6 +976,7 @@ implements \ArrayAccess
 	 * @param mixed $key generate link with argument? (if yes you can specify name of parameter
 	 * 				   otherwise variable DataGrid\DataGrid::$keyName will be used and must be defined)
 	 * @return Action
+	 * @throws \Nette\InvalidStateException
 	 */
 	public function addAction($title, $signal, $icon=NULL, $useAjax=FALSE, $key=Action::WITH_KEY)
 	{
@@ -1038,7 +1039,7 @@ implements \ArrayAccess
 
 	/*	 * ******************* backend ******************** */
 	/**
-	 * @return SessionNamespace
+	 * @return \Nette\Http\SessionSection
 	 */
 	protected function getStateSession()
 	{
@@ -1046,7 +1047,7 @@ implements \ArrayAccess
 	}
 
 	/**
-	 * @return Session
+	 * @return \Nette\Http\Session
 	 */
 	protected function getSession()
 	{

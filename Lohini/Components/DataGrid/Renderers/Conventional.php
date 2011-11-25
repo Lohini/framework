@@ -17,7 +17,8 @@ namespace Lohini\Components\DataGrid\Renderers;
  */
 
 use Nette\Utils\Html,
-	Lohini\Components\DataGrid\Columns\ActionColumn;
+	Lohini\Components\DataGrid\Columns\ActionColumn,
+	Lohini\Components\DataGrid\Columns\Column;
 
 /**
  * Converts a data grid into the HTML output
@@ -103,7 +104,7 @@ implements IRenderer
 	protected $dataGrid;
 	/** @var array of function(\Nette\Utils\Html $row, \DibiRow $data) */
 	public $onRowRender;
-	/** @var array  of function(\Nette\Utils\Html $cell, string $column, mixed $value) */
+	/** @var array of function(\Nette\Utils\Html $cell, string $column, mixed $value) */
 	public $onCellRender;
 	/** @var array  of function(\Nette\Utils\Html $action, \DibiRow $data) */
 	public $onActionRender;
@@ -418,7 +419,7 @@ implements IRenderer
 
 	/**
 	 * Generates datagrid headrer
-	 * @return \Nette\Utils\Html
+	 * @return Html
 	 */
 	protected function generateHeaderRow()
 	{
@@ -447,18 +448,18 @@ implements IRenderer
 					}
 
 				if (isset($list[$column->getName()])) {
-					$a = $list[$column->getName()][0]==='a';
-					$d = $list[$column->getName()][0]==='d';
+					$a= $list[$column->getName()][0]==='a';
+					$d= $list[$column->getName()][0]==='d';
 					}
 				else {
-					$a=$d=FALSE;
+					$a= $d= FALSE;
 					}
 
 				if (count($list)>1 && isset($list[$column->getName()])) {
 					$text.=Html::el('span')->setHtml($list[$column->getName()][1]);
 					}
 
-				$up=clone $down=Html::el('a')->addClass(\Lohini\Components\DataGrid\Columns\Column::$ajaxClass);
+				$up= clone $down= Html::el('a')->addClass(Column::$ajaxClass);
 				$up->addClass($a? 'active' : '')->href($column->getOrderLink('a'))
 						->add(Html::el('span')
 							->class('up ui-icon ui-icon-triangle-1-s')
@@ -469,11 +470,11 @@ implements IRenderer
 							->class('down ui-icon ui-icon-triangle-1-n')
 							->style('float: right;')
 							);
-				$positioner = Html::el('span')->class('positioner')->add($up)->add($down);
+				$positioner=Html::el('span')->class('positioner')->add($up)->add($down);
 				$active= $a || $d;
 
 				$value=(string)Html::el('a')->href($column->getOrderLink())
-							->addClass(\Lohini\Components\DataGrid\Columns\Column::$ajaxClass)->setHtml($text).$positioner;
+						->addClass(Column::$ajaxClass)->setHtml($text).$positioner;
 				}
 			else {
 				$value=(string)Html::el('p')->setText($value);
@@ -493,7 +494,7 @@ implements IRenderer
 
 	/**
 	 * Generates datagrid filter
-	 * @return \Nette\Utils\Html
+	 * @return Html
 	 */
 	protected function generateFilterRow() {
 		$row=$this->getWrapper('row.filter container');
@@ -518,12 +519,9 @@ implements IRenderer
 			else {
 				if ($column->hasFilter()) {
 					$filter=$column->getFilter();
-					if ($filter instanceof \Lohini\Components\DataGrid\Filters\SelectboxFilter) {
-						$class=$this->getValue('row.filter control .select');
-						}
-					else {
-						$class=$this->getValue('row.filter control .input');
-						}
+					$class= $filter instanceof \Lohini\Components\DataGrid\Filters\SelectboxFilter
+						? $this->getValue('row.filter control .select')
+						: $this->getValue('row.filter control .input');
 					$control=$filter->getFormControl()->control;
 					$control->addClass($class);
 					$value=(string)$control;
@@ -547,9 +545,9 @@ implements IRenderer
 
 	/**
 	 * Generates datagrid row content.
-	 * @param  \Traversable|array data
-	 * @return \Nette\Utils\Html
-	 * @throws \InvalidArgumentException
+	 * @param \Traversable|array $data
+	 * @return Html
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	protected function generateContentRow($data)
 	{
@@ -559,14 +557,14 @@ implements IRenderer
 		if ($this->dataGrid->hasOperations() || $this->dataGrid->hasActions()) {
 			$primary=$this->dataGrid->keyName;
 			if (!isset($data[$primary])) {
-				throw new \InvalidArgumentException("Invalid name of key for group operations or actions. Column '$primary' does not exist in data source.");
+				throw new \Nette\InvalidArgumentException("Invalid name of key for group operations or actions. Column '$primary' does not exist in data source.");
 				}
 			}
 
 // checker
 		if ($this->dataGrid->hasOperations()) {
 			$value=$form['checker'][$data[$primary]]->getControl();
-			$cell=$this->getWrapper('row.content cell container')->setHtml((string) $value);
+			$cell=$this->getWrapper('row.content cell container')->setHtml((string)$value);
 			$cell->addClass('checker');
 			$row->add($cell);
 			}
@@ -595,12 +593,12 @@ implements IRenderer
 				}
 			else {
 				if (!array_key_exists($column->getName(), $data)) {
-					throw new \InvalidArgumentException("Non-existing column '".$column->getName()."' in datagrid '".$this->dataGrid->getName()."'");
+					throw new \Nette\InvalidArgumentException("Non-existing column '".$column->getName()."' in datagrid '".$this->dataGrid->getName()."'");
 					}
 				$value=$column->formatContent($data[$column->getName()], $data);
 				}
 
-			$cell->setHtml((string) $value);
+			$cell->setHtml((string)$value);
 			$this->onCellRender($cell, $column->getName(), !($column instanceof ActionColumn)? $data[$column->getName()] : $data);
 			$row->add($cell);
 			}
@@ -611,7 +609,7 @@ implements IRenderer
 
 	/**
 	 * Generates datagrid footer
-	 * @return \Nette\Utils\Html
+	 * @return Html
 	 */
 	protected function generateFooterRow()
 	{
@@ -649,7 +647,7 @@ implements IRenderer
 
 	/**
 	 * @param string $name
-	 * @return \Nette\Utils\Html
+	 * @return Html
 	 */
 	protected function getWrapper($name)
 	{

@@ -23,7 +23,8 @@ extends TextColumn
 	 * Checkbox column constructor
 	 * @param string $caption column's textual caption
 	 */
-	public function __construct($caption = NULL) {
+	public function __construct($caption=NULL)
+	{
 		throw new \Nette\NotImplementedException('Class was not implemented yet.');
 		parent::__construct($caption);
 	}

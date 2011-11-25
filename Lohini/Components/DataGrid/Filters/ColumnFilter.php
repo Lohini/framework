@@ -34,7 +34,11 @@ implements IColumnFilter
 		parent::__construct();
 	}
 
-	/*	 * ******************* interface DataGrid\Filters\IColumnFilter ******************** */
+	/********************* interface DataGrid\Filters\IColumnFilter *********************/
+	/**
+	 * Returns filter's form element.
+	 * @return \Nette\Forms\Controls\BaseControl
+	 */
 	public function getFormControl()
 	{
 	}

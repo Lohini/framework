@@ -146,13 +146,13 @@ implements IColumn
 	 */
 	public function hasFilter()
 	{
-		return $this->getFilter(FALSE) instanceof \Lohini\Components\DataGrid\Filters\IColumnFilter;
+		return $this->getFilter(FALSE) instanceof Filters\IColumnFilter;
 	}
 
 	/**
 	 * Returns column's filter
 	 * @param bool $need throw exception if component doesn't exist?
-	 * @return \Lohini\Components\DataGrid\Filters\IColumnFilter|NULL
+	 * @return Filters\IColumnFilter|NULL
 	 */
 	public function getFilter($need=TRUE)
 	{
@@ -183,7 +183,7 @@ implements IColumn
 	/**
 	 * Adds default sorting to data grid
 	 * @param string $order
-	 * @return \Lohini\Components\Columns\Column provides a fluent interface
+	 * @return Column provides a fluent interface
 	 * @throws \InvalidArgumentException
 	 */
 	public function addDefaultSorting($order=\Lohini\Database\DataSources\IDataSource::ASCENDING)
@@ -203,7 +203,7 @@ implements IColumn
 	/**
 	 * Adds default filtering to data grid
 	 * @param string $value
-	 * @return \Lohini\Components\DataGrid\Columns\Column provides a fluent interface
+	 * @return Column provides a fluent interface
 	 */
 	public function addDefaultFiltering($value)
 	{
@@ -216,7 +216,7 @@ implements IColumn
 
 	/**
 	 * Removes data grid's default sorting
-	 * @return \Lohini\Components\DataGrid\Columns\Column provides a fluent interface
+	 * @return Column provides a fluent interface
 	 */
 	public function removeDefaultSorting()
 	{
@@ -231,7 +231,7 @@ implements IColumn
 
 	/**
 	 * Removes data grid's default filtering
-	 * @return \Lohini\Components\DataGrid\Columns\Column provides a fluent interface
+	 * @return Column provides a fluent interface
 	 */
 	public function removeDefaultFiltering()
 	{
@@ -247,7 +247,7 @@ implements IColumn
 	/*	 * ******************* filter factories ******************** */
 	/**
 	 * Alias for method addTextFilter()
-	 * @return \Lohini\Components\DataGrid\Filters\IColumnFilter
+	 * @return Filters\IColumnFilter
 	 */
 	public function addFilter()
 	{
@@ -256,9 +256,10 @@ implements IColumn
 
 	/**
 	 * Adds single-line text filter input to data grid
-	 * @return \Lohini\Components\DataGrid\Filters\IColumnFilter
+	 * @return Filters\IColumnFilter
 	 */
-	public function addTextFilter() {
+	public function addTextFilter()
+	{
 		$this->_addFilter(new Filters\TextFilter);
 		return $this->getFilter();
 	}
@@ -266,7 +267,7 @@ implements IColumn
 	/**
 	 * Adds single-line text date filter input to data grid
 	 * Optional dependency on DatePicker class (@link http://nettephp.com/extras/datepicker)
-	 * @return \Lohini\Components\DataGrid\Filters\IColumnFilter
+	 * @return Filters\IColumnFilter
 	 */
 	public function addDateFilter()
 	{
@@ -276,7 +277,7 @@ implements IColumn
 
 	/**
 	 * Adds check box filter input to data grid
-	 * @return \Lohini\Components\DataGrid\Filters\IColumnFilter
+	 * @return Filters\IColumnFilter
 	 */
 	public function addCheckboxFilter()
 	{
@@ -289,7 +290,7 @@ implements IColumn
 	 * @param array $items from which to choose
 	 * @param bool $firstEmpty add empty first item to selectbox?
 	 * @param bool $translateItems translate all items in selectbox?
-	 * @return \Lohini\Components\DataGrid\Filters\IColumnFilter
+	 * @return Filters\IColumnFilter
 	 */
 	public function addSelectboxFilter($items=NULL, $firstEmpty=TRUE, $translateItems=TRUE)
 	{
@@ -299,7 +300,7 @@ implements IColumn
 
 	/**
 	 * Internal filter adding routine
-	 * @param \Lohini\Components\DataGrid\Filters\IColumnFilter $filter
+	 * @param Filters\IColumnFilter $filter
 	 */
 	private function _addFilter(Filters\IColumnFilter $filter)
 	{

@@ -16,6 +16,8 @@ namespace Lohini\Components\DataGrid\Columns;
  * @author Lopo <lopo@lohini.net>
  */
 
+use Nette\Utils\Strings;
+
 /**
  * Representation of textual data grid column
  */
@@ -48,11 +50,11 @@ extends Column
 		if ($this->maxLength!=0) {
 			if ($value instanceof \Nette\Utils\Html) {
 				$text=$value->getText();
-				$text=\Nette\Utils\Strings::truncate($text, $this->maxLength);
+				$text=Strings::truncate($text, $this->maxLength);
 				$value->setText($text);
 				}
 			else {
-				$value=\Nette\Utils\Strings::truncate($value, $this->maxLength);
+				$value=Strings::truncate($value, $this->maxLength);
 				}
 			}
 

@@ -24,7 +24,7 @@ extends ColumnFilter
 {
 	/**
 	 * Returns filter's form element
-	 * @return FormControl
+	 * @return \Nette\Forms\Controls\BaseControl
 	 */
 	public function getFormControl()
 	{
