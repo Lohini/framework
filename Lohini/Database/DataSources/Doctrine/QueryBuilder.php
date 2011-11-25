@@ -26,7 +26,7 @@ extends \Lohini\Database\DataSources\Mapped
 	const MAP_PROPERTIES=1;
 	const MAP_OBJECTS=2;
 
-	/** @var \Doctrine\ORM\QueryBuilder Query builder instance */
+	/** @var \Doctrine\ORM\QueryBuilder instance */
 	private $qb;
 	/**
 	 * The mapping type
@@ -37,13 +37,13 @@ extends \Lohini\Database\DataSources\Mapped
 	 * @var integer
 	 */
 	private $mappingType;
-	/** @var array Fetched data */
+	/** @var array fetched data */
 	private $data;
 
 
 	/**
 	 * Store given query builder instance
-	 * @param QueryBuilder $qb
+	 * @param \Doctrine\ORM\QueryBuilder $qb
 	 */
 	public function __construct(\Doctrine\ORM\QueryBuilder $qb)
 	{
@@ -61,20 +61,20 @@ extends \Lohini\Database\DataSources\Mapped
 	 * @param string $operation
 	 * @param string $value
 	 * @param string $chainType
-	 * @return QueryBuilder
-	 * @throws \InvalidArgumentException
+	 * @return QueryBuilder (fluent)
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function filter($column, $operation=self::EQUAL, $value=NULL, $chainType=NULL)
 	{
 		if (!$this->hasColumn($column)) {
-			throw new \InvalidArgumentException('Trying to filter data source by unknown column.');
+			throw new \Nette\InvalidArgumentException('Trying to filter data source by unknown column.');
 			}
 
 		$nextParamId=count($this->qb->getParameters())+1;
 
 		if (is_array($operation)) {
 			if ($chainType!==self::CHAIN_AND && $chainType!==self::CHAIN_OR) {
-				throw new \InvalidArgumentException('Invalid chain operation type.');
+				throw new \Nette\InvalidArgumentException('Invalid chain operation type.');
 				}
 			$conds=array();
 			foreach ($operation as $t) {
@@ -121,13 +121,13 @@ extends \Lohini\Database\DataSources\Mapped
 	 * Sort data source
 	 * @param string $column
 	 * @param string $order
-	 * @return QueryBuilder
-	 * @throws \InvalidArgumentException
+	 * @return QueryBuilder (fluent)
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function sort($column, $order=self::ASCENDING)
 	{
 		if (!$this->hasColumn($column)) {
-			throw new \InvalidArgumentException('Trying to sort data source by unknown column.');
+			throw new \Nette\InvalidArgumentException('Trying to sort data source by unknown column.');
 			}
 		$this->qb->addOrderBy($this->mapping[$column], $order===self::ASCENDING? 'ASC' : 'DESC');
 
@@ -138,7 +138,7 @@ extends \Lohini\Database\DataSources\Mapped
 	 * Reduce data source to given $count starting from $start
 	 * @param integer $count
 	 * @param integer $start
-	 * @return QueryBuilder
+	 * @return QueryBuilder (fluent)
 	 * @throws \OutOfRangeException
 	 */
 	public function reduce($count, $start=0)
@@ -212,7 +212,7 @@ extends \Lohini\Database\DataSources\Mapped
 	/**
 	 * Detect the mapping type.
 	 * It is detected from type of SELECT expressions.
-	 * @return integer
+	 * @return int
 	 */
 	protected function detectMappingType()
 	{
@@ -226,7 +226,7 @@ extends \Lohini\Database\DataSources\Mapped
 
 	/**
 	 * Count items in data source
-	 * @return integer
+	 * @return int
 	 */
 	public function count()
 	{
@@ -247,11 +247,12 @@ extends \Lohini\Database\DataSources\Mapped
 	 * Returns distinct values for a selectbox filter
 	 * @param string $column name
 	 * @return array
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function getFilterItems($column)
 	{
 		if (!$this->hasColumn($column)) {
-			throw new \InvalidArgumentException('Trying to filter data source by unknown column.');
+			throw new \Nette\InvalidArgumentException('Trying to filter data source by unknown column.');
 			}
 
 		$query=clone $this->qb->getQuery();

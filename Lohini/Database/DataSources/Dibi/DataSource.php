@@ -26,16 +26,16 @@ use Lohini\Database\DataSources\IDataSource,
 class DataSource
 extends \Lohini\Database\DataSources\DataSource
 {
-	/** @var \DibiDataSource Dibi data source instance */
+	/** @var \DibiDataSource instance */
 	private $ds;
-	/** @var array Fetched data */
+	/** @var array fetched data */
 	private $data;
 
 
 	/**
 	 * Stores given dibi data source instance
 	 * @param \DibiDataSource
-	 * @return \Lohini\Database\DataSources\IDataSource
+	 * @return IDataSource
 	 */
 	public function __construct(\DibiDataSource $ds)
 	{
@@ -78,14 +78,14 @@ extends \Lohini\Database\DataSources\DataSource
 	 * @param string $operation filter
 	 * @param string|array $value operation mode
 	 * @param string $chainType (if third argument is array)
-	 * @return \Lohini\Database\DataSources\IDataSource
-	 * @throws \InvalidArgumentException
+	 * @return IDataSource
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function filter($column, $operation=IDataSource::EQUAL, $value=NULL, $chainType=NULL)
 	{
 		if (is_array($operation)) {
 			if ($chainType!==self::CHAIN_AND && $chainType!==self::CHAIN_OR) {
-				throw new \InvalidArgumentException('Invalid chain operation type.');
+				throw new \Nette\InvalidArgumentException('Invalid chain operation type.');
 				}
 			$conds=array();
 			foreach ($operation as $t) {
@@ -131,12 +131,13 @@ extends \Lohini\Database\DataSources\DataSource
 	 * Adds ordering to specified column
 	 * @param string $column name
 	 * @param string $order one of ordering types
-	 * @return \Lohini\Database\DataSources\IDataSource
+	 * @return IDataSource
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function sort($column, $order=IDataSource::ASCENDING)
 	{
 		if (!$this->hasColumn($column)) {
-			throw new \InvalidArgumentException("Column '$column' not exist.");
+			throw new \Nette\InvalidArgumentException("Column '$column' not exist.");
 			}
 		$this->ds->orderBy($column, $order===self::ASCENDING? 'ASC' : 'DESC');
 		return $this;
@@ -146,7 +147,7 @@ extends \Lohini\Database\DataSources\DataSource
 	 * Reduces the result starting from $start to have $count rows
 	 * @param int $count the number of results to obtain
 	 * @param int $start the offset
-	 * @return \Lohini\Database\DataSources\IDataSource
+	 * @return IDataSource
 	 * @throws \OutOfRangeException
 	 */
 	public function reduce($count, $start=0)

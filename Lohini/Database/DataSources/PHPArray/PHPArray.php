@@ -34,31 +34,31 @@ extends \Lohini\Database\DataSources\DataSource
 
 	/**
 	 * @param array $items
-	 * @throws \InvalidArgumentException
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function __construct(array $items)
 	{
 		if (empty($items)) {
-			throw new \InvalidArgumentException('Empty array given');
+			throw new \Nette\InvalidArgumentException('Empty array given');
 			}
 		$this->items=$this->source=$items;
 	}
 
 	public function filter($column, $operation=self::EQUAL, $value=NULL, $chainType=NULL)
 	{
-		throw new \NotImplementedException;
+		throw new \Nette\NotImplementedException;
 	}
 
 	/**
 	 * @param string $column
 	 * @param string $order
 	 * @return int
-	 * @throws \InvalidArgumentException
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function sort($column, $order=self::ASCENDING)
 	{
 		if (!$this->hasColumn($column)) {
-			throw new \InvalidArgumentException;
+			throw new \Nette\InvalidArgumentException;
 			}
 		usort($this->items, function ($a, $b) use ($column, $order) {
 				return $order===\Lohini\Database\DataSources\IDataSource::DESCENDING
@@ -95,7 +95,7 @@ extends \Lohini\Database\DataSources\DataSource
 
 	public function getFilterItems($column)
 	{
-		throw new \NotImplementedException;
+		throw new \Nette\NotImplementedException;
 	}
 
 	/**

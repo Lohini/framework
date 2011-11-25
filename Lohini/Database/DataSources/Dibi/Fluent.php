@@ -26,18 +26,18 @@ use Lohini\Database\DataSources\IDataSource,
 class Fluent
 extends \Lohini\Database\DataSources\Mapped
 {
-	/** @var \DibiFluent Dibi fluent instance */
+	/** @var \DibiFluent instance */
 	private $df;
-	/** @var array Fetched data */
+	/** @var array fetched data */
 	private $data;
-	/** @var int Total data count */
+	/** @var int total data count */
 	private $count;
 
 
 	/**
 	 * Stores given dibi data fluent instance
-	 * @param \DibiFluent
-	 * @return \Lohini\Database\DataSources\IDataSource
+	 * @param \DibiFluent $df
+	 * @return IDataSource
 	 */
 	public function __construct(\DibiFluent $df)
 	{
@@ -50,18 +50,18 @@ extends \Lohini\Database\DataSources\Mapped
 	 * @param string $operation filter
 	 * @param string|array $value operation mode
 	 * @param string $chainType (if third argument is array)
-	 * @return \Lohini\Database\DataSources\IDataSource
-	 * @throws \InvalidArgumentException
+	 * @return IDataSource
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function filter($column, $operation=IDataSource::EQUAL, $value=NULL, $chainType=NULL)
 	{
 		if (!$this->hasColumn($column)) {
-			throw new \InvalidArgumentException('Trying to filter data source by unknown column.');
+			throw new \Nette\InvalidArgumentException('Trying to filter data source by unknown column.');
 			}
 
 		if (is_array($operation)) {
 			if ($chainType!==self::CHAIN_AND && $chainType!==self::CHAIN_OR) {
-				throw new \InvalidArgumentException('Invalid chain operation type.');
+				throw new \Nette\InvalidArgumentException('Invalid chain operation type.');
 				}
 			$conds=array();
 			foreach ($operation as $t) {
@@ -111,13 +111,13 @@ extends \Lohini\Database\DataSources\Mapped
 	 * Adds ordering to specified column
 	 * @param string $column name
 	 * @param string $order one of ordering types
-	 * @throws \InvalidArgumentException
-	 * @return \Lohini\Database\DataSources\IDataSource
+	 * @return IDataSource
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function sort($column, $order=IDataSource::ASCENDING)
 	{
 		if (!$this->hasColumn($column)) {
-			throw new \InvalidArgumentException('Trying to sort data source by unknown column.');
+			throw new \Nette\InvalidArgumentException('Trying to sort data source by unknown column.');
 			}
 
 		$this->df->orderBy($this->mapping[$column], $order===self::ASCENDING? 'ASC' : 'DESC');
@@ -129,7 +129,7 @@ extends \Lohini\Database\DataSources\Mapped
 	 * Reduces the result starting from $start to have $count rows
 	 * @param int $count the number of results to obtain
 	 * @param int $start the offset
-	 * @return \Lohini\Database\DataSources\IDataSource
+	 * @return IDataSource
 	 * @throws \OutOfRangeException
 	 */
 	public function reduce($count, $start=0)
@@ -189,7 +189,7 @@ extends \Lohini\Database\DataSources\Mapped
 
 	public function getFilterItems($column)
 	{
-		throw new \NotImplementedException;
+		throw new \Nette\NotImplementedException;
 	}
 
 	/**
