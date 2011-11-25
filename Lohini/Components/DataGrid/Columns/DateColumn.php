@@ -39,16 +39,27 @@ extends TextColumn
 
 	/**
 	 * Formats cell's content.
-	 * @param mixed
-	 * @param \DibiRow|array
+	 * @param mixed $value
+	 * @param \DibiRow|array $data
 	 * @return string
 	 */
 	public function formatContent($value, $data=NULL)
 	{
-		if ((int)$value==NULL || empty($value)) {
+		if (!($value instanceof \DateTime) && ((int)$value==NULL || empty($value))) {
 			return 'N/A';
 			}
-		$value=parent::formatContent($value, $data);
+
+		if (is_array($this->replacement) && !empty($this->replacement)) {
+			if (in_array($value, array_keys($this->replacement))) {
+				$value=$this->replacement[$value];
+				}
+			}
+
+		foreach ($this->formatCallback as $callback) {
+			if (is_callable($callback)) {
+				$value=call_user_func($callback, $value, $data);
+				}
+			}
 
 		$value= is_numeric($value)? (int)$value : ($value instanceof \DateTime ? $value->format('U') : strtotime($value));
 		return strftime($this->format, $value);
