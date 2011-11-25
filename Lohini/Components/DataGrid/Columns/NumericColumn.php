@@ -45,6 +45,8 @@ extends Column
 	 */
 	public function formatContent($value, $data=NULL)
 	{
+		$value=round($value, $this->precision);
+
 		if (is_array($this->replacement) && !empty($this->replacement)) {
 			if (in_array($value, array_keys($this->replacement))) {
 				$value=$this->replacement[$value];
@@ -57,7 +59,7 @@ extends Column
 				}
 			}
 
-		return round($value, $this->precision);
+		return $value;
 	}
 
 	/**
