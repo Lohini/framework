@@ -11,6 +11,7 @@ define('LOHINI', TRUE);
 define('LOHINI_DIR', __DIR__);
 define('LOHINI_VERSION_ID', 200); //0.2.0
 define('LOHINI_PACKAGE', '5.3');
+defined('LIBS_DIR') || define('LIBS_DIR', realpath(LOHINI_DIR.'/..'));
 
 // check required PHP version
 if (!version_compare(phpversion(), LOHINI_PACKAGE, '>=')) {

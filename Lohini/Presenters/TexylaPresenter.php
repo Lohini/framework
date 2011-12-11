@@ -38,7 +38,7 @@ extends BasePresenter
 	{
 		parent::startup();
 		$texy=$this->context->texy->texy;
-		$this->baseFolderPath= $texy->imageModule->fileRoot= ROOT_DIR.'/var/storage/texyla';
+		$this->baseFolderPath= $texy->imageModule->fileRoot= $this->context->params['varDir'].'/storage/texyla';
 		$texy->imageModule->root= $this->link('file');
 		$this->tempDir=$this->baseFolderPath.'/thumbnails';
 	}
