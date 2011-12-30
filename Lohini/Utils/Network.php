@@ -35,10 +35,12 @@ final class Network
 		for ($i=0; $i<4; $i++) {
 			$long+= isset($ip[$i])? $ip[$i]<<((3-$i)<<3) : 0;
 			}
-		return array(
-			$prefix===32? $long : $long&(((1<<$prefix)-1)<<(32-$prefix)),
-			$long|((1<<(32-$prefix))-1)
-			);
+		return $prefix==32
+			? array($long, $long)
+			: array(
+				$long&(((1<<$prefix)-1)<<(32-$prefix)),
+				$long|((1<<(32-$prefix))-1)
+				);
 	}
 
 	/**
