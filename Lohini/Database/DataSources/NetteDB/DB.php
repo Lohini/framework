@@ -21,7 +21,7 @@ use Lohini\Database\DataSources\IDataSource,
  * 
  */
 class DB
-extends DataSources\Mapped
+extends \Lohini\Database\DataSources\Mapped
 {
     /**
 	 * @var Table\Selection
