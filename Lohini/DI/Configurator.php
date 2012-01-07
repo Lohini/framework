@@ -29,6 +29,7 @@ use Nette\Application\UI\Presenter,
  * @property-read \Lohini\Database\Doctrine\ODM\Container $couchdb
  * @property-read \Lohini\Database\Doctrine\Cache $doctrineCache
  * @property-read \Lohini\Database\Doctrine\Workspace $workspace
+ * @property-read \Lohini\Plugins\Manager $pluginManager
  * @property-read \Lohini\Diagnostics\Panels\Callback $callbackPanel
  * @property-read \Lohini\Security\Authenticator $authenticator
  * @property-read \Lohini\Security\User $user
@@ -155,6 +156,8 @@ extends \Nette\Configurator
 		$backend= $router[]= new RouteList('Backend');
 		$backend[]=new Route('admin[/<lang=en [a-z]{2}>]/<presenter>[/<action>[/<id>]]', 'Default:default');
 
+		$container->pluginManager->injectRoutes($router);
+
 		return $router;
 	}
 
@@ -175,6 +178,7 @@ extends \Nette\Configurator
 	{
 		$translator=new \Lohini\Localization\Translator;
 		$translator->addDictionary('Lohini', LOHINI_DIR.'/lang');
+		$container->pluginManager->injectTranslations($translator);
 		return $translator;
 	}
 
@@ -194,6 +198,15 @@ extends \Nette\Configurator
 	public static function createServiceUserPanel(Container $container)
 	{
 		return new \Lohini\Security\Panel($container->user->identity, $container->sqldb);
+	}
+
+	/**
+	 * @param \Nette\DI\Container $container
+	 * @return \Lohini\Plugins\IManager
+	 */
+	public static function createServicePluginManager(Container $container)
+	{
+		return new \Lohini\Plugins\Manager($container);
 	}
 
 	/**
