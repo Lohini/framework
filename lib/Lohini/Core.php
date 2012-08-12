@@ -28,4 +28,12 @@ final class Core
 	{
 		throw new \Nette\StaticClassException("Can't instantiate static class ".get_class($this));
 	}
+
+	/**
+	 * @return array
+	 */
+	public static function findExceptionClasses()
+	{
+		return iterator_to_array(\Nette\Utils\Finder::findFiles('exceptions.php')->in(__DIR__));
+	}
 }

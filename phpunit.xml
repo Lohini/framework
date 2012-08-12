@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<phpunit
+	stopOnError="false"
+	stopOnFailure="false"
+	stopOnIncomplete="false"
+	stopOnSkipped="false"
+
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+
+	bootstrap="./tests/bootstrap.php"
+	colors="true"
+	>
+	<testsuites>
+		<testsuite name="Lohini Framework Testing Suite">
+			<directory suffix="Test.php">./tests</directory>
+		</testsuite>
+	</testsuites>
+
+	<filter>
+		<blacklist>
+			<directory suffix=".php">./vendor</directory>
+			<directory suffix=".php">./tests</directory>
+		</blacklist>
+		<whitelist addUncoveredFilesFromWhiteList="true">
+			<directory suffix=".php">./lib</directory>
+		</whitelist>
+	</filter>
+
+	<logging>
+		<log type="coverage-html" target="./build/coverage" title="Lohini"
+			charset="UTF-8" yui="true" highlight="true"
+			lowUpperBound="35" highLowerBound="70" />
+		<log type="coverage-clover" target="./build/logs/clover.xml" />
+		<log type="junit" target="./build/logs/junit.xml" logIncompleteSkipped="false" />
+	</logging>
+</phpunit>
