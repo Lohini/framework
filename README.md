@@ -1,4 +1,4 @@
-Lohini/Framework [![Build Status](https://secure.travis-ci.org/Lohini/framework.png?branch=master)](http://travis-ci.org/Lohini/framework)
+Lohini/framework [![Build Status](https://secure.travis-ci.org/Lohini/framework.png?branch=master)](http://travis-ci.org/Lohini/framework)
 ==========================
 The aim of this project is integration of interesting technologies and options
 to Nette Framework.
