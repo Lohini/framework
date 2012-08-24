@@ -19,6 +19,12 @@
 		"symfony/css-selector": "2.0.*",
 		"kriswallsmith/assetic": "1.0.3"
 	},
+	"replace": {
+		"lohini/assets-extension": "self.version",
+		"lohini/curl-extension": "self.version",
+		"lohini/browser-extension": "self.version",
+		"lohini/redis-extension": "self.version"
+	},
 	"autoload": {
 		"psr-0": {
 			"Lohini": "lib/"
