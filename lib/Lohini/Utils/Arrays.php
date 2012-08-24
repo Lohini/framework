@@ -34,7 +34,7 @@ extends \Nette\Object
 	 */
 	final public function __construct()
 	{
-		throw new \Nette\StaticClassException;
+		throw new \Nette\StaticClassException("Can't instantiate static class ".get_class($this));
 	}
 
 	/**

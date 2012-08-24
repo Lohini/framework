@@ -1,0 +1,64 @@
+services:
+  nette.presenterFactory: Lohini\Application\PresenterManager(%appDir%, @container, @lohini.packageManager)
+
+  lohini.packageManager: Lohini\Packages\PackageManager
+
+  lohini.console.helpers: Symfony\Component\Console\Helper\HelperSet
+
+  lohini.console.helper.serviceContainer:
+    class: Lohini\Console\ContainerHelper
+    tags: {console.helper: {alias: di}}
+
+  lohini.console.helper.packageManager:
+    class: Lohini\Console\PackageManagerHelper
+    tags: {console.helper: {alias: pm}}
+
+  lohini.console.helper.ormEntityManager:
+    class: Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper(@doctrine.orm.entityManager)
+    tags: {console.helper: {alias: em}}
+
+  lohini.console.helper.dbalConnection:
+    class: Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper(@doctrine.dbal.connection)
+    tags: {console.helper: {alias: db}}
+
+  lohini.console.helper.cacheStorage:
+    class: Lohini\Console\StorageHelper(@lohini.cacheStorage)
+    tags: {console.helper: {alias: cacheStorage}}
+
+  lohini.console.helper.phpFileStorage:
+    class: Lohini\Console\StorageHelper(@lohini.phpFileStorage)
+    tags: {console.helper: {alias: phpFileStorage}}
+
+  lohini.console.helper.dialogHelper:
+    class: Symfony\Component\Console\Helper\DialogHelper
+    tags: {console.helper: {alias: dialog}}
+
+  lohini.phpFileStorage: @nette.templateCacheStorage
+  lohini.cacheStorage: @cacheStorage
+
+  nette.userStorage: Lohini\Security\UserStorage
+
+  user: Lohini\Security\User
+
+  nette.authenticator: @user
+
+  nette.authorizator:
+    class: Nette\Security\IAuthorizator
+    factory: @lohini.security.authorizatorFactory::create()
+
+  lohini.security.authorizatorFactory:
+    class: Lohini\Security\AuthorizatorFactory
+
+  lohini.templateConfigurator:
+    class: Lohini\Templating\TemplateConfigurator
+
+  lohini.editableTemplates:
+    class: Lohini\Templating\EditableTemplates
+    arguments: {1: Lohini\Caching\LatteStorage("%tempDir%/cache")}
+
+  lohini.eventManager: Lohini\Extension\EventDispatcher\EventManager
+
+  application:
+    setup:
+      - Lohini\Application\LifeCycleEvent::register(@self, @lohini.eventManager)
+

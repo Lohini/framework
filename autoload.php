@@ -6,33 +6,15 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
 
-use Doctrine\Common\Annotations\AnnotationRegistry,
-	Symfony\Component\ClassLoader\UniversalClassLoader;
-
-
-// require class loader
-require_once __DIR__.'/vendor/autoload.php';
-
-
-// library
-$loader=new UniversalClassLoader;
-$loader->registerNamespaces(array(
-	'Lohini' => __DIR__ . '/lib',
-	'LohiniTesting' => __DIR__.'/tests'
-	));
-$loader->register();
+/** @var \Composer\Autoload\ClassLoader $loader */
+$loader=require_once __DIR__.'/vendor/autoload.php';
+$loader->add('Lohini\\Testing', __DIR__.'/tests');
+$loader->add('Lohini\\Tests', __DIR__.'/tests');
+$loader->add('Lohini', __DIR__.'/lib');
 
 @header('X-Powered-By: Lohini');
 
-// exceptions
-$exceptions=new \Lohini\Loaders\ExceptionsLoader;
-$exceptions->register();
-
 // Doctrine annotations
-AnnotationRegistry::registerLoader(function($class) use ($loader) {
-	$loader->loadClass($class);
-	return class_exists($class, FALSE);
-	});
-AnnotationRegistry::registerFile(__DIR__.'/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
+\Doctrine\Common\Annotations\AnnotationRegistry::registerLoader(callback('class_exists'));
 
-unset($loader, $exceptions); // cleanup
+unset($loader); // cleanup

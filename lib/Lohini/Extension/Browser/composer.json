@@ -1,0 +1,32 @@
+{
+    "name": "lohini/browser-extension",
+    "description": "Browser extension of Curl wrapper",
+    "keywords": ["nette", "curl", "http", "browser"],
+    "homepage": "http://www.lohini.net",
+    "license": ["GPLv3"],
+    "authors": [
+        {
+            "name": "Pavol Hluchý",
+            "homepage": "http://lopo.losys.eu"
+        }
+    ],
+    "support": {
+        "email": "lopo@losys.eu",
+        "issues": "https://github.com/lohini/framework/issues"
+    },
+    "require": {
+        "php": ">=5.3.2",
+        "nette/nette": "2.0.*",
+        "lohini/curl-extension": "*",
+        "symfony/css-selector": "2.0.6"
+    },
+    "conflict": {
+        "lohini/framework": "self.version"
+    },
+    "autoload": {
+        "psr-0": {
+            "Lohini\\Extension\\Browser": ""
+        }
+    },
+    "target-dir": "Lohini/Extension/Browser"
+}

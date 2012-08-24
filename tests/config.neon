@@ -1,7 +1,8 @@
 php:
     date.timezone: Europe/Bratislava
 
-
 services:
     cacheStorage:
         class: Nette\Caching\Storages\MemoryStorage
+    session:
+        class: Lohini\Testing\Http\FakeSession

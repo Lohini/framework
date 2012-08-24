@@ -36,4 +36,23 @@ final class Core
 	{
 		return iterator_to_array(\Nette\Utils\Finder::findFiles('exceptions.php')->in(__DIR__));
 	}
+
+	/**
+	 * @return array
+	 */
+	public static function getDefaultPackages()
+	{
+		return array(
+			'Lohini\Package\Framework\Package',
+			'Lohini\Package\Doctrine\Package'
+			);
+	}
+
+	/**
+	 * @return Packages\PackagesList 
+	 */
+	public static function createPackagesList()
+	{
+		return new Packages\PackagesList(static::getDefaultPackages());
+	}
 }

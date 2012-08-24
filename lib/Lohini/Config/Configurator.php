@@ -23,6 +23,8 @@ extends \Nette\Config\Configurator
 		);
 	/** @var bool */
 	private $initialized=FALSE;
+	/** @var \Lohini\Packages\PackagesContainer */
+	private $packages;
 	/** @var \Nette\DI\Container */
 	private $container;
 
@@ -33,7 +35,7 @@ extends \Nette\Config\Configurator
 	 * @param array $parameters
 	 * @throws \Lohini\DirectoryNotWritableException
 	 */
-	public function __construct($parameters=NULL)
+	public function __construct($parameters=NULL, \Lohini\Packages\IPackageList $packages=NULL)
 	{
 		// path defaults
 		$this->parameters=static::defaultPaths($parameters)+$this->parameters;
@@ -45,6 +47,10 @@ extends \Nette\Config\Configurator
 
 		// debugger defaults
 		$this->setupDebugger(array('debugMode' => FALSE, 'consoleMode' => PHP_SAPI==='cli'));
+
+		// finder
+		$packages= $packages ?: new \Lohini\Packages\InstalledPackages($this->parameters['appDir']);
+		$this->packages=new \Lohini\Packages\PackagesContainer($packages);
 
 		// environment
 		$this->setDebugMode();
@@ -98,6 +104,11 @@ extends \Nette\Config\Configurator
 		// Last call for debugger
 		$this->setupDebugger();
 
+		// packages
+		foreach ($this->packages as $name => $package) {
+			$this->parameters['lohini']['packages'][$name]=get_class($package);
+			}
+
 		// configure
 		$configurator=$this->createConfigurator();
 
@@ -111,6 +122,7 @@ extends \Nette\Config\Configurator
 			}
 
 		// create container
+		$configurator->onCompile[]=callback($this->packages, 'compile');
 		$configurator->addConfig($configFile=$this->getConfigFile(), \Nette\Config\Configurator::NONE);
 		if (is_file($localConfig=str_replace('.neon', '.local.neon', $configFile))) {
 			$configurator->addConfig($localConfig, \Nette\Config\Configurator::NONE);
@@ -142,12 +154,30 @@ extends \Nette\Config\Configurator
 	}
 
 	/**
+	 * @return \Lohini\Packages\PackagesContainer
+	 */
+	public function getPackages()
+	{
+		$this->startup();
+		return $this->packages;
+	}
+
+	/**
 	 * @return \SystemContainer|\Nette\DI\Container
 	 */
 	public function getContainer()
 	{
 		$this->startup();
 		return $this->container;
+	}
+
+	/* ******************** services ******************** */
+	/**
+	 * @param \Lohini\Database\Doctrine\Diagnostics\Panel $panel
+	 */
+	public static function configureDbalSqlLogger(\Lohini\Database\Doctrine\Diagnostics\Panel $panel)
+	{
+		$panel->registerBarPanel(Debugger::$bar);
 	}
 
 	/* ******************** service factories ******************** */

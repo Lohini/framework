@@ -1,0 +1,22 @@
+services:
+	doctrine.registry:
+		class: Lohini\Database\Doctrine\Registry
+		arguments:
+			- @container
+			- %doctrine.connections%
+			- %doctrine.entityManagers%
+			- %doctrine.defaultConnection%
+			- %doctrine.defaultEntityManager%
+			- %doctrine.auditManagers%
+
+	doctrine.orm.events.discriminatorMapDiscovery:
+		class: Lohini\Database\Doctrine\Mapping\DiscriminatorMapDiscoveryListener
+		tags: [doctrine.eventSubscriber]
+
+	doctrine.orm.events.entityDefaults:
+		class: Lohini\Database\Doctrine\Mapping\EntityDefaultsListener
+		tags: [doctrine.eventSubscriber]
+
+	doctrine.dao<E>:
+		class: Lohini\Database\Doctrine\Dao
+		factory: @doctrine.registry::getDao(<E>)

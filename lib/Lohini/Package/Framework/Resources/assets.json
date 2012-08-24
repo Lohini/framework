@@ -1,0 +1,33 @@
+[
+    {
+        "name": "jquery/jquery",
+        "paths": ["public/js/jquery.js"]
+    },
+    {
+        "name": "jquery/ui",
+        "paths": ["public/js/jquery.ui.js", "public/css/jquery.ui.css"],
+        "require": {
+            "jquery/jquery":"*"
+        }
+    },
+    {
+        "name": "nette/forms",
+        "paths": ["public/js/nette.forms.js"]
+    },
+    {
+        "name": "nette/ajax",
+        "paths": [
+            "public/js/nette.ajax.js",
+            "public/js/nette.ajax.scrollTo.js",
+            "public/js/nette.ajax.spinner.js",
+            "public/js/nette.ajax.codeEditor.js"
+        ],
+        "require": {
+            "jquery/jquery":"*"
+        }
+    },
+    {
+        "name": "lohini/class",
+        "paths": ["public/js/class.js"]
+    }
+]

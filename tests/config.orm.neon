@@ -1,0 +1,53 @@
+parameters:
+	doctrine:
+		connections: []
+		entityManagers: []
+		defaultConnection: default
+		defaultEntityManager: default
+
+nette:
+	security:
+		frames: null
+
+dbal:
+	connections:
+		sqlite:
+			driver: pdo_sqlite
+			memory: TRUE
+		mysql:
+			driver: pdo_mysql
+
+orm:
+	entityManagers:
+		default:
+			connection: sqlite
+		mysql:
+			connection: mysql
+
+services:
+	doctrine.registry:
+		class: Lohini\Testing\ORM\SandboxRegistry
+		arguments:
+			- @container
+			- "%doctrine.connections%"
+			- "%doctrine.entityManagers%"
+			- "%doctrine.defaultConnection%"
+			- "%doctrine.defaultEntityManager%"
+	cacheStorage:
+		class: Nette\Caching\Storages\MemoryStorage
+	session:
+		class: Lohini\Testing\Http\FakeSession
+
+factories: # overwrite
+	nette.cache:
+		internal: TRUE
+	nette.mail:
+		internal: TRUE
+	nette.basicForm:
+		internal: TRUE
+	nette.latte:
+		internal: TRUE
+	nette.template:
+		internal: TRUE
+	lohini.macros.core:
+		internal: TRUE
