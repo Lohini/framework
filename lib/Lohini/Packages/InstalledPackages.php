@@ -93,7 +93,9 @@ implements \IteratorAggregate, IPackageList
 	 */
 	private function supplyDefaultPackages($file)
 	{
-		$default=\Lohini\Core::getDefaultPackages();
+		$default= class_exists('Lohini\CF')
+			? \Lohini\CF::createPackagesList()->getPackages()
+			: \Lohini\Core::getDefaultPackages();
 
 		if (!@file_put_contents($file, Neon::encode($default, Neon::BLOCK))) {
 			throw \Lohini\FileNotWritableException::fromFile($file);

@@ -529,7 +529,11 @@ extends \Lohini\Config\CompilerExtension
 
 		// gather paths
 		$paths=array();
-		if (in_array('Lohini\Package\Framework\Package', $container->parameters['lohini']['packages'])) {
+		$packages=$container->parameters['lohini']['packages'];
+		if (in_array('Lohini\Package\Cf\Package', $packages)) {
+			$paths[]=dirname(ClassType::from('Lohini\CF')->getFileName());
+			}
+		if (in_array('Lohini\Package\Framework\Package', $packages)) {
 			$paths[]=dirname(ClassType::from('Lohini\Core')->getFileName());
 			}
 		if (!$paths) {
