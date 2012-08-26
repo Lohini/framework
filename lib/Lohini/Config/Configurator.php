@@ -209,16 +209,13 @@ extends \Nette\Config\Configurator
 			}
 
 		// temp directory
-		if (!isset($params['varDir'])) {
-			$params['varDir']=$params['rootDir'].'/var';
-			}
 		if (!isset($params['tempDir'])) {
-			$params['tempDir']=$params['varDir'].'/temp';
+			$params['tempDir']=$params['rootDir'].'/temp';
 			}
 
 		// log directory
 		if (!isset($params['logDir'])) {
-			$params['logDir']=$params['varDir'].'/log';
+			$params['logDir']=$params['rootDir'].'/log';
 			}
 
 		return $params;
