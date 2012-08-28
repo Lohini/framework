@@ -1,0 +1,49 @@
+#message {
+	margin: 10px 0;
+	color: #f00;
+	}
+
+.flash {
+	border: 1px solid;
+	margin: 1em 0;
+	padding: 15px 10px 15px 50px;
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	-moz-border-radius-bottomleft: 5px;
+	-moz-border-radius-bottomright: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-khtml-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+	border-radius: 5px;
+	opacity: 0.9;
+	border: none !important;
+	}
+div.flash.info {
+	color: #00529B;
+	background-color: #C6DBFF;
+	background-image: url('/img/ico/info.png');
+	}
+div.flash.success {
+	color: #4F8A10;
+	background-color: #DFF2BF;
+	background-image:url('/img/ico/success.png');
+	}
+div.flash.warning {
+	color: #9F6000;
+	background-color: #FEEFB3;
+	background-image: url('/img/ico/warning.png');
+	}
+div.flash.error {
+	color: #D8000C;
+	background-color: #FFBABA;
+	background-image: url('/img/ico/error.png');
+	}
+.validation {
+	color: #D63301;
+	background-color: #FFCCBA;
+	background-image: url('/img/ico/warning.png');
+	}
+	
