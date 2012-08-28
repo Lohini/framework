@@ -1,15 +1,15 @@
-[libs/Lohini/Extension/Assets]
+[lib/Lohini/Extension/Assets]
 branch = split/assets
 target = git@github.com:Lohini/AssetsExtension.git
 
-[libs/Lohini/Extension/Curl]
+[lib/Lohini/Extension/Curl]
 branch = split/curl
 target = git@github.com:Lohini/CurlExtension.git
 
-[libs/Lohini/Extension/Browser]
+[lib/Lohini/Extension/Browser]
 branch = split/browser
 target = git@github.com:Lohini/BrowserExtension.git
 
-[libs/Lohini/Extension/Redis]
+[lib/Lohini/Extension/Redis]
 branch = split/redis
 target = git@github.com:Lohini/RedisExtension.git
