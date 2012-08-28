@@ -19,6 +19,9 @@ use Lohini\Forms\Controls,
  * 
  * @property callable $validateThatControlsAreRendered
  * @method \Lohini\Forms\Controls\CheckboxList addCheckboxList(string $name, string $label=NULL, array $items=NULL)
+ * @method \Lohini\Forms\Controls\DateTimeInput addDate(string $name, string $label=NULL)
+ * @method \Lohini\Forms\Controls\DateTimeInput addTime(string $name, string $label=NULL)
+ * @method \Lohini\Forms\Controls\DateTimeInput addDatetime(string $name, string $label=NULL)
  * @method \Lohini\Forms\Containers\Replicator addDynamic(string $name, callback $factory, int $default)
  */
 class Form
