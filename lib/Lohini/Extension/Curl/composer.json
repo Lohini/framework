@@ -5,13 +5,17 @@
 	"homepage": "http://lohini.net",
 	"authors": [
 		{
+			"name": "Filip Procházka",
+			"homepage": "http://filip-prochazka.com"
+		},
+		{
 			"name": "Lopo",
 			"homepage": "http://lopo.losys.eu"
 		}
 	],
 	"require": {
 		"php" : ">=5.3.2",
-		"nette/nette" : "2.0.*"
+		"nette/nette" : "*"
 	},
     "conflict": {
         "lohini/framework": "self.version"
