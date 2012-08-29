@@ -243,6 +243,7 @@ extends \Nette\Application\UI\Form
 }
 
 Controls\CheckboxList::register();
+Controls\DateTimeInput::register();
 \Lohini\Forms\Containers\Replicator::register();
 
 // radio list helper

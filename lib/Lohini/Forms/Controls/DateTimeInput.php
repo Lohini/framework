@@ -329,7 +329,7 @@ extends \Nette\Forms\Controls\BaseControl
 	 * @param \Nette\Forms\Controls\BaseControl|\Nette\Forms\IControl $control
 	 * @return bool
 	 */
-	public static function validateFilled(Nette\Forms\IControl $control)
+	public static function validateFilled(\Nette\Forms\IControl $control)
 	{
 		return (string)$control->value!==''; // NULL, FALSE, '' ==> FALSE
 	}
