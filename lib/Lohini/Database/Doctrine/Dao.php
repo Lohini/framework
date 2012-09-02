@@ -404,13 +404,13 @@ implements Persistence\IDao, Persistence\IQueryExecutor, Persistence\IQueryable,
 
 	/**
 	 * @param \Exception $e
-	 * @param \Doctrine\ORM\Query $query
+	 * @param AbstractQuery $query
 	 * @param string $message
 	 * @throws \Exception
 	 * @throws \Lohini\Database\Doctrine\QueryException
 	 * @throws \Lohini\Database\Doctrine\SqlException
 	 */
-	private function handleException(\Exception $e, \Doctrine\ORM\Query $query=NULL, $message=NULL)
+	private function handleException(\Exception $e, AbstractQuery $query=NULL, $message=NULL)
 	{
 		if ($e instanceof \Doctrine\ORM\Query\QueryException) {
 			throw new QueryException($e, $query, $message);

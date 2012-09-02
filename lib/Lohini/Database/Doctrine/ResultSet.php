@@ -58,6 +58,9 @@ implements \Countable, \IteratorAggregate
 		if ($this->paginatedQuery!==NULL) {
 			throw new \Nette\InvalidStateException('Cannot modify result set, that was fetched from storage.');
 			}
+		if ($this->query instanceof ORM\NativeQuery) {
+			throw new \Nette\InvalidStateException("Can't call ".__CLASS__.'::applySorting() when using NativeQuery.');
+			}
 
 		$sorting=array();
 		foreach (is_array($columns)? $columns : func_get_args() as $column) {
@@ -81,13 +84,16 @@ implements \Countable, \IteratorAggregate
 	/**
 	 * @param int $offset
 	 * @param int $limit
-	 * @throws \Nette\InvalidStateException
 	 * @return \Lohini\Database\Doctrine\ResultSet
+	 * @throws \Nette\InvalidStateException
 	 */
 	public function applyPaging($offset, $limit)
 	{
 		if ($this->paginatedQuery!==NULL) {
 			throw new \Nette\InvalidStateException('Cannot modify result set, that was fetched from storage.');
+			}
+		if ($this->query instanceof ORM\NativeQuery) {
+			throw new \Nette\InvalidStateException("Can't call ".__CLASS__.'::applyPaging() when using NativeQuery.');
 			}
 
 		$this->query->setFirstResult($offset);
@@ -107,20 +113,28 @@ implements \Countable, \IteratorAggregate
 
 	/**
 	 * @return bool
+	 * @throws \Nette\InvalidStateException
 	 */
 	public function isEmpty()
 	{
+		if ($this->query instanceof ORM\NativeQuery) {
+			throw new \Nette\InvalidStateException("Can't call ".__CLASS__.'::isEmpty() when using NativeQuery.');
+			}
 		$count=$this->getTotalCount();
 		$offset=$this->query->getFirstResult();
 		return $count <= $offset;
 	}
 
 	/**
-	 * @throws \Lohini\Database\Doctrine\QueryException
 	 * @return int
+	 * @throws \Nette\InvalidStateException
+	 * @throws \Lohini\Database\Doctrine\QueryException
 	 */
 	public function getTotalCount()
 	{
+		if ($this->query instanceof ORM\NativeQuery) {
+			throw new \Nette\InvalidStateException("Can't call ".__CLASS__.'::getTotalCount() when using NativeQuery.');
+			}
 		if ($this->totalCount===NULL) {
 			try {
 				$this->totalCount=$this->getPaginatedQuery()->count();
@@ -134,8 +148,8 @@ implements \Countable, \IteratorAggregate
 	}
 
 	/**
-	 * @throws \Lohini\Database\Doctrine\QueryException
 	 * @return \ArrayIterator
+	 * @throws \Lohini\Database\Doctrine\QueryException
 	 */
 	public function getIterator()
 	{

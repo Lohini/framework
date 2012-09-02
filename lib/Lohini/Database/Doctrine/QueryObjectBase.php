@@ -15,6 +15,7 @@ namespace Lohini\Database\Doctrine;
  */
 
 use Doctrine\ORM\AbstractQuery,
+	Doctrine\ORM\NativeQuery,
 	Lohini\Persistence\IQueryable;
 
 /**
@@ -23,9 +24,9 @@ abstract class QueryObjectBase
 extends \Nette\Object
 implements \Lohini\Persistence\IQueryObject
 {
-	/** @var \Doctrine\ORM\Query */
+	/** @var AbstractQuery */
 	private $lastQuery;
-	/** @var \Lohini\Database\Doctrine\ResultSet */
+	/** @var ResultSet */
 	private $lastResult;
 
 
@@ -37,13 +38,13 @@ implements \Lohini\Persistence\IQueryObject
 
 	/**
 	 * @param IQueryable $repository
-	 * @return \Doctrine\ORM\Query|\Doctrine\ORM\QueryBuilder
+	 * @return AbstractQuery|\Doctrine\ORM\QueryBuilder
 	 */
 	protected abstract function doCreateQuery(IQueryable $repository);
 
 	/**
 	 * @param IQueryable $repository
-	 * @return \Doctrine\ORM\Query
+	 * @return \Doctrine\ORM\Query|NativeQuery
 	 * @throws \Lohini\UnexpectedValueException
 	 */
 	private function getQuery(IQueryable $repository)
@@ -53,16 +54,20 @@ implements \Lohini\Persistence\IQueryObject
 			$query=$query->getQuery();
 			}
 
-		if (!$query instanceof \Doctrine\ORM\Query) {
+		if (!$query instanceof AbstractQuery) { // Query|NativeQuery
 			$class=$this->getReflection()->getMethod('doCreateQuery')->getDeclaringClass();
 			throw new \Lohini\UnexpectedValueException("Method $class".'::doCreateQuery() must return'
-				.' instanceof Doctrine\ORM\Query or instanceof Doctrine\ORM\QueryBuilder, '
+				.' instanceof Doctrine\ORM\Query or instanceof Doctrine\ORM\QueryBuilder or instanceof Doctrine\ORM\NativeQuery, '
 				.\Lohini\Utils\Tools::getType($query).' given.'
 				);
 			}
 
-		if ($this->lastQuery && $this->lastQuery->getDQL()===$query->getDQL()) {
-			$query=$this->lastQuery;
+		if ($this->lastQuery) {
+			if (($query instanceof \Doctrine\ORM\Query && $this->lastQuery->getDQL()===$query->getDQL())
+				|| ($query instanceof NativeQuery && $this->lastQuery->getSQL()===$query->getSQL())
+				) {
+				$query=$this->lastQuery;
+				}
 			}
 
 		if ($this->lastQuery!==$query) {
@@ -75,9 +80,14 @@ implements \Lohini\Persistence\IQueryObject
 	/**
 	 * @param IQueryable $repository
 	 * @return int
+	 * @throws \Nette\InvalidStateException
 	 */
 	public function count(IQueryable $repository)
 	{
+		if ($this->getQuery($repository) instanceof NativeQuery) {
+			$class=$this->getReflection()->getMethod('doCreateQuery')->getDeclaringClass();
+			throw \Nette\InvalidStateException("Can't use $class".'::count() when using NativeQuery.');
+			}
 		return $this->fetch($repository)
 			->getTotalCount();
 	}
@@ -89,9 +99,11 @@ implements \Lohini\Persistence\IQueryObject
 	 */
 	public function fetch(IQueryable $repository, $hydrationMode=AbstractQuery::HYDRATE_OBJECT)
 	{
-		$query=$this->getQuery($repository)
-			->setFirstResult(NULL)
-			->setMaxResults(NULL);
+		if (!($query=$this->getQuery($repository)) instanceof NativeQuery) {
+			$query
+				->setFirstResult(NULL)
+				->setMaxResults(NULL);
+			}
 
 		return $hydrationMode!==AbstractQuery::HYDRATE_OBJECT
 			? $query->execute(array(), $hydrationMode)
@@ -104,16 +116,18 @@ implements \Lohini\Persistence\IQueryObject
 	 */
 	public function fetchOne(IQueryable $repository)
 	{
-		$query=$this->getQuery($repository)
-			->setFirstResult(NULL)
-			->setMaxResults(1);
+		if (!($query=$this->getQuery($repository)) instanceof NativeQuery) {
+			$query
+				->setFirstResult(NULL)
+				->setMaxResults(1);
+			}
 
 		return $query->getSingleResult();
 	}
 
 	/**
 	 * @internal For Debugging purposes only!
-	 * @return \Doctrine\ORM\Query
+	 * @return \Doctrine\ORM\Query|NativeQuery
 	 */
 	public function getLastQuery()
 	{
