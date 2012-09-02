@@ -94,7 +94,7 @@ implements \Lohini\Persistence\IQueryObject
 			->setMaxResults(NULL);
 
 		return $hydrationMode!==AbstractQuery::HYDRATE_OBJECT
-			? $query->execute($hydrationMode)
+			? $query->execute(array(), $hydrationMode)
 			: $this->lastResult;
 	}
 

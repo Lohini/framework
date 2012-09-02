@@ -20,7 +20,6 @@ use Doctrine\ORM\AbstractQuery,
 	Nette\ObjectMixin;
 
 /**
- * @method Mapping\ClassMetadata getClassMetadata() getClassMetadata()
  */
 class Dao
 extends \Doctrine\ORM\EntityRepository
@@ -254,8 +253,9 @@ implements Persistence\IDao, Persistence\IQueryExecutor, Persistence\IQueryable,
 	}
 
 	/**
-	 * @param callback $callback
+	 * @param callable $callback
 	 * @return mixed|bool
+	 * @throws \Exception
 	 */
 	public function transactional($callback)
 	{
@@ -335,7 +335,7 @@ implements Persistence\IDao, Persistence\IQueryExecutor, Persistence\IQueryable,
 			$pairs=array();
 			foreach ($queryObject->fetch($this, AbstractQuery::HYDRATE_ARRAY) as $row) {
 				$offset= $key? $row[$key] : reset($row);
-				$pairs[$offset]= $value? $value[$row] : next($row);
+				$pairs[$offset]= $value? $row[$value] : next($row);
 				}
 			return array_filter($pairs); // todo: orly?
 			}

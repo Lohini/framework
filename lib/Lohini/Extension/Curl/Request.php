@@ -74,7 +74,7 @@ extends RequestOptions
 	 */
 	public function getUrl()
 	{
-		if (!$this->url instanceof Url) {
+		if (!$this->url instanceof UrlScript) {
 			$this->url=new UrlScript($this->url);
 			}
 		return $this->url;
