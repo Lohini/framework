@@ -222,7 +222,7 @@ extends RequestOptions
 	public static function fixUrl($from, $to)
 	{
 		$lastUrl=new UrlScript($from);
-		$url=new Url($to);
+		$url=new UrlScript($to);
 
 		if (empty($url->scheme)) { // scheme
 			if (empty($lastUrl->scheme)) {
