@@ -14,7 +14,7 @@ namespace Lohini\Database\Doctrine;
  * @author Lopo <lopo@lohini.net>
  */
 
-use Doctrine\ORM\Query;
+use Doctrine\ORM\AbstractQuery;
 
 /**
  * "Informed" exception knows, what connection caused it,
@@ -65,23 +65,23 @@ extends \PDOException
 class QueryException
 extends \Lohini\Persistence\Exception
 {
-	/** @var \Doctrine\ORM\Query */
+	/** @var \Doctrine\ORM\AbstractQuery */
 	private $query;
 
 
 	/**
 	 * @param \Exception $previous
-	 * @param Query $query
+	 * @param AbstractQuery $query
 	 * @param string $message
 	 */
-	public function __construct(\Exception $previous, Query $query=NULL, $message='')
+	public function __construct(\Exception $previous, AbstractQuery $query=NULL, $message='')
 	{
 		parent::__construct($message ?: $previous->getMessage(), 0, $previous);
 		$this->query=$query;
 	}
 
 	/**
-	 * @return Query
+	 * @return AbstractQuery
 	 */
 	public function getQuery()
 	{
@@ -97,10 +97,10 @@ extends QueryException
 {
 	/**
 	 * @param \PDOException $previous
-	 * @param Query $query
+	 * @param AbstractQuery $query
 	 * @param string $message
 	 */
-	public function __construct(\PDOException $previous, Query $query=NULL, $message='')
+	public function __construct(\PDOException $previous, AbstractQuery $query=NULL, $message='')
 	{
 		parent::__construct($previous, $query, $message);
 	}
