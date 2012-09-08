@@ -1,0 +1,35 @@
+{
+    "name": "lohini/html-validator-panel",
+    "type": "library",
+    "description": "Nette DebugBar panel for validating the output HTML.",
+    "keywords": ["nette", "kdyby", "html", "validator"],
+    "homepage": "http://kdyby.org",
+    "license": ["GPL-3.0"],
+    "authors": [
+        {
+            "name": "Filip Procházka",
+            "homepage": "http://filip-prochazka.com"
+        },
+		{
+			"name": "Pavol Hluchý",
+			"homepage": "http://lopo.losys.eu"
+		}
+    ],
+    "support": {
+        "email": "lopo@lohini.net",
+        "issues": "https://github.com/Lohini/framework/issues"
+    },
+    "require": {
+        "php": ">=5.3.2",
+        "nette/nette": "*"
+    },
+    "conflict": {
+        "lohini/framework": "self.version"
+    },
+    "autoload": {
+        "psr-0": {
+            "Lohini\\Extension\\Diagnostics\\HtmlValidator":""
+        }
+    },
+    "target-dir": "Lohini/Extension/Diagnostics/HtmlValidator"
+}

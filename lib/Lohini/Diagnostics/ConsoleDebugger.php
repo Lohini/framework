@@ -8,7 +8,7 @@
 namespace Lohini\Diagnostics;
 /**
  * @author Ondřej Mirtes
- * @author Filip Procházka <filip.prochazka@kdyby.org>
+ * @author Filip Procházka <filip@prochazka.su>
  */
 /**
  * Lohini port

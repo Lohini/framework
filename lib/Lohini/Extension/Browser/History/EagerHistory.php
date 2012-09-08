@@ -7,7 +7,7 @@
  */
 namespace Lohini\Extension\Browser\History;
 /**
- * @author Filip Procházka <filip.prochazka@kdyby.org>
+ * @author Filip Procházka <filip@prochazka.su>
  */
 /**
  * Lohini port

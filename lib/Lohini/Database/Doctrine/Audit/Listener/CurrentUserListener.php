@@ -7,7 +7,7 @@
  */
 namespace Lohini\Database\Doctrine\Audit\Listener;
 /**
- * @author Filip Procházka <filip.prochazka@kdyby.org>
+ * @author Filip Procházka <filip@prochazka.su>
  */
 /**
  * Lohini port

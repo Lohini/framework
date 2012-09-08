@@ -7,22 +7,15 @@
  */
 namespace Lohini\Forms\Controls;
 /**
- * @author Filip Procházka <filip.prochazka@kdyby.org>
- */
-/**
- * Cloned RadioList from Nette Framework distribution. Instead of radios use checkboxes.
- *
- * @copyright Copyright (c) 2004, 2009 David Grudl
- * @license http://nettephp.com/license  Nette license
- * @link http://addons.nettephp.com/cs/checkboxlist
- * @author David Grudl, Jan Vlcek
+ * @author Filip Procházka <filip@prochazka.su>
  */
 /**
  * Lohini port
  * @author Lopo <lopo@lohini.net>
  */
 
-use Nette\Utils\Html;
+use Nette\Utils\Html,
+	Nette\Forms\Container;
 
 /**
  * CheckboxList
@@ -61,6 +54,20 @@ extends \Nette\Forms\Controls\BaseControl
 	 * @return mixed
 	 */
 	public function getValue()
+	{
+		$checked= is_array($this->value)? array_keys(array_filter($this->value)) : NULL;
+		if ($checked!==NULL) {
+			$checked=array_intersect(array_keys($this->items), $checked);
+			}
+		return $checked;
+	}
+
+	/**
+	 * Returns selected radio value. NULL means nothing have been checked.
+	 *
+	 * @return mixed
+	 */
+	public function getRawValues()
 	{
 		return is_array($this->value)? $this->value : NULL;
 	}
@@ -115,27 +122,27 @@ extends \Nette\Forms\Controls\BaseControl
 	 */
 	public function getControl($key = NULL)
 	{
-		if ($key===NULL) {
-			$container=clone $this->container;
-			$separator=(string) $this->separator;
-			}
-		elseif (!isset($this->items[$key])) {
+		if ($key!==NULL && !isset($this->items[$key])) {
 			return NULL;
 			}
 
+		$container=clone $this->container;
+		$separator=(string)$this->separator;
+
 		$control=parent::getControl();
-		$control->name.='[]';
 		$id=$control->id;
-		$counter=-1;
+		$name=$control->name;
 		$values= $this->value===NULL? NULL : (array)$this->getValue();
 		$label=Html::el('label');
 
+		$counter=-1;
 		foreach ($this->items as $k => $val) {
 			$counter++;
 			if ($key!==NULL && $key!=$k) { // intentionally ==
 				continue;
 				}
 
+			$control->name=$name.'['.$k.']';
 			$control->id= $label->for= "$id-$counter";
 			$control->checked= (count($values)>0)? in_array($k, $values) : false;
 			$control->value=$k;
@@ -185,9 +192,9 @@ extends \Nette\Forms\Controls\BaseControl
 	 */
 	public static function register($name='addCheckboxList')
 	{
-		\Nette\Forms\Container::extensionMethod(
+		Container::extensionMethod(
 			$name,
-			function(\Nette\Forms\Container $container, $name, $label=NULL, array $items=NULL) {
+			function(Container $container, $name, $label=NULL, array $items=NULL) {
 				return $container[$name]=new CheckboxList($label, $items);
 				}
 			);

@@ -13,3 +13,11 @@ target = git@github.com:Lohini/BrowserExtension.git
 [lib/Lohini/Extension/Redis]
 branch = split/redis
 target = git@github.com:Lohini/RedisExtension.git
+
+[lib/Lohini/Extension/Forms/Replicator]
+branch = split/forms-replicator
+target = git@github.com:Lohini/ReplicatorExtension.git
+
+[lib/Lohini/Extension/Diagnostis/HtmlValidator]
+branch = split/html-validator-panel
+target = git@github.com:Lohini/HtmlValidatorPanel.git

@@ -8,7 +8,7 @@
 namespace Lohini\Extension\Redis;
 /**
  * @author ptrofimov https://github.com/ptrofimov
- * @author Filip Procházka <filip.prochazka@kdyby.org>
+ * @author Filip Procházka <filip@prochazka.su>
  */
 /**
  * Lohini port

@@ -22,7 +22,7 @@ use Lohini\Forms\Controls,
  * @method \Lohini\Forms\Controls\DateTimeInput addDate(string $name, string $label=NULL)
  * @method \Lohini\Forms\Controls\DateTimeInput addTime(string $name, string $label=NULL)
  * @method \Lohini\Forms\Controls\DateTimeInput addDatetime(string $name, string $label=NULL)
- * @method \Lohini\Forms\Containers\Replicator addDynamic(string $name, callback $factory, int $default)
+ * @method \Lohini\Extension\Forms\Replicator\Replicator addDynamic(string $name, callback $factory, int $default)
  */
 class Form
 extends \Nette\Application\UI\Form
@@ -244,7 +244,7 @@ extends \Nette\Application\UI\Form
 
 Controls\CheckboxList::register();
 Controls\DateTimeInput::register();
-\Lohini\Forms\Containers\Replicator::register();
+\Lohini\Extension\Forms\Replicator\Replicator::register();
 
 // radio list helper
 RadioList::extensionMethod(

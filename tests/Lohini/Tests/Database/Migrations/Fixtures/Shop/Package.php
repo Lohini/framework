@@ -7,7 +7,7 @@
  */
 namespace Lohini\Tests\Database\Migrations\Fixtures\Shop;
 /**
-* @author Filip Procházka <filip.prochazka@kdyby.org>
+* @author Filip Procházka <filip@prochazka.su>
 */
 /**
  * Lohini port

@@ -1,0 +1,32 @@
+{
+    "name": "lohini/forms-replicator",
+    "type": "library",
+    "description": "Nette forms container replicator",
+    "keywords": ["nette", "lohini", "forms", "replicator", "addDynamic"],
+    "homepage": "http://lohini.net",
+    "license": ["GPL-3.0"],
+    "authors": [
+        {
+            "name": "Filip Procházka",
+            "homepage": "http://filip-prochazka.com"
+        },
+		{
+			"name": "Pavol Hluchý",
+			"homepage": "http://lopo.losys.eu"
+		}
+    ],
+    "support": {
+		"email": "lopo@lohini.net",
+		"issues": "https://github.com/Lohini/framework/issues"
+    },
+    "require": {
+        "php": ">=5.3.2",
+        "nette/nette": "*"
+    },
+    "conflict": {
+        "lohini/framework": "self.version"
+    },
+    "autoload": {
+        "files": ["Replicator.php"]
+    }
+}

@@ -7,7 +7,7 @@
  */
 namespace Lohini\Testing;
 /**
-* @author Filip Procházka <filip.prochazka@kdyby.org>
+* @author Filip Procházka <filip@prochazka.su>
 */
 /**
  * Lohini port
@@ -64,7 +64,7 @@ extends \PHPUnit_Framework_TestCase
 	 * @param array $extensions
 	 * @return \Nette\DI\Container|\SystemContainer
 	 */
-	protected function createContainer($neonFile, array $extensions=array())
+	protected function createContainer($neonFile=NULL, array $extensions=array())
 	{
 		// configurator
 		$config=new \Nette\Config\Configurator;
@@ -82,7 +82,13 @@ extends \PHPUnit_Framework_TestCase
 		$tempDir=$this->getContext()->expand('%tempDir%/cache/'.$id);
 		@mkdir($tempDir, 0777);
 		$config->setTempDirectory($tempDir);
-		$config->addConfig($neonFile, $config::NONE);
+
+		// configuration
+		$testsConfig=$this->getContext()->expand('%appDir%/config.neon');
+		$config->addConfig($testsConfig, $config::NONE);
+		if ($neonFile!==NULL) {
+			$config->addConfig($neonFile, $config::NONE);
+			}
 
 		// create container
 		return $config->createContainer();

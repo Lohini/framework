@@ -9,7 +9,7 @@ namespace Lohini\Database\Doctrine\Diagnostics;
 /**
  * @author David Grudl
  * @author Patrik Votoček
- * @author Filip Procházka <filip.prochazka@kdyby.org>
+ * @author Filip Procházka <filip@prochazka.su>
  */
 /**
  * Lohini port

@@ -8,7 +8,7 @@
 namespace Lohini\Database\Doctrine\Audit;
 /**
  * @author Benjamin Eberlei <eberlei@simplethings.de>
- * @author Filip Procházka <filip.prochazka@kdyby.org>
+ * @author Filip Procházka <filip@prochazka.su>
  */
 /**
  * Lohini port

@@ -9,10 +9,10 @@ namespace Lohini\Extension\Curl;
 /**
  * This file is part of the Kdyby (http://www.kdyby.org)
  *
- * Copyright (c) 2008, 2011 Filip Procházka (filip.prochazka@kdyby.org)
+ * Copyright (c) 2008, 2011 Filip Procházka (filip@prochazka.su)
  *
  * @license http://www.kdyby.org/license
- * @author Filip Procházka <hosiplan@kdyby.org>
+ * @author Filip Procházka <filip@prochazka.su>
  */
 /**
  * Lohini port
@@ -224,20 +224,21 @@ extends RequestOptions
 		$lastUrl=new UrlScript($from);
 		$url=new UrlScript($to);
 
-		if (empty($url->scheme)) { // scheme
-			if (empty($lastUrl->scheme)) {
-				throw new InvalidUrlException('Missing URL scheme!');
-				}
-
-			$url->scheme=$lastUrl->scheme;
+		if (!$to instanceof UrlScript && $url->path[0]!=='/') { // relative
+			$url->path=substr($lastUrl->path, 0, strrpos($lastUrl->path, '/')+1).$url->path;
 			}
 
-		if (empty($url->host)) { // host
-			if (empty($lastUrl->host)) {
-				throw new InvalidUrlException('Missing URL host!');
+		foreach (array('scheme', 'host', 'port') as $copy) {
+			if (empty($url->{$copy})) {
+				if (empty($lastUrl->{$copy})) {
+					throw new InvalidUrlException("Missing URL $copy!");
+					}
+				$url->{$copy}=$lastUrl->{$copy};
 				}
+			}
 
-			$url->host=$lastUrl->host;
+		if (!$url->path || $url->path[0]!=='/') {
+			$url->path='/'.$url->path;
 			}
 
 		return $url;

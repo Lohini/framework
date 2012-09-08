@@ -9,7 +9,7 @@ namespace Lohini\Utils;
 /**
  * @link https://github.com/paulgb/simplediff
  * @author Paul Butler 2007 <http://www.paulbutler.org/>
- * @author Filip Procházka <filip.prochazka@kdyby.org>
+ * @author Filip Procházka <filip@prochazka.su>
  */
 /**
  * Lohini port

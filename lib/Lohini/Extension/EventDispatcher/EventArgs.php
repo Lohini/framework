@@ -7,7 +7,7 @@
  */
 namespace Lohini\Extension\EventDispatcher;
 /**
- * @author Filip Procházka <filip.prochazka@kdyby.org>
+ * @author Filip Procházka <filip@prochazka.su>
  */
 /**
  * Lohini port

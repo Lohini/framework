@@ -8,7 +8,7 @@
 namespace Lohini\Package\Doctrine;
 /**
  * @author Fabien Potencier <fabien@symfony.com>
- * @author Filip Procházka <filip.prochazka@kdyby.org>
+ * @author Filip Procházka <filip@prochazka.su>
  */
 /**
  * Lohini port

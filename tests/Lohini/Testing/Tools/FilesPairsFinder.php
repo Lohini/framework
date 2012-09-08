@@ -7,7 +7,7 @@
  */
 namespace Lohini\Testing\Tools;
 /**
-* @author Filip Procházka <filip.prochazka@kdyby.org>
+* @author Filip Procházka <filip@prochazka.su>
 */
 /**
  * Lohini port
@@ -52,8 +52,9 @@ extends \Nette\Object
 		$data=array();
 		foreach ($inputs as $inputFile) {
 			foreach ($outputs as $outputFile) {
-				if ($inputFile->getBasename($this->inputSuffix)===$outputFile->getBasename($this->outputSuffix)) {
-					$data[]=array($inputFile->getRealPath(), $outputFile->getRealPath());
+				$inputBase=$inputFile->getBasename($this->inputSuffix);
+				if ($inputBase===$outputFile->getBasename($this->outputSuffix)) {
+					$data[$inputBase] = array($inputFile->getRealPath(), $outputFile->getRealPath());
 					break;
 					}
 				}

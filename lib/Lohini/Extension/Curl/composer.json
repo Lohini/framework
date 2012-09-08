@@ -14,8 +14,8 @@
 		}
 	],
 	"require": {
-		"php" : ">=5.3.2",
-		"nette/nette" : "*"
+		"php": ">=5.3.2",
+		"nette/nette": "*"
 	},
     "conflict": {
         "lohini/framework": "self.version"
@@ -23,8 +23,8 @@
 	"autoload": {
         "psr-0": {"Lohini\\Extension\\Curl": ""},
 		"classmaps": [
-			"exceptions.php"
+			"Lohini/Extension/Curl/exceptions.php"
 		]
     },
-    "target-dir":"Lohini/Extension/Curl"
+    "target-dir": "Lohini/Extension/Curl"
 }

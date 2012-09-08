@@ -8,7 +8,7 @@
 namespace Lohini\Database\Doctrine;
 /**
  * @author Patrik Votoček
- * @author Filip Procházka <filip.prochazka@kdyby.org>
+ * @author Filip Procházka <filip@prochazka.su>
  */
 /**
  * Lohini port

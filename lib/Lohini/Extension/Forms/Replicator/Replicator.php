@@ -5,9 +5,9 @@
  * @copyright (c) 2010, 2012 Lopo <lopo@lohini.net>
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
-namespace Lohini\Forms\Containers;
+namespace Lohini\Extension\Forms\Replicator;
 /**
- * @author Filip Procházka <filip.prochazka@kdyby.org>
+ * @author Filip Procházka <filip@prochazka.su>
  * @author Jan Tvrdík
  */
 /**
@@ -28,7 +28,7 @@ extends Container
 	public $forceDefault;
 	/** @var int */
 	public $createDefault;
-	/** @var callback */
+	/** @var callable */
 	protected $factoryCallback;
 	/** @var bool */
 	private $submittedBy=FALSE;
@@ -38,6 +38,8 @@ extends Container
 	private $httpRequest;
 	/** @var array */
 	private $httpPost;
+	/** @var bool */
+	private static $registered=FALSE;
 
 
 	/**
@@ -55,7 +57,8 @@ extends Container
 			$this->factoryCallback = callback($factory);
 			}
 		catch (\Nette\InvalidArgumentException $e) {
-			throw new \Nette\InvalidArgumentException('Replicator requires callable factory, '.\Lohini\Utils\Tools::getType($factory).' given.', 0, $e);
+			$type= is_object($factory)? 'instanceof '.get_class($factory) : gettype($factory);
+			throw new \Nette\InvalidArgumentException('Replicator requires callable factory, '.$type.' given.', 0, $e);
 			}
 
 		$this->createDefault=(int)$createDefault;
@@ -63,7 +66,7 @@ extends Container
 	}
 
 	/**
-	 * @param callback $factory
+	 * @param callable $factory
 	 */
 	public function setFactory($factory)
 	{
@@ -84,26 +87,7 @@ extends Container
 			}
 
 		$this->loadHttpData();
-		if ($this->createDefault>0) {
-			$this->createDefault();
-			}
-	}
-
-	/**
-	 * Creates default containers
-	 */
-	protected function createDefault()
-	{
-		if (!$this->getForm()->isSubmitted()) {
-			foreach (range(0, $this->createDefault-1) as $key) {
-				$this->createOne($key);
-				}
-			}
-		elseif ($this->forceDefault) {
-			while ($this->getContainers()->count()<$this->createDefault) {
-				$this->createOne();
-				}
-			}
+		$this->createDefault();
 	}
 
 	/**
@@ -153,8 +137,7 @@ extends Container
 
 	/**
 	 * @param string $name
-	 *
-	 * @return \Nette\Forms\Container
+	 * @return Container
 	 */
 	protected function createContainer($name)
 	{
@@ -183,8 +166,8 @@ extends Container
 	 * Create new container
 	 *
 	 * @param string|int $name
-	 *
-	 * @return \Nette\Forms\Container
+	 * @return Container
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function createOne($name=NULL)
 	{
@@ -202,7 +185,24 @@ extends Container
 	}
 
 	/**
+	 * 
+	 * @param array|\Traversable $values
+	 * @param bool $erase
+	 * @return \Nette\Forms\Container|Replicator
+	 */
+	public function setValues($values, $erase=FALSE)
+	{
+		foreach ($values as $name => $value) {
+			if ((is_array($value) || $value instanceof \Traversable) && !$this->getComponent($name, FALSE)) {
+				$this->createOne($name);
+				}
+			}
+		return parent::setValues($values, $erase);
+	}
+
+	/**
 	 * Loads data received from POST
+	 * @internal
 	 */
 	protected function loadHttpData()
 	{
@@ -210,19 +210,33 @@ extends Container
 			return;
 			}
 
-		$values=(array)$this->getHttpData();
-		foreach ($values as $key => $value) {
-			if (is_array($value) && !$this->getComponent($key, FALSE)) {
+		$this->setValues((array)$this->getHttpData());
+	}
+
+	/**
+	 * Creates default containers
+	 * @internal
+	 */
+	protected function createDefault()
+	{
+		if (!$this->createDefault) {
+			return;
+			}
+		if (!$this->getForm()->isSubmitted()) {
+			foreach (range(0, $this->createDefault-1) as $key) {
 				$this->createOne($key);
 				}
 			}
-
-		$this->setValues($values);
+		elseif ($this->forceDefault) {
+			while (iterator_count($this->getContainers())<$this->createDefault) {
+				$this->createOne();
+				}
+			}
 	}
 
 	/**
 	 * @param string $name
-	 * @return array|null
+	 * @return array|NULL
 	 */
 	protected function getContainerValues($name)
 	{
@@ -235,34 +249,16 @@ extends Container
 	 */
 	private function getHttpData()
 	{
-		if ($this->httpPost!==NULL) {
-			return $this->httpPost;
+		if ($this->httpPost===NULL) {
+			$path=explode(self::NAME_SEPARATOR, $this->lookupPath('Nette\Forms\Form'));
+			$this->httpPost=\Nette\Utils\Arrays::get($this->getForm()->getHttpData(), $path, NULL);
 			}
-
-		if (($request=$this->getRequest()) && $request->isPost()) {
-			$post=(array)$request->getPost();
-
-			$chain=array();
-			$parent=$this;
-
-			while (!$parent instanceof \Nette\Forms\Form) {
-				$chain[]=$parent->getName();
-				$parent=$parent->getParent();
-				}
-
-			while ($chain) {
-				$post=&$post[array_pop($chain)];
-				}
-
-			return $this->httpPost=$post ?: NULL;
-			}
-
-		return NULL;
+		return $this->httpPost;
 	}
 
 	/**
+	 * @internal
 	 * @param \Nette\Application\Request $request
-	 *
 	 * @return Replicator (fluent)
 	 */
 	public function setRequest(\Nette\Application\Request $request)
@@ -284,9 +280,8 @@ extends Container
 	}
 
 	/**
-	 * @param \Nette\Forms\Container $container
+	 * @param Container $container
 	 * @param bool $cleanUpGroups
-	 *
 	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function remove(Container $container, $cleanUpGroups=FALSE)
@@ -386,16 +381,21 @@ extends Container
 			}
 
 		$filled=$this->countFilledWithout($components, array_unique($exceptChildren));
-		return $filled===count($this->getContainers());
+		return $filled===iterator_count($this->getContainers());
 	}
-
-
 
 	/**
 	 * @param string $methodName
+	 * @throws \Nette\MemberAccessException
 	 */
 	public static function register($methodName='addDynamic')
 	{
+		if (self::$registered) {
+			Container::extensionMethod(
+					self::$registered,
+					function() { throw new \Nette\MemberAccessException; }
+					);
+			}
 		Container::extensionMethod(
 				$methodName,
 				function(Container $_this, $name, $factory, $createDefault=0) {
@@ -403,17 +403,50 @@ extends Container
 					}
 				);
 
+		if (self::$registered) {
+			return;
+			}
+
 		SubmitButton::extensionMethod(
 				'addRemoveOnClick',
-				function(SubmitButton $_this) {
-					$replicator=$_this->lookup('Lohini\Forms\Containers\Replicator');
+				function(SubmitButton $_this, $callback=NULL) {
+					$replicator=$_this->lookup(__NAMESPACE__.'\Replicator');
 					$_this->setValidationScope(FALSE);
-					$_this->onClick[]=function(SubmitButton $button) use ($replicator) {
+					$_this->onClick[]=function(SubmitButton $button) use ($replicator, $callback) {
+						/** @var Replicator $replicator */
+						if (is_callable($callback)) {
+							callback($callback)->invoke($replicator, $button->parent);
+							}
 						$replicator->remove($button->parent);
 						};
 					return $_this;
 					}
 				);
-	}
 
+		SubmitButton::extensionMethod(
+				'addCreateOnClick',
+				function(SubmitButton $_this, $allowEmpty=FALSE, $callback=NULL) {
+					$replicator=$_this->lookup(__NAMESPACE__.'\Replicator');
+					$_this->onClick[]=function(SubmitButton $button) use ($replicator, $allowEmpty, $callback) {
+						/** @var Replicator $replicator */
+						if (!is_bool($allowEmpty)) {
+							$callback=callback($allowEmpty);
+							$allowEmpty=FALSE;
+							}
+						if ($allowEmpty===FALSE && $replicator->isAllFilled()===FALSE) {
+							return;
+							}
+						$newContainer=$replicator->createOne();
+						if (is_callable($callback)) {
+							callback($callback)->invoke($replicator, $newContainer);
+							}
+						};
+					return $_this;
+					}
+				);
+		self::$registered = $methodName;
+	}
 }
+
+class_alias(__NAMESPACE__.'\Replicator', 'Lohini\Forms\Containers\Replicator');
+Replicator::register();

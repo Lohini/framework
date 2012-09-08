@@ -7,7 +7,7 @@
  */
 namespace Lohini\Tests\Security\RBAC;
 /**
-* @author Filip Procházka <filip.prochazka@kdyby.org>
+* @author Filip Procházka <filip@prochazka.su>
 */
 /**
  * Lohini port

@@ -9,10 +9,10 @@ namespace Lohini\Extension\Curl\DI;
 /**
  * This file is part of the Kdyby (http://www.kdyby.org)
  *
- * Copyright (c) 2008, 2011 Filip Procházka (filip.prochazka@kdyby.org)
+ * Copyright (c) 2008, 2011 Filip Procházka (filip@prochazka.su)
  *
  * @license http://www.kdyby.org/license
- * @author Filip Procházka <filip.prochazka@kdyby.org>
+ * @author Filip Procházka <filip@prochazka.su>
  */
 /**
  * Lohini port
@@ -31,10 +31,6 @@ extends \Nette\Config\CompilerExtension
 
 		$builder->addDefinition($this->prefix('curl'))
 			->setClass('Lohini\Extension\Curl\CurlSender');
-
-//		$builder->addDefinition($this->prefix('browser.panel'))
-//			->setFactory('Lohini\Extension\Browser\Diagnostics\Panel::register')
-//			->addTag('run', TRUE);
 
 		$builder->addDefinition($this->prefix('curl.panel'))
 			->setFactory('Lohini\Extension\Curl\Diagnostics\Panel::register')
