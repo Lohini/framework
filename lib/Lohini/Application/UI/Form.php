@@ -8,6 +8,7 @@
 namespace Lohini\Application\UI;
 
 use Lohini\Forms\Controls,
+	Nette\Forms\Controls\BaseControl,
 	Nette\Forms\Controls\RadioList;
 
 /**
@@ -75,8 +76,8 @@ extends \Nette\Application\UI\Form
 
 		$notRendered= $rendered= array();
 		foreach ($this->getControls() as $control) {
-			/** @var \Nette\Forms\Controls\BaseControl $control */
-			if (!$control instanceof \Nette\Forms\Controls\BaseControl) {
+			/** @var BaseControl $control */
+			if (!$control instanceof BaseControl) {
 				continue;
 				}
 			if ($control->getOption('rendered', FALSE)) {
