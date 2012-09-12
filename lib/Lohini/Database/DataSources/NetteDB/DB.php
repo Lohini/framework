@@ -24,8 +24,6 @@ extends \Lohini\Database\DataSources\Mapped
 {
     /** @var Table\Selection */
 	private $selection;
-	/** @var array fetched data */
-//	private $data;
 	/** @var int Total data count */
 	private $count;
 
@@ -58,14 +56,14 @@ extends \Lohini\Database\DataSources\Mapped
 	 * @param string filter
 	 * @param string|array operation mode
 	 * @param string chain type (if third argument is array)
-	 * @return IDataSource (fluent)
+	 * @return DB (fluent)
 	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function filter($column, $operation=IDataSource::EQUAL, $value=NULL, $chainType=NULL)
 	{
-		if (!$this->hasColumn($column)) {
-			throw new \Nette\InvalidArgumentException('Trying to filter data source by unknown column.');
-			}
+		$col= $this->hasColumn($column)
+			? $this->mapping[$column]
+			: $column;
 
 		if (is_array($operation)) {
 			if ($chainType!==self::CHAIN_AND && $chainType!==self::CHAIN_OR) {
@@ -85,7 +83,7 @@ extends \Lohini\Database\DataSources\Mapped
 		foreach ($operation as $o) {
 			$this->validateFilterOperation($o);
 
-			$c=$this->mapping[$column]." $o";
+			$c="$col $o";
 			if ($o!==self::IS_NULL && $o!==self::IS_NOT_NULL) {
 				$c.=' ?';
 				$values[]= ($o===self::LIKE || $o===self::NOT_LIKE)
@@ -106,16 +104,17 @@ extends \Lohini\Database\DataSources\Mapped
 	 *
 	 * @param string column name
 	 * @param string one of ordering types
-	 * @return IDataSource (fluent)
+	 * @return DB (fluent)
 	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function sort($column, $order=IDataSource::ASCENDING)
 	{
 		if (!$this->hasColumn($column)) {
-			throw new \Nette\InvalidArgumentException('Trying to sort data source by unknown column.');
+			$this->selection->order("$column ".($order===self::ASCENDING? 'ASC' : 'DESC'));
 			}
-
-		$this->selection->order($this->mapping[$column].' '.($order===self::ASCENDING? 'ASC' : 'DESC'));
+		else {
+			$this->selection->order($this->mapping[$column].' '.($order===self::ASCENDING? 'ASC' : 'DESC'));
+			}
 
 		return $this;
 	}
@@ -125,7 +124,7 @@ extends \Lohini\Database\DataSources\Mapped
 	 *
 	 * @param int the number of results to obtain
 	 * @param int the offset
-	 * @return IDataSource (fluent)
+	 * @return DB (fluent)
 	 * @throws \OutOfRangeException
 	 */
 	public function reduce($count, $start=0)
@@ -163,8 +162,7 @@ extends \Lohini\Database\DataSources\Mapped
 	 */
 	public function fetch()
 	{
-		throw $this->selection->fetch();
-		//return $this->data = $this->df->fetchAll();
+		return $this->selection->fetch();
 	}
 
 	/**
@@ -188,7 +186,8 @@ extends \Lohini\Database\DataSources\Mapped
 	 */
 	public function getFilterItems($column)
 	{
-		throw new \Nette\NotImplementedException;
+		$query=clone $this->selection;
+		return $query->select($column)->group($column)->fetchPairs($column, $column);
 	}
 
 	/**
