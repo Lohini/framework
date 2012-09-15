@@ -1,33 +1,45 @@
 [
     {
         "name": "jquery/jquery",
-        "paths": ["public/js/jquery.js"]
+        "paths": ["public/js/jquery.min.js"]
     },
     {
         "name": "jquery/ui",
-        "paths": ["public/js/jquery.ui.js", "public/css/jquery.ui.css"],
+        "paths": [
+			"public/js/jquery-ui-1.8.22.custom.min.js",
+			"public/css/jquery.ui.css"
+		],
         "require": {
-            "jquery/jquery":"*"
+            "jquery/jquery": "*"
         }
     },
     {
         "name": "nette/forms",
-        "paths": ["public/js/nette.forms.js"]
+        "paths": ["public/js/Nette/nette.forms.js"]
     },
     {
         "name": "nette/ajax",
         "paths": [
-            "public/js/nette.ajax.js",
-            "public/js/nette.ajax.scrollTo.js",
-            "public/js/nette.ajax.spinner.js",
-            "public/js/nette.ajax.codeEditor.js"
+            "public/js/Nette/nette.ajax.js",
+            "public/js/Nette/extensions/nette.ajax.scrollTo.js",
+            "public/js/Nette/extensions/nette.ajax.spinner.js",
+            "public/js/Nette/extensions/codeEditor.js",
+            "public/js/Nette/extensions/diagnostics.dumps.ajax.js",
+            "public/js/Nette/extensions/flashMessage.js"
         ],
         "require": {
-            "jquery/jquery":"*"
+            "jquery/jquery": "*"
         }
     },
     {
         "name": "lohini/class",
         "paths": ["public/js/class.js"]
-    }
+    },
+	{
+		"name": "lohini/flash",
+		"paths": ["public/js/Lohini/flash.js"],
+		"require": {
+			"jquery/jquery": "*"
+		}
+	}
 ]
