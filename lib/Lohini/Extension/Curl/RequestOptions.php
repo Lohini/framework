@@ -19,8 +19,6 @@ namespace Lohini\Extension\Curl;
  * @author Lopo <lopo@lohini.net>
  */
 
-require_once __DIR__.'/exceptions.php';
-
 /**
  * @property-write int $timeout
  * @property-write string $referer
@@ -32,6 +30,12 @@ require_once __DIR__.'/exceptions.php';
 abstract class RequestOptions
 extends \Nette\Object
 {
+	/**#@+ verify host for certificates */
+	const VERIFYHOST_NO=0;
+	const VERIFYHOST_COMMON=1;
+	const VERIFYHOST_MATCH=2;
+	/**#@- */
+
 	/** @var array */
 	public $options=array(
 		'timeout' => 15,

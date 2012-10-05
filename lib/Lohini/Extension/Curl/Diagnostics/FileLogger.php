@@ -19,18 +19,19 @@ namespace Lohini\Extension\Curl\Diagnostics;
  * @author Lopo <lopo@lohini.net>
  */
 
-use Nette\Utils\PhpGenerator;
+use Nette\Utils\PhpGenerator,
+	Lohini\Extension\Curl;
 
 /**
  */
 class FileLogger
 extends \Nette\Object
-implements \Lohini\Extension\Curl\IRequestLogger
+implements Curl\IRequestLogger
 {
 	/** @var string */
 	private $logDir;
 	/** @var \Nette\Callback[] */
-	private $formaters=array();
+	private $formatters=array();
 
 
 	/**
@@ -42,17 +43,17 @@ implements \Lohini\Extension\Curl\IRequestLogger
 	}
 
 	/**
-	 * @param callback $callback
+	 * @param callable $callback
 	 */
-	public function addFormater($callback)
+	public function addFormatter($callback)
 	{
-		$this->formaters[]=callback($callback);
+		$this->formatters[]=callback($callback);
 	}
 
 	/**
-	 * @param \Lohini\Extension\Curl\Request $request
+	 * @param Curl\Request $request
 	 */
-	public function request(\Lohini\Extension\Curl\Request $request)
+	public function request(Curl\Request $request)
 	{
 		$id=md5(serialize($request));
 
@@ -75,10 +76,10 @@ implements \Lohini\Extension\Curl\IRequestLogger
 	}
 
 	/**
-	 * @param \Lohini\Extension\Curl\Response $response
+	 * @param Curl\Response $response
 	 * @param string $id
 	 */
-	public function response(\Lohini\Extension\Curl\Response $response, $id)
+	public function response(Curl\Response $response, $id)
 	{
 		$content=array();
 		foreach ($response->getHeaders() as $name => $value) {
@@ -89,9 +90,9 @@ implements \Lohini\Extension\Curl\IRequestLogger
 		$this->write($content."\n\n", $id);
 
 		$body=$response->getResponse();
-		foreach ($this->formaters as $formater) {
-			if ($formated=$formater($body, $response)) {
-				$body=$formated;
+		foreach ($this->formatters as $formatter) {
+			if ($formatted=$formatter($body, $response)) {
+				$body=$formatted;
 				}
 			}
 		$this->write($body, $id);

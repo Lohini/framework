@@ -821,7 +821,9 @@ implements \Nette\Diagnostics\IBarPanel
 	 */
 	public function stopBuffering()
 	{
-		ob_end_flush();
+		if (ob_get_level()) {
+			ob_end_flush();
+			}
 	}
 
 	/**
@@ -829,6 +831,10 @@ implements \Nette\Diagnostics\IBarPanel
 	 */
 	public function validate()
 	{
+		if (!ob_get_level()) {
+			return;
+			}
+
 		$this->html=Strings::normalize(ob_get_contents());
 		ob_end_flush();
 

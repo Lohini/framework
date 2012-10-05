@@ -49,7 +49,7 @@ extends \Nette\ArrayHash
 	 */
 	public function compile()
 	{
-		$cookies=\Lohini\Utils\Arrays::flatMapAssoc(
+		$cookies=self::flatMapAssoc(
 			$this,
 			function($value, $keys) {
 				$name=implode('][', array_map('urlencode', $keys));
@@ -105,7 +105,7 @@ extends \Nette\ArrayHash
 	 */
 	public static function readCookie($cookie)
 	{
-		if (!$m=\Nette\Utils\Strings::matchAll($cookie, '~(?P<name>[^;=\s]+)(?:=(?P<value>[^;]+))?~i')) {
+		if (!$m=\Nette\Utils\Strings::matchAll($cookie, '~(?P<name>[^;=\s]+)(?:=(?P<value>[^;]*))?~i')) {
 			return NULL;
 			}
 
@@ -120,5 +120,29 @@ extends \Nette\ArrayHash
 			}
 
 		return $cookie;
+	}
+
+	/**
+	 * @param array|\Traversable $array
+	 * @param callable $callback
+	 * @return array
+	 */
+	private static function flatMapAssoc($array, $callback)
+	{
+		$callback=callback($callback);
+		$result=array();
+		$walker=function($array, $keys=array()) use (&$walker, &$result, $callback) {
+					foreach ($array as $key => $value) {
+						$currentKeys=$keys+array(count($keys) => $key);
+						if (is_array($value)) {
+							$walker($value, $currentKeys);
+							continue;
+							}
+						$result[]=$callback($value, $currentKeys);
+						}
+					return $result;
+					};
+
+		return $walker($array);
 	}
 }

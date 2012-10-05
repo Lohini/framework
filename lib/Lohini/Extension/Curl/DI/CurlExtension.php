@@ -28,12 +28,12 @@ extends \Nette\Config\CompilerExtension
 	public function loadConfiguration()
 	{
 		$builder=$this->getContainerBuilder();
-
 		$builder->addDefinition($this->prefix('curl'))
 			->setClass('Lohini\Extension\Curl\CurlSender');
-
-		$builder->addDefinition($this->prefix('curl.panel'))
-			->setFactory('Lohini\Extension\Curl\Diagnostics\Panel::register')
-			->addTag('run', TRUE);
+		if (!$builder->parameters['productionMode']) {
+			$builder->addDefinition($this->prefix('curl.panel'))
+				->setFactory('Lohini\Extension\Curl\Diagnostics\Panel::register')
+				->addTag('run', TRUE);
+			}
 	}
 }

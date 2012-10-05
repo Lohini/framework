@@ -37,11 +37,6 @@ extends RequestOptions
 	const DELETE=IRequest::DELETE;
 	const DOWNLOAD='DOWNLOAD';
 	/**#@- */
-	/**#@+ verify host for certificates */
-	const VERIFYHOST_NO=0;
-	const VERIFYHOST_COMMON=1;
-	const VERIFYHOST_MATCH=2;
-	/**#@- */
 
 	/** @var \Nette\Http\UrlScript */
 	public $url;
