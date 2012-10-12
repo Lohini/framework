@@ -212,12 +212,12 @@ extends \Nette\Application\UI\Form
 
 	/**
 	 * @param string $name
-	 * @param string $label
-	 * @return Controls\CBox3S
+	 * @param string $caption
+	 * @return Controls\Checkbox3S
 	 */
-	public function addCBox3S($name, $label=NULL)
+	public function addCheckbox3S($name, $caption=NULL)
 	{
-		return $this[$name]=new Controls\CBox3S($label);
+		return $this[$name]=new Controls\Checkbox3S($caption);
 	}
 
 	/**

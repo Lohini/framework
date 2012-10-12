@@ -14,7 +14,7 @@ use Nette\Utils\Html;
  *
  * @author Lopo <lopo@lohini.net>
  */
-class CBox3S
+class Checkbox3S
 extends \Nette\Forms\Controls\BaseControl
 {
 	/**
@@ -24,11 +24,13 @@ extends \Nette\Forms\Controls\BaseControl
 	{
 		parent::__construct($label);
 		$this->control->type='checkbox';
+		$this->value=0;
 	}
 
 	/**
 	 * Returns control's value
-	 * @return mixed
+	 *
+	 * @return int
 	 */
 	public function getValue()
 	{
@@ -37,41 +39,36 @@ extends \Nette\Forms\Controls\BaseControl
 
 	/**
 	 * Sets control's value
-	 * @param string $value
+	 *
+	 * @param int $value
+	 * @return Checkbox3S (fluent)
 	 * @throws \InvalidArgumentException
 	 */
 	public function setValue($value)
 	{
-		if (!in_array($value, array(-1, 0, 1))) {
+		if (!in_array((int)$value, array(-1, 0, 1))) {
 			throw new \InvalidArgumentException("Invalid argument passed, one of [-1, 0, 1] expected, '$value' given.");
 			}
-		parent::setValue($value);
+		$this->value=(int)$value;
+		return $this;
 	}
 
 	/**
 	 * Generates control's HTML element
+	 *
 	 * @return Html
 	 */
 	public function getControl()
 	{
 		$control=parent::getControl();
+		$control->addClass('checkbox3s');
+		$val=$this->getValue();
+		$control->data('lohini-state', $val ?: 0);
+		if ($val==1) {
+			$control->checked='checked';
+			}
 		return Html::el('span')
 				->add($control)
-				->addClass('ui-icon')
-				->add(Html::el('script', array('type' => 'text/javascript'))
-					->add("head.ready(function() {head.js('".rtrim($this->form->getPresenter(FALSE)->getContext()->getService('httpRequest')->getUrl()->getBasePath(), '/')."/js/CBox3S.js', function() { CBox3S('{$control->id}', ".($this->getValue()!==NULL? (int)$this->getValue() : 0).');});});')
-					);
-	}
-
-	/**
-	 * Generates label's HTML element
-	 * @param string $caption
-	 * @return Html
-	 */
-	public function getLabel($caption=NULL)
-	{
-		$label=parent::getLabel($caption);
-		$label->for=NULL;
-		return $label;
+				->addClass('ui-icon');
 	}
 }
