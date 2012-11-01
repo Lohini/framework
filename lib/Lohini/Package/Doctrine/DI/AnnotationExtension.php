@@ -26,11 +26,11 @@ class AnnotationExtension
 extends \Lohini\Config\CompilerExtension
 {
 	/**
-	 * @param \Nette\Utils\PhpGenerator\ClassType $class 
+	 * @param \Nette\PhpGenerator\ClassType $class 
 	 */
-	public function afterCompile(\Nette\Utils\PhpGenerator\ClassType $class)
+	public function afterCompile(\Nette\PhpGenerator\ClassType $class)
 	{
-		/** @var \Nette\Utils\PhpGenerator\Method $init */
+		/** @var \Nette\PhpGenerator\Method $init */
 		$init=$class->methods['initialize'];
 
 		// just look it up, mother fucker!

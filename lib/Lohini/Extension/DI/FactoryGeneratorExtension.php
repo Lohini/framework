@@ -15,7 +15,7 @@ namespace Lohini\Extension\DI;
  */
 
 use Nette\DI\ServiceDefinition,
-	Nette\Utils\PhpGenerator;
+	Nette\PhpGenerator;
 
 /**
  */

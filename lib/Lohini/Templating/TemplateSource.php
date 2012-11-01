@@ -16,7 +16,7 @@ namespace Lohini\Templating;
 
 use Doctrine\ORM\Mapping as ORM,
 	Nette\Caching\Cache,
-	Nette\Utils\PhpGenerator;
+	Nette\PhpGenerator;
 
 /**
  * @ORM\Entity()

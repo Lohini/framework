@@ -80,7 +80,7 @@ extends \Nette\Object
 	{
 		$assets=array();
 		foreach ($asset=$this->createAsset($factory) as $leaf) {
-			$assets[]=\Nette\Utils\PhpGenerator\Helpers::formatArgs('unserialize(?)', array(serialize($leaf)));
+			$assets[]=\Nette\PhpGenerator\Helpers::formatArgs('unserialize(?)', array(serialize($leaf)));
 			}
 
 		if (count($assets)===1) {

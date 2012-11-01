@@ -236,7 +236,7 @@ implements Latte\IMacro
 
 			// registration code
 			$code='$template->_fm->register('.$asset->serialized.', ?, ?, ?, $control);';
-			$prolog[]=\Nette\Utils\PhpGenerator\Helpers::formatArgs(
+			$prolog[]=\Nette\PhpGenerator\Helpers::formatArgs(
 					$code,
 					array(
 						$asset->type,

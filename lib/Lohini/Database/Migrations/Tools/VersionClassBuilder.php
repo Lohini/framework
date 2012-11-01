@@ -19,7 +19,7 @@ namespace Lohini\Database\Migrations\Tools;
 class VersionClassBuilder
 extends \Nette\Object
 {
-	/** @var \Nette\Utils\PhpGenerator\ClassType */
+	/** @var \Nette\PhpGenerator\ClassType */
 	private $class;
 	/** @var \Lohini\Packages\Package */
 	private $package;
@@ -32,7 +32,7 @@ extends \Nette\Object
 	public function __construct(\Lohini\Packages\Package $package, $name=NULL)
 	{
 		$this->package=$package;
-		$this->class=new \Nette\Utils\PhpGenerator\ClassType($name ?: 'Version'.date('YmdHis'));
+		$this->class=new \Nette\PhpGenerator\ClassType($name ?: 'Version'.date('YmdHis'));
 		$this->class->addExtend('Lohini\Database\Migrations\AbstractMigration');
 		$this->class->addDocument('@todo: write description of migration');
 
@@ -47,7 +47,7 @@ extends \Nette\Object
 	 */
 	public function addUpSql($sql, array $params=array())
 	{
-		/** @var \Nette\Utils\PhpGenerator\Method $up */
+		/** @var \Nette\PhpGenerator\Method $up */
 		$up=$this->class->methods['up'];
 		$up->addBody('$this->addSql(?,?)', array($sql, $params));
 	}
@@ -64,7 +64,7 @@ extends \Nette\Object
 			$down->addBody("// this method was auto-generated, please modify it to your needs\n");
 			}
 
-		/** @var \Nette\Utils\PhpGenerator\Method $down */
+		/** @var \Nette\PhpGenerator\Method $down */
 		$down = $this->class->methods['down'];
 		$down->addBody('$this->addSql(?,?)', array($sql, $params));
 	}

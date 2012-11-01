@@ -29,7 +29,7 @@ extends \Lohini\Testing\TestCase
 		$tempDir=$this->getContext()->expand('%tempDir%/classes');
 		\Lohini\Utils\Filesystem::mkDir($tempDir);
 
-		$class=new \Nette\Utils\PhpGenerator\ClassType('MyClass_'.\Nette\Utils\Strings::random());
+		$class=new \Nette\PhpGenerator\ClassType('MyClass_'.\Nette\Utils\Strings::random());
 		$foo=$class->addMethod('foo')
 			->addBody('$c = $a + $b;');
 		$foo->addParameter('a');

@@ -19,7 +19,7 @@ namespace Lohini\Extension\Curl\Diagnostics;
  * @author Lopo <lopo@lohini.net>
  */
 
-use Nette\Utils\PhpGenerator,
+use Nette\PhpGenerator,
 	Lohini\Extension\Curl;
 
 /**

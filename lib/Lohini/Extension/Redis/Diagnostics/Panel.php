@@ -143,7 +143,7 @@ implements \Nette\Diagnostics\IBarPanel
 					.'</span></pre>';
 				}
 			if ($e->response) {
-				$response=\Nette\Utils\PhpGenerator\Helpers::dump($e->response);
+				$response=\Nette\PhpGenerator\Helpers::dump($e->response);
 				$panel.='<h3>Redis Response ('.strlen($e->response).')</h3>'
 					.'<pre class="nette-dump"><span class="php-string">'
 					.htmlSpecialChars($response)

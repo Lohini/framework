@@ -32,17 +32,18 @@ extends \Doctrine\DBAL\Connection
 	 */
 	public function connect()
 	{
+		set_error_handler(function($severity, $message) {
+			restore_error_handler();
+			throw new \Nette\InvalidStateException("Connection to database could not be established: $message");
+			});
 		try {
-			Debugger::tryError();
 			parent::connect();
-			if (Debugger::catchError($error)) {
-				throw $error;
-				}
-
+			restore_error_handler();
 			return TRUE;
 			}
-		catch (\ErrorException $e) {
-			throw new \Nette\InvalidStateException('Connection to database could not be established: '.$e->getMessage(), 0, $e);
+		catch (\PDOException $e) {
+			restore_error_handler();
+			throw new \Nette\InvalidStateException("Connection to database could not be established: " . $e->getMessage(), 0, $e);
 			}
 
 		return FALSE;

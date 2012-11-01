@@ -43,7 +43,7 @@ extends \Lohini\Testing\LatteTestCase
 		$assetColl->setTargetPath('static/main.css');
 		foreach ($assetColl as $asset) {
 			} // this affects all assets
-		$serialized=\Nette\Utils\PhpGenerator\Helpers::formatArgs('?', array(serialize($asset)));
+		$serialized=\Nette\PhpGenerator\Helpers::formatArgs('?', array(serialize($asset)));
 
 		$this->factory->expects($this->once())
 			->method('createAsset')
@@ -83,7 +83,7 @@ php;
 			));
 		foreach ($assetColl as $asset) {
 			} // this affects all assets
-		$serialized=\Nette\Utils\PhpGenerator\Helpers::formatArgs('?', array(serialize($asset)));
+		$serialized=\Nette\PhpGenerator\Helpers::formatArgs('?', array(serialize($asset)));
 
 		$this->factory->expects($this->once())
 			->method('createAsset')
