@@ -266,6 +266,49 @@ extends \PHPUnit_Framework_TestCase
 		return $this->getTempClassGenerator()->resolveFilename($class);
 	}
 
+	/********************* Utility *********************/
+	/**
+	 * @return string
+	 */
+	protected function tempDir()
+	{
+		$tempDir=$this->getContext()->expand('%tempDir%');
+		$tempDir.='/dyn/'.Strings::random();
+
+		if (!file_exists($tempDir)) {
+			Filesystem::mkDir($tempDir);
+			}
+		else {
+			Filesystem::cleanDir($tempDir);
+			}
+
+		return $tempDir;
+	}
+
+	/**
+	 * @param callable $closure
+	 * @param int $repeat
+	 * @param int $jobs
+	 * @throws \PHPUnit_Framework_AssertionFailedError
+	 */
+	protected function threadStress(\Closure $closure, $repeat=100, $jobs=30)
+	{
+		$scriptsDir=$this->getContext()->expand('%tempDir%/scripts');
+		Filesystem::mkDir($scriptsDir);
+		$scriptFile=$scriptsDir.'/'.md5($this->getName(TRUE)).'.php';
+
+		$extractor=new ClosureExtractor($closure);
+		file_put_contents($scriptFile, $extractor->buildScript($this->getReflection()));
+
+		try {
+			$runner=new ParallelRunner($scriptFile);
+			$runner->run($repeat, $jobs);
+			}
+		catch (Tools\ParallelExecutionException $e) {
+			throw new \PHPUnit_Framework_AssertionFailedError($e->getMessage(), 0, $e);
+			}
+	}
+
 	/********************* Exceptions handling *********************/
 	/**
 	 * This method is called when a test method did not execute successfully.
@@ -282,7 +325,7 @@ extends \PHPUnit_Framework_TestCase
 		parent::onNotSuccessfulTest($e);
 	}
 
-	/********************* Nette\Object behaviour ****************d*g**/
+	/********************* \Nette\Object behaviour ****************d*g**/
 	/**
 	 * @return \Nette\Reflection\ClassType
 	 */

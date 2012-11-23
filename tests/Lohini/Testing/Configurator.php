@@ -80,11 +80,15 @@ extends \Lohini\Config\Configurator
 		$packages= $packages ?: \Lohini\Core::createPackagesList();
 
 		// cleanup directories
-		Filesystem::cleanDir($params['tempDir'].'/cache');
-		Filesystem::cleanDir($params['tempDir'].'/classes');
-		Filesystem::cleanDir($params['tempDir'].'/entities');
-		Filesystem::cleanDir($params['tempDir'].'/proxies');
-		Filesystem::rm($params['tempDir'].'/btfj.dat', FALSE);
+		if (!Tools\Process::isChild()) {
+			Filesystem::cleanDir($params['tempDir'].'/cache');
+			Filesystem::cleanDir($params['tempDir'].'/classes');
+			Filesystem::cleanDir($params['tempDir'].'/entities');
+			Filesystem::cleanDir($params['tempDir'].'/proxies');
+			Filesystem::cleanDir($params['tempDir'].'/scripts');
+			Filesystem::cleanDir($params['tempDir'].'/dyn');
+			Filesystem::rm($params['tempDir'].'/btfj.dat', FALSE);
+			}
 
 		// create container
 		return new static($params, $packages);

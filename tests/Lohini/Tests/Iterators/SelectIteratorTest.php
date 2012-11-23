@@ -7,8 +7,8 @@
  */
 namespace Lohini\Tests\Iterators;
 /**
-* @author Filip Procházka <filip@prochazka.su>
-*/
+ * @author Filip Procházka <filip@prochazka.su>
+ */
 /**
  * Lohini port
  * @author Lopo <lopo@lohini.net>

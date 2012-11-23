@@ -39,7 +39,6 @@ extends \Lohini\Packages\Package
 		$compiler->addExtension('assets', new \Lohini\Extension\Assets\DI\AssetsExtension);
 		$compiler->addExtension('lohini', new DI\FrameworkExtension);
 		$compiler->addExtension('migrations', new \Lohini\Database\Migrations\DI\MigrationsExtension);
-		$compiler->addExtension('dicFactories', new \Lohini\Extension\DI\FactoryGeneratorExtension);
 	}
 
 	/**

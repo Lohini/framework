@@ -8,7 +8,6 @@ env:
   - DB=sqlite
 
 before_script:
-  - "sh -c 'curl -s http://getcomposer.org/installer | php'"
-  - "sh -c 'php composer.phar install --quiet'"
+  - composer install --no-interaction --quiet
 
 script: php tests/lint.php tests/ lib/ && phpunit --verbose
