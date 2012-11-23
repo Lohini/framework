@@ -25,8 +25,10 @@
 		"lohini/assets-extension": "self.version",
 		"lohini/curl-extension": "self.version",
 		"lohini/browser-extension": "self.version",
-		"lohini/redis-extension": "self.version",
 		"lohini/forms-replicator": "self.version"
+	},
+	"suggest": {
+		"kdyby/redis-extension": "*"
 	},
 	"autoload": {
 		"psr-0": {
