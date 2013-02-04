@@ -31,7 +31,7 @@ extends \Nette\Object
 {
 	/**#@+ regexp's for parsing */
 	const HEADER_REGEXP='~(?P<header>.*?)\:\s(?P<value>.*)~';
-	const VERSION_AND_STATUS='~^HTTP/(?P<version>\d\.\d)\s(?P<code>\d+)\s(?P<status>.*)~';
+	const VERSION_AND_STATUS='~^HTTP/(?P<version>\d\.\d)\s(?P<code>\d+)(\s(?P<status>.*))?~';
 	/**#@- */
 
 	/** @var string */
@@ -410,7 +410,7 @@ extends \Nette\Object
 		while ($m=Strings::match(reset($input), static::VERSION_AND_STATUS)) {
 			$headers['Http-Version']=$m['version'];
 			$headers['Status-Code']=$m['code'];
-			$headers['Status']=$m['code'].' '.$m['status'];
+			$headers['Status']= isset($m['status'])? $m['code'].' '.$m['status'] : '';
 			array_shift($input);
 			}
 

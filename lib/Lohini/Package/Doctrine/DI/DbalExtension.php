@@ -149,8 +149,7 @@ extends \Lohini\Config\CompilerExtension
 
 		// connection factory
 		$container->addDefinition($connectionName.'.factory')
-			->setClass('Lohini\Package\Doctrine\ConnectionFactory', array('%doctrine.dbal.connectionFactory.types%'))
-			->setInternal(TRUE);
+			->setClass('Lohini\Package\Doctrine\ConnectionFactory', array('%doctrine.dbal.connectionFactory.types%'));
 
 		// connection
 		Validators::assertField($options, 'mappingTypes', 'array');

@@ -20,6 +20,8 @@ use Nette\Forms\Controls\SubmitButton,
 
 /**
  * @method \Nette\Application\UI\Form getForm()
+ * @method \Nette\Forms\Container getParent()
+ * @property \Nette\Forms\Container $parent
  */
 class Replicator
 extends Container
@@ -385,6 +387,30 @@ extends Container
 	}
 
 	/**
+	 * @param string $name
+	 * @return Container
+	 */
+	public function addContainer($name)
+	{
+		return $this[$name]=new Container;
+	}
+
+	/**
+	 * @param \Nette\ComponentModel\IComponent $component
+	 * @param string $name
+	 * @param null $insertBefore
+	 * @return \Nette\ComponentModel\Container|\Nette\Forms\Container
+	 */
+	public function addComponent(\Nette\ComponentModel\IComponent $component, $name, $insertBefore=NULL)
+	{
+		$group=$this->currentGroup;
+		$this->currentGroup=NULL;
+		parent::addComponent($component, $name, $insertBefore);
+		$this->currentGroup=$group;
+		return $this;
+	}
+
+	/**
 	 * @param string $methodName
 	 * @throws \Nette\MemberAccessException
 	 */
@@ -398,8 +424,10 @@ extends Container
 			}
 		Container::extensionMethod(
 				$methodName,
-				function(Container $_this, $name, $factory, $createDefault=0) {
-					return $_this[$name]=new Replicator($factory, $createDefault);
+				function(Container $_this, $name, $factory, $createDefault=0, $forceDefault=FALSE) {
+					$control=new Replicator($factory, $createDefault, $forceDefault);
+					$control->currentGroup=$_this->currentGroup;
+					return $_this[$name]=$control;
 					}
 				);
 
