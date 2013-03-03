@@ -2,12 +2,13 @@ language: php
 
 php:
   - 5.4
-  - 5.3
+  - 5.3.3
 
 env:
   - DB=sqlite
 
 before_script:
+  - composer self-update
   - composer install --no-interaction --quiet
 
 script: php tests/lint.php tests/ lib/ && phpunit --verbose
