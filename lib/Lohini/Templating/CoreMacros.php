@@ -21,7 +21,6 @@ use Nette\Latte;
 class CoreMacros
 extends Latte\Macros\MacroSet
 {
-
 	/**
 	 * @param Latte\Compiler $compiler
 	 * @return CoreMacros

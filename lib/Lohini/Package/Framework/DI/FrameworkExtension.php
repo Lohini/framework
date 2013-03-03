@@ -45,6 +45,7 @@ extends \Lohini\Config\CompilerExtension
 
 		// macros
 		$this->addMacro('macros.core', 'Lohini\Templating\CoreMacros::install');
+		$this->addMacro('macros.ui', 'Lohini\Templating\UIMacros::install');
 	}
 
 	public function beforeCompile()
