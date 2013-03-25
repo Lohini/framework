@@ -16,7 +16,7 @@ extends Latte\Macros\MacroSet
 {
 	/**
 	 * @param Latte\Compiler $compiler
-	 * @return CoreMacros
+	 * @return UIMacros
 	 */
 	public static function install(Latte\Compiler $compiler)
 	{
