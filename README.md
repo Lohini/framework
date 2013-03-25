@@ -6,7 +6,7 @@ Now heavily based on Kdyby (www.kdyby.org)
 
 Requirements
 ------------
-- PHP 5.3.2 or later with PDO
+- PHP 5.3.6 or later with PDO
 - [Nette Framework 2.0.x](https://github.com/nette/nette)
 - [Doctrine ORM 2.2.x](https://github.com/doctrine/doctrine2)
 - [Symfony 2.0.x](https://github.com/symfony/symfony)
