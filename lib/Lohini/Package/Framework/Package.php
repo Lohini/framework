@@ -36,7 +36,6 @@ extends \Lohini\Packages\Package
 	 */
 	public function compile(\Nette\Config\Configurator $config, \Nette\Config\Compiler $compiler, \Lohini\Packages\PackagesContainer $packages)
 	{
-		$compiler->addExtension('assets', new \Lohini\Extension\Assets\DI\AssetsExtension);
 		$compiler->addExtension('lohini', new DI\FrameworkExtension);
 		$compiler->addExtension('migrations', new \Lohini\Database\Migrations\DI\MigrationsExtension);
 	}

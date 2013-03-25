@@ -17,11 +17,9 @@
 		"doctrine/orm": "2.2.*",
 		"doctrine/data-fixtures": "v1.0.0-ALPHA2",
 		"symfony/console": "2.0.*",
-		"symfony/css-selector": "2.0.*",
-		"kriswallsmith/assetic": "dev-fileexts"
+		"symfony/css-selector": "2.0.*"
 	},
 	"replace": {
-		"lohini/assets-extension": "self.version",
 		"lohini/curl-extension": "self.version",
 		"lohini/browser-extension": "self.version",
 		"lohini/forms-replicator": "self.version"
@@ -37,7 +35,6 @@
 			"lib/Lohini/Application/exceptions.php",
 			"lib/Lohini/Database/Doctrine/exceptions.php",
 			"lib/Lohini/Extension/Curl/exceptions.php",
-			"lib/Lohini/Extension/Assets/exceptions.php",
 			"lib/Lohini/Database/Migrations/exceptions.php",
 			"lib/Lohini/exceptions.php"
 		]
@@ -46,10 +43,6 @@
 		{
 			"type": "vcs",
 			"url": "git://github.com/HosipLan/nette.git"
-		},
-		{
-			"type": "vcs",
-			"url": "git://github.com/Lopo/assetic.git"
 		}
 	],
 	"minimum-stability": "dev",
