@@ -61,7 +61,7 @@ extends \Nette\Application\UI\Presenter
 	public function formatLayoutTemplateFiles()
 	{
 		return array_unique(array_merge(
-				$this->getTemplateFilesFormatter()->formatLayoutTemplateFiles($this->getName(), $this->getLayout()),
+				$this->getTemplateFilesFormatter()->formatLayoutTemplateFiles($this->getName(), $this->getLayout() ?: 'layout'),
 				parent::formatLayoutTemplateFiles()
 				));
 	}
