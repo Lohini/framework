@@ -1,0 +1,32 @@
+{
+	"name": "lohini/framework",
+	"description": "Lohini Framework is collection of tools to ease web development.",
+	"type": "library",
+	"keywords": ["lohini", "framework", "nette"],
+	"homepage": "http://lohini.net",
+	"license": ["GPL-3.0", "BSD-3-Clause", "GPL-2.0"],
+	"authors": [
+		{
+			"name": "Pavol Hluchý",
+			"homepage": "http://lopo.losys.eu"
+		}
+	],
+	"support": {
+		"email": "lopo@lohini.net",
+		"issues": "https://github.com/Lohini/framework/issues",
+		"source": "https://github.com/Lohini/framework"
+	},
+	"require": {
+		"php": ">= 5.4.0",
+		"nette/nette": "@dev"
+	},
+	"autoload": {
+		"psr-0": {
+			"Lohini": "lib/"
+		}
+	},
+	"minimum-stability": "dev",
+	"require-dev": {
+		"nette/tester": "@dev"
+	}
+}
