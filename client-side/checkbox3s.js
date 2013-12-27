@@ -8,10 +8,9 @@
 (function($, undefined) {
 
 	$.nette.ext('checkbox3s', {
-		init: function() {
-			$('body').on('change', 'input[type=checkbox].checkbox3s', this.changeFn);
-			},
 		load: function() {
+			$('body').off('change', 'input[type=checkbox].checkbox3s');
+			$('body').on('change', 'input[type=checkbox].checkbox3s', this.changeFn);
 			$('input[type=checkbox].checkbox3s')
 				.hide()
 				.each(this.wrapFn);
@@ -55,6 +54,7 @@
 					});
 			$('<span class="ui-icon"></span>')
 				.click(ext.clickFn)
+				.on('contextmenu', ext.rClickFn)
 				.prependTo(s);
 			$('<input></input>')
 				.attr({
@@ -92,20 +92,39 @@
 			dh.val(state);
 			$.nette.ext('checkbox3s').updateFn(this);
 			},
+		rClickFn: function(e) {
+			e.stopImmediatePropagation();
+			e.preventDefault();
+			var p=$(this).parent();
+			if (p.children('input[type=checkbox]').is(':disabled')) {
+				return;
+				}
+			var dh=p.children('input[type=hidden]'),
+				state=parseInt(dh.val());
+			if (state==-1) {
+				state=1;
+				}
+			else {
+				state--;
+				}
+			dh.val(state);
+			$.nette.ext('checkbox3s').updateFn(this);
+			},
 		updateFn: function(el) {
 			var p=$(el).parent(),
 				nb=p.children('span');
 			switch (parseInt(p.children('input[type=hidden]').val())) {
 				case -1:
+					nb.css('background-position', '');
 					nb.removeClass('ui-icon-check').addClass('ui-icon-closethick');
 					break;
 				case 0:
 					nb.css('background-position', '-240px -224px'); //blank
-					nb.removeClass('ui-icon-closethick');
+					nb.removeClass('ui-icon-closethick').removeClass('ui-icon-check');
 					break;
 				case 1:
 					nb.css('background-position', '');
-					nb.addClass('ui-icon-check');
+					nb.removeClass('ui-icon-closethick').addClass('ui-icon-check');
 					break;
 				}
 			},
