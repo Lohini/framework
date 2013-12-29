@@ -37,7 +37,6 @@ extends Latte\Macros\MacroSet
 	{
 		$set=new static($compiler);
 		$set->addMacro('asAttachment', callback($set, 'macroAsAttachment'));
-		$set->addMacro('css', [$set, 'macroCss']);
 		return $set;
 	}
 
