@@ -53,10 +53,9 @@ implements ITemplateFilesFormatter
 	 */
 	public function formatLayoutTemplateFiles($name, $layout='layout')
 	{
-		if ($path=str_replace(':', '/', substr($name, 0, strrpos($name, ':')))) {
+		if ($path=str_replace(':', '/', substr($name, 0, $pos=strrpos($name, ':')))) {
 			$path.='/';
 			}
-		$pos=strrpos($name, ':');
 		$subPath= substr($name, $pos!==FALSE? $pos+1 : 0);
 
 		if ($path) {
@@ -104,10 +103,9 @@ implements ITemplateFilesFormatter
 	 */
 	public function formatTemplateFiles($name, $view)
 	{
-		if ($path=str_replace(':', '/', substr($name, 0, strrpos($name, ':')))) {
+		if ($path=str_replace(':', '/', substr($name, 0, $pos=strrpos($name, ':')))) {
 			$path.='/';
 			}
-		$pos=strrpos($name, ':');
 		$subPath= substr($name, $pos!==FALSE? $pos+1 : 0);
 
 		if ($path) {
