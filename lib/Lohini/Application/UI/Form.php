@@ -45,13 +45,13 @@ extends \Nette\Application\UI\Form
 	protected function attachHandlers()
 	{
 		if (method_exists($this, 'handleSuccess')) {
-			$this->onSuccess[]=callback($this, 'handleSuccess');
+			$this->onSuccess[]=[$this, 'handleSuccess'];
 			}
 		if (method_exists($this, 'handleError')) {
-			$this->onError[]=callback($this, 'handleError');
+			$this->onError[]=[$this, 'handleError'];
 			}
 		if (method_exists($this, 'handleValidate')) {
-			$this->onValidate[]=callback($this, 'handleValidate');
+			$this->onValidate[]=[$this, 'handleValidate'];
 			}
 
 		foreach ($this->getComponents(TRUE, 'Nette\Forms\ISubmitterControl') as $submitControl) {
@@ -64,10 +64,10 @@ extends \Nette\Application\UI\Form
 					)));
 
 			if (method_exists($this, 'handle'.$name.'Click')) {
-				$submitControl->onClick[]=callback($this, 'handle'.$name.'Click');
+				$submitControl->onClick[]=[$this, 'handle'.$name.'Click'];
 				}
 			if (method_exists($this, 'handle'.$name.'InvalidClick')) {
-				$submitControl->onInvalidClick[]=callback($this, 'handle'.$name.'InvalidClick');
+				$submitControl->onInvalidClick[]=[$this, 'handle'.$name.'InvalidClick'];
 				}
 		}
 	}
@@ -119,7 +119,7 @@ extends \Nette\Application\UI\Form
 				$component->redirect($handler->getDestination(), $handler->getParameters());
 				}
 			else {
-				callback($handler)->invokeArgs($args);
+				\Nette\Utils\Callback::invokeArgs($handler, $args);
 				}
 			}
 	}

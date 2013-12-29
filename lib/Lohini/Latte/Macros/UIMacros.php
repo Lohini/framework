@@ -36,7 +36,7 @@ extends Latte\Macros\MacroSet
 	public static function install(Latte\Compiler $compiler)
 	{
 		$set=new static($compiler);
-		$set->addMacro('asAttachment', callback($set, 'macroAsAttachment'));
+		$set->addMacro('asAttachment', [$set, 'macroAsAttachment']);
 		return $set;
 	}
 

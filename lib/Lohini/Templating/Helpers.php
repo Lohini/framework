@@ -30,12 +30,12 @@ extends \Nette\Object
 	 * Try to load the requested helper.
 	 *
 	 * @param string $helper name
-	 * @return callback
+	 * @return callable
 	 */
 	public static function loader($helper)
 	{
 		if (method_exists(__CLASS__, $helper)) {
-			return callback(__CLASS__, $helper);
+			return [__CLASS__, $helper];
 			}
 		if (isset(self::$helpers[$helper])) {
 			return self::$helpers[$helper];
