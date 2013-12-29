@@ -36,23 +36,8 @@
 				return true;
 				}
 			s.data('wrapped', true);
-			s.css({
-				background: ext.cb+' 2px 2px transparent no-repeat',
-				border: '0px none'
-				})
-				.mouseenter(function() {
-					if ($(this).is(':disabled')) {
-						return;
-						}
-					$(this).addClass('ui-state-hover');
-					})
-				.mouseleave(function() {
-					if ($(this).is(':disabled')) {
-						return;
-						}
-					$(this).removeClass('ui-state-hover');
-					});
-			$('<span class="ui-icon"></span>')
+			s.addClass('cb3s-cb');
+			$('<span class="cb3s cb3s-state"></span>')
 				.click(ext.clickFn)
 				.on('contextmenu', ext.rClickFn)
 				.prependTo(s);
@@ -64,16 +49,16 @@
 					})
 				.appendTo(s);
 			if (b.is(':disabled')) {
-				s.addClass('ui-state-disabled');
+				s.addClass('cb3s-disabled');
 				}
 			ext.updateFn(this);
 			},
 		changeFn: function(e) {
 			if ($(this).is(':disabled')) {
-				$(this).children('input[type=checkbox].checkbox3s').addClass('ui-state-disabled');
+				$(this).children('input[type=checkbox].checkbox3s').addClass('cb3s-disabled');
 				}
 			else {
-				$(this).children('input[type=checkbox].checkbox3s').removeClass('ui-state-disabled');
+				$(this).children('input[type=checkbox].checkbox3s').removeClass('cb3s-disabled');
 				}
 			},
 		clickFn: function() {
@@ -115,16 +100,13 @@
 				nb=p.children('span');
 			switch (parseInt(p.children('input[type=hidden]').val())) {
 				case -1:
-					nb.css('background-position', '');
-					nb.removeClass('ui-icon-check').addClass('ui-icon-closethick');
+					nb.removeClass('cb3s-check').removeClass('cb3s-blank').addClass('cb3s-close');
 					break;
 				case 0:
-					nb.css('background-position', '-240px -224px'); //blank
-					nb.removeClass('ui-icon-closethick').removeClass('ui-icon-check');
+					nb.removeClass('cb3s-close').removeClass('cb3s-check').addClass('cb3s-blank');
 					break;
 				case 1:
-					nb.css('background-position', '');
-					nb.removeClass('ui-icon-closethick').addClass('ui-icon-check');
+					nb.removeClass('cb3s-close').removeClass('cb3s-blank').addClass('cb3s-check');
 					break;
 				}
 			},
@@ -141,8 +123,7 @@
 					}
 				}
 			return ret;
-			},
-		cb: 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAYAAABy6+R8AAAAAXNSR0IArs4c6QAAAAlwSFlzAAALEwAACxMBAJqcGAAAANJJREFUKM+V0jFOQ0EMhOF/7RnvcofQAy0SEgcKxyF9chMaKq6SJtzhUSThKeQVxNJ2+2lsy+19s5m4sQTwtl7/G2x3uyMC+Pj8WvzUWsNOusXry/OcdK771eoCWIktysl+v79s729FNCxRpSM8vUUUEWQGyqCXKAspyQiqfI2kZHRjJWUxupFEaw2AMe6uUZ3QMcHYJnNuaYyxnFQWlshMMpOIoLXGNE3YWkjyeQb9goiY164FNHpxOHzTe8dlqmqeaYLMBfT0+HDbGW13u5tu7wdOXxehg2jd/gAAAABJRU5ErkJggg==)'
+			}
 		});
 
 	})(jQuery);

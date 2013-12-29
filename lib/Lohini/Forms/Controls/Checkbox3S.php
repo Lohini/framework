@@ -69,6 +69,6 @@ extends \Nette\Forms\Controls\BaseControl
 			}
 		return Html::el('span')
 				->add($control)
-				->addClass('ui-icon');
+				->addClass('cb3s');
 	}
 }

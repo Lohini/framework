@@ -1,0 +1,29 @@
+.cb3s {
+	width: 16px;
+	height: 16px;
+	display: block;
+	text-indent: -99999px;
+	overflow: hidden;
+	background-repeat: no-repeat;
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfdDB0IORAY1wt0AAAA50lEQVRIx+2SsZHCMBBFn6RdiZAGKOAaIHYzFHCVUAAzCiiExL2QUMQS2IBvbNkW2Q38SF7Ne1rJ645GIb+OFRE4TG6cWBcBuAwKDiWyhxoB7J6finKFWgGAR4gIMiyuFXgCgYgieGKtQEgISkJwwKZWoCQiihLgHYGgCIGAx2FofQedwOMBV/+IiRuJSERwWH+RCsEP70fWD+03H5hmVNli5H6dMbbzuI0UhvWK3K9ncRsp8lPxUk02PY0PFQW8Q8r43y6KTc/h50EHbUmxjOclRVN42hfWlv5CM4N3c/A4tV2ag3+VO17xX0iAzcg2AAAAAElFTkSuQmCC);
+	}
+.cb3s-cb {
+	background-position: 2px 2px;
+	}
+.cb3s-check {
+	background-position: 0 -16px;
+	}
+.cb3s-blank {
+	background-position: 16px 16px;
+	}
+.cb3s-close {
+	background-position: -16px -16px;
+	}
+.cb3s-disabled {
+	opacity: .35;
+	filter: Alpha(Opacity=35);
+	background-image: none;
+	}
+.cb3s-disabled .cb3s {
+	filter:Alpha(Opacity=35);
+	}
