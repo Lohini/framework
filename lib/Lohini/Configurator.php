@@ -7,6 +7,10 @@
  */
 namespace Lohini;
 
+if (PHP_VERSION_ID<50400) {
+	throw new \Exception('Lohini Framework requires PHP 5.4 or newer.');
+	}
+
 /**
  * Initial system DI container generator
  *
@@ -15,14 +19,6 @@ namespace Lohini;
 class Configurator
 extends \Nette\Configurator
 {
-	public function __construct()
-	{
-		if (PHP_VERSION_ID<50400) {
-			throw new \Exception('Lohini Framework requires PHP 5.4 or newer.');
-			}
-		parent::__construct();
-	}
-
 	protected function createCompiler()
 	{
 		$compiler=parent::createCompiler();
