@@ -111,6 +111,9 @@
 				}
 			},
 		deserializeFn: function(data) { // https://github.com/kflorence/jquery-deserialize
+			if (data===undefined) {
+				return [];
+				}
 			var parts, ret=[];
 			data=data.split('&');
 			for (var i=0, length=data.length; i<length; i++) {
