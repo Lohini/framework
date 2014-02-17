@@ -115,4 +115,15 @@ extends \Nette\Object
 			}
 		return date($format ?: self::$datetimeFormat, \Nette\DateTime::from($time)->format('U'));
 	}
+
+	/**
+	 * Base email protection from harvesters
+	 *
+	 * @param string $email
+	 * @return string
+	 */
+	public static function protectEmail($email)
+	{
+		return str_replace('@', '&#64;<!---->', $email);
+	}
 }
