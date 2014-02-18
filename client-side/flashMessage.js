@@ -3,8 +3,6 @@
  * This file is part of Lohini (http://lohini.net)
  *
  * @copyright (c) 2010, 2014 Lopo <lopo@lohini.net>
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
- * @license MIT
  * @author Lopo <lopo@lohini.net>
  * @note based on part of datagrid.js from romansklenar/nette-datagrid
  */

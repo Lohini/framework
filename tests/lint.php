@@ -4,7 +4,6 @@
  * This file is part of Lohini
  *
  * @copyright (c) 2010, 2014 Lopo <lopo@lohini.net>
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License Version 3
  */
 /**
  * @author Filip Procházka <filip@prochazka.su>
