@@ -1,7 +1,6 @@
 Lohini/framework [![Build Status](https://secure.travis-ci.org/Lohini/framework.png?branch=master)](http://travis-ci.org/Lohini/framework)
 ==========================
 The aim of this project is integration of interesting technologies and options to Nette Framework.
-Now heavily based on Kdyby (www.kdyby.org)
 
 Requirements
 ------------
