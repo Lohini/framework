@@ -22,7 +22,7 @@ extends \Nette\Forms\Controls\TextInput
 	/** @var Html */
 	protected $container;
 	/** @var array */
-	private $data=array(
+	private $data=[
 		'useWarning' => TRUE,
 		'useShow' => FALSE,
 		'useMasked' => FALSE,
@@ -30,7 +30,7 @@ extends \Nette\Forms\Controls\TextInput
 		'cbLabel' => 'Show Password',
 		'cbDesc' => 'Show the password as plain text (not advisable in a public place)',
 		'symbol' => "●"
-		);
+		];
 
 
 	/**
@@ -95,12 +95,11 @@ extends \Nette\Forms\Controls\TextInput
 		$control=parent::getControl()
 				->addClass('pswdinput');
 		$this->data['fid']=$this->getForm()->getElementPrototype()->id;
-		$data=array_filter($this->data);
 		$control->data(
 			'lohini-pswd',
-			\Nette\Utils\Json::encode($data)
+			\Nette\Utils\Json::encode(array_filter($this->data))
 			);
-		return Html::el('span', array('style' => 'position: relative; float: left;'))
+		return Html::el('span', ['style' => 'position: relative; float: left;'])
 				->add($control);
 	}
 }

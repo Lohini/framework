@@ -35,7 +35,7 @@ implements ITemplateFilesFormatter
 	/**
 	 * @param string $dir
 	 * @param int $priority
-	 * @return self
+	 * @return TemplateFilesFormatter (fluent)
 	 */
 	public function addDir($dir, $priority=5)
 	{

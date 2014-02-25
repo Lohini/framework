@@ -34,11 +34,11 @@ final class Network
 			$long+= isset($ip[$i])? $ip[$i]<<((3-$i)<<3) : 0;
 			}
 		return $prefix==32
-			? array($long, $long)
-			: array(
+			? [$long, $long]
+			: [
 				$long&(((1<<$prefix)-1)<<(32-$prefix)),
 				$long|((1<<(32-$prefix))-1)
-				);
+				];
 	}
 
 	/**
@@ -123,7 +123,6 @@ final class Network
 						}
 					// Otherwise, we've got an IP!
 					return trim($ip);
-					break;
 					}
 				}
 			// Otherwise just use the only one.

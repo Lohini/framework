@@ -45,7 +45,7 @@ extends \Nette\Forms\Controls\BaseControl
 	 */
 	public function setValue($value)
 	{
-		if (!in_array((int)$value, array(-1, 0, 1))) {
+		if (!in_array((int)$value, [-1, 0, 1])) {
 			throw new \InvalidArgumentException("Invalid argument passed, one of [-1, 0, 1] expected, '$value' given.");
 			}
 		$this->value=(int)$value;
