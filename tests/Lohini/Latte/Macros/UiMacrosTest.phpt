@@ -8,27 +8,25 @@
 
 namespace Lohini\Tests\Latte\Macros;
 
-use Tester\Assert,
-	Nette\Latte;
+use Tester\Assert;
 
 require_once __DIR__.'/../../bootstrap.php';
 
 class UIMacrosTest
 extends \Tester\TestCase
 {
-	/** @var Latte\Compiler */
+	/** @var \Latte\Compiler */
 	private $compiler;
-	/** @var Latte\Parser */
+	/** @var \Latte\Parser */
 	private $parser;
 
 	protected function setUp()
 	{
-		$this->compiler=new Latte\Compiler;
-		$this->compiler->setContext(Latte\Compiler::CONTENT_HTML);
-		$this->parser=new Latte\Parser;
-		$this->parser->setContext(Latte\Parser::CONTEXT_HTML_TEXT);
+		$this->compiler=new \Latte\Compiler;
+		$this->compiler->setContext(\Latte\Compiler::CONTENT_HTML);
+		$this->parser=new \Latte\Parser;
+		$this->parser->setContext(\Latte\Parser::CONTEXT_HTML_TEXT);
 		\Lohini\Latte\Macros\UIMacros::install($this->compiler);
-		\Nette\Diagnostics\Debugger::$maxLen=4096;
 	}
 
 	public function testAsAttachment()

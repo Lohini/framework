@@ -18,7 +18,9 @@
 	},
 	"require": {
 		"php": ">= 5.4.0",
-		"nette/nette": "2.1.*@dev"
+		"nette/application": "2.2.*@dev",
+		"nette/forms": "2.2.*@dev",
+		"latte/latte": "2.2.*@dev"
 	},
 	"autoload": {
 		"psr-0": {
@@ -27,6 +29,7 @@
 	},
 	"minimum-stability": "dev",
 	"require-dev": {
-		"nette/tester": "@dev"
+		"nette/tester": "@dev",
+		"tracy/tracy": "@dev"
 	}
 }

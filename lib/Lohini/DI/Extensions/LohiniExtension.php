@@ -21,8 +21,6 @@ extends \Nette\DI\CompilerExtension
 
 	/** @var array */
 	public $defaults=[
-		'application' => [
-			],
 		'templating' => [
 			'dirs' => [
 				'%appDir%' => 2
@@ -38,7 +36,7 @@ extends \Nette\DI\CompilerExtension
 		$builder=$this->getContainerBuilder();
 		$config=$this->getConfig($this->defaults);
 
-		$this->setupApplication($builder, $config['application']);
+		$this->setupApplication($builder);
 		$this->setupTemplating($builder, $config['templating']);
 	}
 
@@ -46,14 +44,12 @@ extends \Nette\DI\CompilerExtension
 	 * @param \Nette\DI\ContainerBuilder $container
 	 * @param array $config
 	 */
-	private function setupApplication(ContainerBuilder $container, array $config)
+	private function setupApplication(ContainerBuilder $container)
 	{
 		if ($container->hasDefinition('nette.presenterFactory')) {
 			$container->getDefinition('nette.presenterFactory')
 				->addSetup('setMapping', [['Lohini' => 'LohiniModule\\*\\*Presenter']]);
 			}
-		$container->getDefinition('application')
-			->addSetup('!headers_sent() && header(?, TRUE);', ['X-Powered-By: Nette Framework with Lohini Framework']);
 	}
 
 	/**

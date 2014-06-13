@@ -6,7 +6,6 @@
  */
 namespace Lohini\Latte\Macros;
 
-use Nette\Latte;
 
 /**
  * /--code latte
@@ -17,13 +16,13 @@ use Nette\Latte;
  * @author Lopo <lopo@lohini.net>
  */
 class UIMacros
-extends Latte\Macros\MacroSet
+extends \Latte\Macros\MacroSet
 {
 	/**
 	 * @param Latte\Engine
 	 * @return Latte\Macros\MacroSet
 	 */
-	public static function factory(Latte\Engine $engine)
+	public static function factory(\Latte\Engine $engine)
 	{
 		return static::install($engine->getCompiler());
 	}
@@ -32,7 +31,7 @@ extends Latte\Macros\MacroSet
 	 * @param Latte\Compiler $compiler
 	 * @return UIMacros
 	 */
-	public static function install(Latte\Compiler $compiler)
+	public static function install(\Latte\Compiler $compiler)
 	{
 		$set=new static($compiler);
 		$set->addMacro('asAttachment', [$set, 'macroAsAttachment']);
@@ -46,7 +45,7 @@ extends Latte\Macros\MacroSet
 	 * @param Latte\PhpWriter $writer
 	 * @return string
 	 */
-	public function macroAsAttachment(Latte\MacroNode $node, Latte\PhpWriter $writer)
+	public function macroAsAttachment(\Latte\MacroNode $node, \Latte\PhpWriter $writer)
 	{
 		return $writer->write('$netteHttpResponse->setHeader("Content-Disposition", "attachment; filename=\"%raw\"")', $node->args);
 	}
