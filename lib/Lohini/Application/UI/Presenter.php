@@ -43,8 +43,6 @@ extends \Nette\Application\UI\Presenter
 		/** @var \Nette\Templating\FileTemplate|\stdClass $template */
 		$template=parent::createTemplate($class);
 
-		$template->registerHelperLoader('Lohini\Templating\Helpers::loader');
-
 		$template->registerHelper('mtime', function ($f) {
 			return $f.'?v='.filemtime($this->context->parameters['wwwDir'].'/'.$f);
 			});

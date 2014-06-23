@@ -4,44 +4,18 @@
  *
  * @copyright (c) 2010, 2014 Lopo <lopo@lohini.net>
  */
-namespace Lohini\Templating;
+namespace Lohini\Latte;
 
 /**
  * Lohini template run-time helpers
  *
  * @author Lopo <lopo@lohini.net>
  */
-final class Helpers
-extends \Nette\Object
+final class Filters
 {
 	/** @var string */
 	public static $datetimeFormat='j.n.Y H:i:s';
-	/** @var array */
-	private static $helpers=[];
 
-
-	public function __construct()
-	{
-		throw new \Nette\StaticClassException;
-	}
-
-	/**
-	 * Try to load the requested helper.
-	 *
-	 * @param string $helper name
-	 * @return callable
-	 */
-	public static function loader($helper)
-	{
-		if (method_exists(__CLASS__, $helper)) {
-			return [__CLASS__, $helper];
-			}
-		if (isset(self::$helpers[$helper])) {
-			return self::$helpers[$helper];
-			}
-		// fallback
-		return \Nette\Templating\Helpers::loader($helper);
-	}
 
 	/**
 	 * Office XML Date formatting

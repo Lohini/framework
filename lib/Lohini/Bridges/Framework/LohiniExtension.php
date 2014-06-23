@@ -4,7 +4,7 @@
  *
  * @copyright (c) 2010, 2014 Lopo <lopo@lohini.net>
  */
-namespace Lohini\DI\Extensions;
+namespace Lohini\Bridges\Framework;
 
 use Nette\DI\ContainerBuilder,
 	Nette\Utils\Validators;
@@ -29,12 +29,26 @@ extends \Nette\DI\CompilerExtension
 			'debugger' => TRUE
 			]
 		];
+	/** @var array */
+	private $bridges=[
+		'lohiniLatte' => 'Lohini\Bridges\Latte\Extension'
+		];
 
 
 	public function loadConfiguration()
 	{
+		if (PHP_VERSION_ID<50400) {
+			throw new \Exception('Lohini Framework requires PHP 5.4 or newer.');
+			}
+
 		$builder=$this->getContainerBuilder();
 		$config=$this->getConfig($this->defaults);
+
+		foreach ($this->bridges as $name => $extension) {
+			if (class_exists($extension)) {
+				$this->compiler->addExtension($name, new $extension);
+				}
+			}
 
 		$this->setupApplication($builder);
 		$this->setupTemplating($builder, $config['templating']);
@@ -62,17 +76,12 @@ extends \Nette\DI\CompilerExtension
 			->setClass('Lohini\Templating\TemplateFilesFormatter')
 			->addSetup('$skin', [$config['skin']]);
 		foreach ($config['dirs'] as $dir => $priority) {
-			if (Validators::isNumericInt($dir)) {
-				$def->addSetup('addDir', [$priority]);
-				}
-			else {
-				$def->addSetup('addDir', [$container->expand($dir), $priority]);
-				}
-			}
-
-		if ($container->hasDefinition('nette.latte')) {
-			$container->getDefinition('nette.latte')
-				->addSetup('Lohini\Latte\Macros\UIMacros::factory', ['@self']);
+			$def->addSetup(
+				'addDir',
+				Validators::isNumericInt($dir)
+					? [$priority]
+					: [$container->expand($dir), $priority]
+				);
 			}
 	}
 }

@@ -15,34 +15,23 @@ namespace Lohini\Latte\Macros;
  *
  * @author Lopo <lopo@lohini.net>
  */
-class UIMacros
+class CoreMacros
 extends \Latte\Macros\MacroSet
 {
 	/**
-	 * @param Latte\Engine
-	 * @return Latte\Macros\MacroSet
-	 */
-	public static function factory(\Latte\Engine $engine)
-	{
-		return static::install($engine->getCompiler());
-	}
-
-	/**
-	 * @param Latte\Compiler $compiler
-	 * @return UIMacros
+	 * @param \Latte\Compiler $compiler
 	 */
 	public static function install(\Latte\Compiler $compiler)
 	{
 		$set=new static($compiler);
 		$set->addMacro('asAttachment', [$set, 'macroAsAttachment']);
-		return $set;
 	}
 
 	/**
 	 * {asAttachment ...}
 	 *
-	 * @param Latte\MacroNode $node
-	 * @param Latte\PhpWriter $writer
+	 * @param \Latte\MacroNode $node
+	 * @param \Latte\PhpWriter $writer
 	 * @return string
 	 */
 	public function macroAsAttachment(\Latte\MacroNode $node, \Latte\PhpWriter $writer)
