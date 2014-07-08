@@ -154,17 +154,6 @@ extends \Nette\Application\UI\Form
 	{
 		return $this[$name]=new Controls\ResetButton($caption);
 	}
-
-	/**
-	 * @param string $name
-	 * @param string $label
-	 * @param array $items
-	 * @return Controls\CheckboxList
-	 */
-	public function addCheckboxList($name, $label=NULL, array $items=NULL)
-	{
-		return $this[$name]=new Controls\CheckboxList($label, $items);
-	}
 }
 
 // radio list helper
