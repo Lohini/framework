@@ -1,0 +1,32 @@
+{
+	"name": "lohini-framework",
+	"description": "Client side scripts for Lohini framework",
+	"homepage": "http://www.lohini.net",
+	"keywords": [
+		"lohini",
+		"framework",
+		"nette"
+	],
+		"authors": [
+			{"name": "Pavol Hluchý",  "homepage": "http://lopo.losys.eu"}
+	],
+	"license": [
+		"BSD-3-Clause",
+		"GPL-3.0",
+		"MIT"
+	],
+	"main": [
+		"assets/js/checkbox3s.js",
+		"assets/js/flashMessage.js",
+		"assets/js/pswd.js"
+	],
+	"ignore": [
+		"**/.*",
+		"*.json",
+		"lib/*"
+	],
+	"dependencies": {
+		"jquery": ">=1.9",
+		"nette.ajax.js": ">=1.2.2"
+	}
+}
