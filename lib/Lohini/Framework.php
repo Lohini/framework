@@ -15,7 +15,7 @@ final class Framework
 {
 	/**#@+ Lohini version ID's */
 	const NAME='Lohini Framework';
-	const VERSION='0.4.2-dev';
+	const VERSION='0.4.3-dev';
 	const REVISION='$WCREV$ released on $WCDATE$';
 	/**#@-*/
 
